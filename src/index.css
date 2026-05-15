@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+  
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+  
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+@layer base {
+  :root {
+    --primary: #0058be;
+    --primary-container: #2170e4;
+    --on-primary: #ffffff;
+    --on-primary-container: #fefcff;
+    
+    --secondary: #505f76;
+    --secondary-container: #d0e1fb;
+    --on-secondary: #ffffff;
+    --on-secondary-container: #54647a;
+    
+    --tertiary: #006947;
+    --tertiary-container: #00855b;
+    --on-tertiary: #ffffff;
+    --on-tertiary-container: #f5fff6;
+    
+    --background: #f7f9fb;
+    --on-background: #191c1e;
+    
+    --surface: #f7f9fb;
+    --on-surface: #191c1e;
+    --surface-container-low: #f2f4f6;
+    --surface-container: #eceef0;
+    --surface-container-high: #e6e8ea;
+    --surface-container-highest: #e0e3e5;
+    
+    --outline: #727785;
+    --outline-variant: #c2c6d6;
+  }
+
+  .dark {
+    --primary: #adc6ff;
+    --primary-container: #004395;
+    --on-primary: #002e6b;
+    --on-primary-container: #d8e2ff;
+    
+    --secondary: #b7c8e1;
+    --secondary-container: #38485d;
+    --on-secondary: #223146;
+    --on-secondary-container: #d3e4fe;
+    
+    --tertiary: #4edea3;
+    --tertiary-container: #005236;
+    --on-tertiary: #003824;
+    --on-tertiary-container: #6ffbbe;
+    
+    --background: #111318;
+    --on-background: #e2e2e6;
+    
+    --surface: #111318;
+    --on-surface: #e2e2e6;
+    --surface-container-low: #191c21;
+    --surface-container: #1d2025;
+    --surface-container-high: #272a2f;
+    --surface-container-highest: #32353a;
+    
+    --outline: #8c9199;
+    --outline-variant: #42474e;
+  }
+
+  body {
+    @apply bg-background text-on-background font-sans transition-colors duration-300;
+  }
+
+  /* Override generic cards for dark mode */
+  .dark .bg-white {
+    @apply bg-surface-container-low;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
