@@ -8,40 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useEffect, type ReactNode, type MouseEvent, type Key } from 'react';
-import { 
-  Gamepad2, 
-  Heart, 
-  PlayCircle, 
-  CheckCircle2, 
-  Inbox, 
-  Settings, 
-  Search, 
-  Moon, 
-  Sun,
-  Download, 
-  Plus, 
-  ChevronDown, 
-  Star, 
-  Clock, 
-  Award, 
-  ArrowLeft,
-  X,
-  UserCircle2,
-  Trash2,
-  Info,
-  Palette,
-  Languages,
-  Database,
-  Cloud,
-  FileUp,
-  FileDown,
-  Edit2,
-  ClipboardList,
-  Medal,
-  RotateCcw,
-  UserCog
-} from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef, type ReactNode, type MouseEvent, type Key } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Types
@@ -145,6 +112,8 @@ export default function App() {
   const [activeDeveloper, setActiveDeveloper] = useState<string>('Todos');
   const [activeYear, setActiveYear] = useState<string>('Todos');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showLuckyModal, setShowLuckyModal] = useState(false);
+  const [luckyGame, setLuckyGame] = useState<Game | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -153,6 +122,40 @@ export default function App() {
     }
     return 'light';
   });
+
+  const [userAvatar, setUserAvatar] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('userAvatar') || "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
+    }
+    return "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
+  });
+
+  // Persist avatar
+  useEffect(() => {
+    localStorage.setItem('userAvatar', userAvatar);
+  }, [userAvatar]);
+
+  const mainRef = useRef<HTMLDivElement>(null);
+  const [showScrollBottom, setShowScrollBottom] = useState(true);
+
+  const scrollToPosition = (position: 'top' | 'bottom') => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({
+        top: position === 'top' ? 0 : document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+      setShowScrollBottom(position === 'top');
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isAtBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+      setShowScrollBottom(!isAtBottom);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Apply theme
   useEffect(() => {
@@ -280,6 +283,69 @@ export default function App() {
     setView('Details');
   };
 
+  const handleLuckyDraw = () => {
+    const nonCompleted = games.filter(g => g.status !== 'Completos');
+    if (nonCompleted.length > 0) {
+      const randomIndex = Math.floor(Math.random() * nonCompleted.length);
+      setLuckyGame(nonCompleted[randomIndex]);
+      setShowLuckyModal(true);
+    } else {
+      alert("Todos os jogos da sua biblioteca já foram completados! Parabéns!");
+    }
+  };
+
+  const handleExport = (fullBackup = false) => {
+    const data = fullBackup 
+      ? { games, theme, userAvatar, version: '1.0.4' }
+      : games;
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fullBackup ? `gaminghub-backup-${new Date().toISOString().split('T')[0]}.json` : `gaminghub-library.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (fullRestore = false) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          const parsed = JSON.parse(content);
+          if (fullRestore) {
+             if (parsed.games) setGames(parsed.games);
+             if (parsed.theme) setTheme(parsed.theme);
+             if (parsed.userAvatar) setUserAvatar(parsed.userAvatar);
+             alert("Backup restaurado com sucesso!");
+          } else {
+             // Just games or generic import
+             const importedGames = Array.isArray(parsed) ? parsed : (parsed.games || []);
+             if (confirm("Deseja substituir sua biblioteca atual ou adicionar os novos jogos? (OK = Substituir, Cancelar = Adicionar)")) {
+                setGames(importedGames);
+             } else {
+                setGames(prev => {
+                  const existingIds = new Set(prev.map(g => g.id));
+                  const uniqueNew = importedGames.filter((g: Game) => !existingIds.has(g.id));
+                  return [...prev, ...uniqueNew];
+                });
+             }
+          }
+        } catch (err) {
+          alert("Erro ao importar arquivo. Verifique se o formato está correto.");
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
   const getStatusColor = (status: GameStatus) => {
     switch (status) {
       case 'Jogando': return 'bg-primary-container text-on-primary-container';
@@ -295,23 +361,27 @@ export default function App() {
       <aside className="fixed left-0 top-0 h-full w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col py-10 z-50">
         <div className="px-6 mb-10">
           <div className="flex items-center gap-3 text-primary font-bold text-2xl tracking-tight">
-            <Gamepad2 className="w-8 h-8" />
+            <span className="material-symbols-outlined text-4xl">sports_esports</span>
             <span>GamingHub</span>
           </div>
         </div>
         
         <nav className="flex-1 px-3 space-y-1">
-          <NavItem active={view === 'Library'} onClick={() => setView('Library')} icon={<Gamepad2 className="w-5 h-5" />} label="Biblioteca" />
-          <NavItem active={view === 'Favorites'} onClick={() => setView('Favorites')} icon={<Heart className="w-5 h-5" />} label="Favoritos" />
-          <NavItem active={view === 'Playing'} onClick={() => setView('Playing')} icon={<PlayCircle className="w-5 h-5" />} label="Jogando" />
-          <NavItem active={view === 'Completed'} onClick={() => setView('Completed')} icon={<CheckCircle2 className="w-5 h-5" />} label="Completos" />
-          <NavItem active={view === 'Backlog'} onClick={() => setView('Backlog')} icon={<Inbox className="w-5 h-5" />} label="Backlog" />
-          <NavItem active={view === 'Settings'} onClick={() => setView('Settings')} icon={<Settings className="w-5 h-5" />} label="Configurações" />
+          <NavItem active={view === 'Library'} onClick={() => setView('Library')} icon={<span className="material-symbols-outlined">sports_esports</span>} label="Biblioteca" />
+          <NavItem active={view === 'Favorites'} onClick={() => setView('Favorites')} icon={<span className="material-symbols-outlined">favorite</span>} label="Favoritos" />
+          <NavItem active={view === 'Playing'} onClick={() => setView('Playing')} icon={<span className="material-symbols-outlined">play_circle</span>} label="Jogando" />
+          <NavItem active={view === 'Completed'} onClick={() => setView('Completed')} icon={<span className="material-symbols-outlined">check_circle</span>} label="Completos" />
+          <NavItem active={view === 'Backlog'} onClick={() => setView('Backlog')} icon={<span className="material-symbols-outlined">inbox</span>} label="Backlog" />
+          <NavItem active={view === 'Settings'} onClick={() => setView('Settings')} icon={<span className="material-symbols-outlined">settings</span>} label="Configurações" />
         </nav>
 
         <div className="px-6 mt-auto">
-          <button className="w-full py-3 bg-primary text-on-primary rounded-xl font-semibold text-sm transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20">
-            Sincronizar Biblioteca
+          <button 
+            onClick={handleLuckyDraw}
+            className="w-full py-3 bg-primary text-on-primary rounded-xl font-semibold text-sm transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[20px]">casino</span>
+            Sortear Jogo
           </button>
         </div>
       </aside>
@@ -322,12 +392,12 @@ export default function App() {
         <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant h-16 flex items-center justify-between px-10">
           <div className="flex items-center gap-4 flex-1">
             {view === 'Details' && (
-              <button onClick={() => setView('Library')} className="p-2 hover:bg-surface-container rounded-full transition-colors">
-                <ArrowLeft className="w-5 h-5" />
+              <button onClick={() => setView('Library')} className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center">
+                <span className="material-symbols-outlined">arrow_back</span>
               </button>
             )}
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
               <input 
                 type="text" 
                 placeholder="Procurar na biblioteca..."
@@ -347,24 +417,31 @@ export default function App() {
                 initial={false}
                 animate={{ y: theme === 'light' ? 0 : 40 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="absolute"
+                className="absolute flex items-center justify-center"
               >
-                <Moon className="w-5 h-5 text-outline" />
+                <span className="material-symbols-outlined text-outline">dark_mode</span>
               </motion.div>
               <motion.div
                 initial={false}
                 animate={{ y: theme === 'dark' ? 0 : -40 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="absolute"
+                className="absolute flex items-center justify-center"
               >
-                <Sun className="w-5 h-5 text-yellow-500" />
+                <span className="material-symbols-outlined text-yellow-500">light_mode</span>
               </motion.div>
             </button>
-            <button className="p-2 hover:bg-surface-container rounded-full transition-colors">
-              <Download className="w-5 h-5 text-outline" />
+            <button 
+              onClick={() => handleExport(false)}
+              className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center"
+              title="Exportar Biblioteca"
+            >
+              <span className="material-symbols-outlined text-outline">download</span>
             </button>
             <div className="h-6 w-px bg-outline-variant mx-2" />
-            <button className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-semibold hover:bg-surface-container transition-all">
+            <button 
+              onClick={() => handleImport(false)}
+              className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-semibold hover:bg-surface-container transition-all"
+            >
               Importar
             </button>
             <motion.button 
@@ -376,11 +453,16 @@ export default function App() {
               Add Jogo
             </motion.button>
             <div className="flex items-center gap-2 ml-2">
-              <img 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4" 
-                alt="Avatar" 
-                className="w-8 h-8 rounded-full border border-outline-variant shadow-sm"
-              />
+              <button 
+                onClick={() => setView('Settings')}
+                className="w-8 h-8 rounded-full border border-outline-variant shadow-sm hover:ring-2 hover:ring-primary/30 transition-all overflow-hidden active:scale-95 cursor-pointer outline-none"
+              >
+                <img 
+                  src={userAvatar} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover"
+                />
+              </button>
             </div>
           </div>
         </header>
@@ -430,7 +512,7 @@ export default function App() {
                             isActive ? 'bg-primary/10 text-primary ring-1 ring-primary/20' : 'text-outline hover:bg-surface-container'
                           }`}
                         >
-                          {!isTodos && activeGenres.includes(genre) && <CheckCircle2 className="w-3 h-3" />}
+                          {!isTodos && activeGenres.includes(genre) && <span className="material-symbols-outlined text-[14px]">check_circle</span>}
                           {genre}
                         </button>
                       );
@@ -452,11 +534,11 @@ export default function App() {
                       }`}
                     >
                       Filtros Avançados
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+                      <span className={`material-symbols-outlined transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-xs font-semibold text-outline hover:bg-surface-container transition-all whitespace-nowrap">
                       Ordenar por: Data adicionado
-                      <ChevronDown className="w-4 h-4" />
+                      <span className="material-symbols-outlined">expand_more</span>
                     </button>
                   </div>
                 </div>
@@ -481,7 +563,7 @@ export default function App() {
                             >
                               {allPlatforms.map(p => <option key={p} value={p}>{p}</option>)}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline pointer-events-none" />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
                           </div>
                         </div>
 
@@ -495,7 +577,7 @@ export default function App() {
                             >
                               {allDevelopers.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline pointer-events-none" />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
                           </div>
                         </div>
 
@@ -509,7 +591,7 @@ export default function App() {
                             >
                               {allYears.map(y => <option key={y} value={y}>{y}</option>)}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline pointer-events-none" />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
                           </div>
                         </div>
 
@@ -545,7 +627,7 @@ export default function App() {
                       }
                     }
                   }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
                 >
                   {filteredGames.map(game => (
                     <motion.div
@@ -589,9 +671,41 @@ export default function App() {
             )}
 
             {view === 'Settings' && (
-              <SettingsView theme={theme} setTheme={setTheme} />
+              <SettingsView 
+                theme={theme} 
+                setTheme={setTheme} 
+                userAvatar={userAvatar} 
+                setUserAvatar={setUserAvatar}
+                onExport={handleExport}
+                onImport={handleImport}
+              />
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Lucky Draw Modal */}
+        <LuckyDrawModal 
+          isOpen={showLuckyModal} 
+          game={luckyGame} 
+          onClose={() => setShowLuckyModal(false)}
+          onReDraw={handleLuckyDraw}
+          onViewDetails={(id) => {
+            setShowLuckyModal(false);
+            navigateToDetails(id);
+          }}
+        />
+
+        {/* Floating Scroll Button */}
+        <div className="fixed bottom-8 right-8 z-[60] flex flex-col gap-3">
+          <button 
+            onClick={() => scrollToPosition(showScrollBottom ? 'bottom' : 'top')}
+            className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90"
+            title={showScrollBottom ? "Rolar para baixo" : "Rolar para cima"}
+          >
+            <span className={`material-symbols-outlined transition-transform duration-300 ${!showScrollBottom ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
         </div>
       </main>
     </div>
@@ -652,7 +766,7 @@ function GameCard({
         transition: { duration: 0.2, ease: "easeOut" }
       }}
       whileTap={{ scale: 0.98 }}
-      className="group bg-white dark:bg-surface-container-low rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden hover:shadow-xl transition-all cursor-pointer"
+      className="group bg-white dark:bg-surface-container-low rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden hover:shadow-xl transition-all cursor-pointer"
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <motion.img 
@@ -683,36 +797,42 @@ function GameCard({
           whileTap={{ scale: 0.85 }}
           className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors z-20"
         >
-          <Heart className={`w-4 h-4 transition-colors ${game.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+          <span className={`material-symbols-outlined text-[20px] transition-colors ${game.isFavorite ? 'text-red-500 font-variation-fill' : ''}`} style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
         </motion.button>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-bold text-lg text-on-surface line-clamp-1 transition-colors group-hover:text-primary">{game.title}</h3>
-            <p className="text-xs text-outline font-medium">{game.genre}</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-sm text-on-surface line-clamp-1 transition-colors group-hover:text-primary">{game.title}</h3>
+            <p className="text-[10px] text-outline font-medium truncate">{game.genre}</p>
           </div>
-          <div className="flex items-center gap-0.5 text-primary">
+          <div className="flex items-center gap-0.5 text-primary shrink-0 ml-2">
             {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
                 initial={false}
                 animate={{ scale: i < game.rating ? 1 : 0.9, opacity: i < game.rating ? 1 : 0.3 }}
+                className="flex items-center justify-center font-semibold"
               >
-                <Star className={`w-3.5 h-3.5 ${i < game.rating ? 'fill-primary' : 'text-outline-variant'}`} />
+                <span 
+                  className="material-symbols-outlined text-[14px]" 
+                  style={{ fontVariationSettings: `"FILL" ${i < game.rating ? 1 : 0}` }}
+                >
+                  star
+                </span>
               </motion.div>
             ))}
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-outline font-medium group-hover:text-primary transition-colors">
-            <Clock className="w-3.5 h-3.5 group-hover:animate-pulse" />
-            {game.playtime}h jogadas
+          <div className="flex items-center gap-1 text-[10px] text-outline font-medium group-hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[14px] group-hover:animate-pulse">schedule</span>
+            {game.playtime}h
           </div>
           {game.status === 'Jogando' && (
-             <div className="w-24 h-1 bg-surface-container rounded-full overflow-hidden">
+             <div className="w-16 h-1 bg-surface-container rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${game.progress}%` }}
@@ -758,16 +878,19 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
               </span>
               {game.isPlatinum && (
                 <div className="bg-tertiary text-on-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                  <Medal className="w-3 h-3" />
+                  <span className="material-symbols-outlined text-[14px]">workspace_premium</span>
                   Platinado
                 </div>
               )}
               <div className="flex items-center gap-1 text-yellow-400">
                 {[...Array(5)].map((_, i) => (
-                  <Star 
+                  <span 
                     key={i} 
-                    className={`w-4 h-4 ${i < game.rating ? 'fill-yellow-400' : 'text-white/30'}`} 
-                  />
+                    className="material-symbols-outlined text-[18px]" 
+                    style={{ fontVariationSettings: `"FILL" ${i < game.rating ? 1 : 0}` }}
+                  >
+                    star
+                  </span>
                 ))}
               </div>
             </div>
@@ -776,11 +899,11 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
             
             <div className="flex items-center gap-6 text-white/80 text-sm font-medium">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[18px]">schedule</span>
                 {game.playtime}h jogadas
               </div>
               <div className="flex items-center gap-2">
-                <ClipboardList className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[18px]">list_alt</span>
                 {game.progress}% completo
               </div>
             </div>
@@ -791,14 +914,14 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
               onClick={onEdit} 
               className="px-5 py-2.5 bg-white text-on-surface rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container transition-all active:scale-95 shadow-lg"
             >
-              <Edit2 className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[20px]">edit</span>
               Editar Jogo
             </button>
             <button 
               onClick={() => onToggleFavorite(game.id)}
               className="px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-all active:scale-95 shadow-lg"
             >
-              <Heart className={`w-4 h-4 ${game.isFavorite ? 'fill-on-primary' : ''}`} />
+              <span className={`material-symbols-outlined text-[20px]` } style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
               Favoritar
             </button>
             {game.trailerUrl && (
@@ -808,7 +931,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
                 rel="noreferrer"
                 className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-xl font-bold text-sm backdrop-blur-md transition-all active:scale-95 flex items-center gap-2"
               >
-                <PlayCircle className="w-5 h-5" />
+                <span className="material-symbols-outlined text-[20px]">play_circle</span>
                 Trailer
               </a>
             )}
@@ -825,7 +948,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
               <div className="w-1.5 h-8 bg-primary rounded-full" />
               <h3 className="text-2xl font-bold tracking-tight">Sinopse</h3>
             </div>
-            <p className="text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none">
+            <p className="text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none line-clamp-10">
               {game.synopsis}
             </p>
           </section>
@@ -874,7 +997,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
             <div className="pt-6 border-t border-outline-variant/10 space-y-5">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-outline-variant uppercase tracking-widest">PLATINADO</span>
-                <Medal className={`w-5 h-5 ${game.isPlatinum || game.progress === 100 ? 'text-primary' : 'text-outline-variant opacity-40'}`} />
+                <span className={`material-symbols-outlined text-[20px] ${game.isPlatinum || game.progress === 100 ? 'text-primary' : 'text-outline-variant opacity-40'}`}>workspace_premium</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold text-outline-variant uppercase tracking-widest">HORAS JOGADAS</span>
@@ -923,6 +1046,15 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDelete }: {
   });
 
   const [newGenre, setNewGenre] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 400)}px`;
+    }
+  }, [formData.synopsis]);
 
   const addGenre = () => {
     if (newGenre.trim() && !formData.genres?.includes(newGenre.trim())) {
@@ -937,269 +1069,419 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDelete }: {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="space-y-8 max-w-[container-max-width] mx-auto p-margin-desktop"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-margin-desktop max-w-[container-max-width] mx-auto"
     >
-      <div className="flex items-center justify-between">
+      <div className="mb-8">
         <h1 className="font-headline-lg text-headline-lg text-on-surface">
-          {isEdit ? `Editar Jogo: ${game?.title}` : 'Adicionar Novo Jogo'}
+          {isEdit ? `Editar Jogo: ${formData.title}` : 'Adicionar Novo Jogo'}
         </h1>
-        <div className="flex gap-4">
-          {isEdit && onDelete && (
-            <button 
-              onClick={() => onDelete(game!.id)}
-              className="px-6 py-2 border border-error text-error rounded-lg font-label-md text-label-md hover:bg-error/5 transition-all outline-none"
-            >
-              Excluir Jogo
-            </button>
-          )}
-          <button 
-            onClick={onCancel} 
-            className="px-6 py-2 border border-outline-variant text-on-surface rounded-lg font-label-md text-label-md hover:bg-surface-variant/50 transition-all font-semibold outline-none"
-          >
-            Cancelar
-          </button>
-          <button 
-            onClick={() => onSave(formData)}
-            className="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-sm active:scale-95 transition-transform font-semibold outline-none"
-          >
-            Salvar Alterações
-          </button>
-        </div>
+        <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+          {isEdit ? 'Atualize as informações do seu jogo na biblioteca.' : 'Preencha as informações para catalogar sua nova experiência.'}
+        </p>
       </div>
 
-      <div className="grid grid-cols-12 gap-8">
-        {/* Game Cover Section */}
-        <div className="col-span-4">
-          <div className="bg-white dark:bg-surface-container-low p-6 rounded-xl border border-outline-variant/30 shadow-sm space-y-4">
-            <p className="font-label-md text-label-md text-on-surface-variant uppercase">Capa do Jogo</p>
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden group border border-outline-variant/10 bg-surface-container-low">
+      <form 
+        onSubmit={(e) => { e.preventDefault(); onSave(formData); }}
+        className="bg-white dark:bg-surface-container-low rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
+          {/* Left Column: Cover Upload */}
+          <div className="md:col-span-4 space-y-4">
+            <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Capa do Jogo</label>
+            <div 
+              className="relative group cursor-pointer aspect-[3/4] bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all overflow-hidden"
+              onClick={() => {
+                const url = prompt("Cole a URL da capa do jogo:", formData.coverUrl || "");
+                if (url !== null) setFormData({ ...formData, coverUrl: url });
+              }}
+            >
               {formData.coverUrl ? (
-                <img src={formData.coverUrl} alt="Preview" className="w-full h-full object-cover" />
+                <img src={formData.coverUrl} alt="Capa" className="w-full h-full object-cover" />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-outline-variant gap-2">
-                  <span className="material-symbols-outlined text-4xl opacity-30">add_photo_alternate</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Sem Capa</span>
-                </div>
+                <>
+                  <span className="material-symbols-outlined text-4xl mb-2">add_photo_alternate</span>
+                  <span className="font-body-sm text-body-sm px-4 text-center">Clique para enviar a capa (URL)</span>
+                </>
               )}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity h-full w-full">
-                <input 
-                  type="text" 
-                  placeholder="Cole a URL da capa"
-                  value={formData.coverUrl || ''}
-                  onChange={(e) => setFormData({ ...formData, coverUrl: e.target.value })}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <span className="material-symbols-outlined mb-2 text-3xl">add_photo_alternate</span>
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
+                <span className="material-symbols-outlined mb-2">add_photo_alternate</span>
                 <span className="font-label-md">Alterar Capa</span>
               </div>
             </div>
-
-            <div className="space-y-4 mt-4 pt-4 border-t border-outline-variant/20">
-              <div>
-                <button 
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95 font-bold outline-none"
-                  onClick={() => formData.trailerUrl && window.open(formData.trailerUrl, '_blank')}
-                >
-                  <span className="material-symbols-outlined">play_circle</span>
-                  Trailer
-                </button>
-              </div>
+            <p className="font-body-sm text-body-sm text-on-surface-variant/70 text-center">Formato recomendado: 3:4. Clique para inserir URL.</p>
+            
+            <div className="pt-4 border-t border-outline-variant/20 space-y-4">
+              <button 
+                type="button"
+                onClick={() => formData.trailerUrl && window.open(formData.trailerUrl, '_blank')}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95 outline-none"
+              >
+                <span className="material-symbols-outlined">play_circle</span>
+                Assistir Trailer
+              </button>
               <div className="space-y-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant uppercase">Link do Trailer</label>
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Link do Trailer</label>
                 <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary font-body-sm text-body-sm outline-none transition-all placeholder:opacity-50" 
+                  className="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary font-body-sm text-body-sm outline-none transition-all" 
                   placeholder="https://youtube.com/..." 
                   type="text"
                   value={formData.trailerUrl || ''}
-                  onChange={(e) => setFormData({ ...formData, trailerUrl: e.target.value })}
+                  onChange={(e) => setFormData({...formData, trailerUrl: e.target.value})}
                 />
               </div>
-              <div className="flex items-center gap-3 mt-4">
+              <div className="flex items-center gap-3 pt-2">
                 <input 
-                  className="w-5 h-5 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary focus:ring-offset-0 transition-all cursor-pointer" 
+                  className="w-5 h-5 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary transition-all cursor-pointer" 
                   id="platina-checkbox" 
                   type="checkbox"
                   checked={formData.isPlatinum || false}
-                  onChange={(e) => setFormData({ ...formData, isPlatinum: e.target.checked })}
+                  onChange={(e) => setFormData({...formData, isPlatinum: e.target.checked})}
                 />
-                <label className="font-label-md text-label-md text-on-surface-variant uppercase cursor-pointer" htmlFor="platina-checkbox">Platina</label>
-              </div>
-              <div className="space-y-4 pt-4 border-t border-outline-variant/20">
-                <div className="space-y-2">
-                  <label className="block font-label-md text-label-md text-on-surface-variant uppercase">Horas Jogadas</label>
-                  <div className="relative flex items-center">
-                    <input 
-                      className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 pr-10 text-on-surface focus:ring-primary focus:border-primary font-body-sm text-body-sm outline-none transition-all" 
-                      placeholder="0" 
-                      type="number"
-                      value={formData.playtime || 0}
-                      onChange={(e) => setFormData({...formData, playtime: Number(e.target.value)})}
-                    />
-                    <span className="absolute right-4 text-on-surface-variant font-body-sm">h</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="block font-label-md text-label-md text-on-surface-variant uppercase">Concluído</label>
-                  <div className="relative flex items-center">
-                    <input 
-                      className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 pr-10 text-on-surface focus:ring-primary focus:border-primary font-body-sm text-body-sm outline-none transition-all" 
-                      max="100" min="0" placeholder="0" 
-                      type="number"
-                      value={formData.progress || 0}
-                      onChange={(e) => setFormData({...formData, progress: Number(e.target.value)})}
-                    />
-                    <span className="absolute right-4 text-on-surface-variant font-body-sm">%</span>
-                  </div>
-                </div>
+                <label className="font-label-md text-label-md text-on-surface-variant uppercase cursor-pointer tracking-wider" htmlFor="platina-checkbox">Jogo Platinado</label>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Form Fields Section */}
-        <div className="col-span-8">
-          <div className="bg-white dark:bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 shadow-sm space-y-6">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="col-span-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Título</label>
+          {/* Right Column: Form Fields */}
+          <div className="md:col-span-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="title">Título do Jogo</label>
                 <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  type="text" 
+                  className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                  id="title" 
+                  placeholder="Ex: Elden Ring" 
+                  type="text"
                   value={formData.title || ''}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Plataforma</label>
-                <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  type="text" 
-                  value={formData.platform || ''}
-                  onChange={(e) => setFormData({...formData, platform: e.target.value})}
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Ano de Lançamento</label>
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="platform">Plataforma</label>
+                <div className="relative">
+                  <select 
+                    className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all appearance-none outline-none" 
+                    id="platform"
+                    value={formData.platform || ''}
+                    onChange={(e) => setFormData({...formData, platform: e.target.value})}
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="PC">PC</option>
+                    <option value="PlayStation 5">PlayStation 5</option>
+                    <option value="Xbox Series X|S">Xbox Series X|S</option>
+                    <option value="Nintendo Switch">Nintendo Switch</option>
+                  </select>
+                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+                </div>
+              </div>
+            </div>
+
+            {/* New Fields: Desenvolvedor & Publisher */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="developer">Desenvolvedor</label>
                 <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  placeholder="Ex: 2024" 
+                  className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                  id="developer" 
+                  placeholder="Ex: FromSoftware" 
+                  type="text"
+                  value={formData.developer || ''}
+                  onChange={(e) => setFormData({...formData, developer: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="publisher">Publisher</label>
+                <input 
+                  className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                  id="publisher" 
+                  placeholder="Ex: Bandai Namco" 
+                  type="text"
+                  value={formData.publisher || ''}
+                  onChange={(e) => setFormData({...formData, publisher: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {/* New Field: Localização (Full Width) */}
+            <div className="space-y-2">
+              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="location">Localização</label>
+              <input 
+                className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                id="location" 
+                placeholder="Ex: HD Externo, Steam Library, GOG Galaxy" 
+                type="text"
+                value={formData.location || ''}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
+              />
+            </div>
+
+            {/* New Field: Ano de Lançamento & Horas Jogadas (Modified grid) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="release_year">Ano de Lançamento</label>
+                <input 
+                  className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                  id="release_year" 
+                  placeholder="Ex: 2022" 
                   type="text"
                   value={formData.releaseDate || ''}
                   onChange={(e) => setFormData({...formData, releaseDate: e.target.value})}
                 />
               </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Horas Jogadas</label>
-                <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  type="number" 
-                  value={formData.playtime || 0}
-                  onChange={(e) => setFormData({...formData, playtime: Number(e.target.value)})}
-                />
-              </div>
               <div className="space-y-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Localização</label>
-                <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface font-body-sm text-body-sm focus:ring-primary focus:border-primary transition-all outline-none" 
-                  placeholder="Ex: HD Externo, Steam Library, GOG Galaxy" 
-                  type="text"
-                  value={formData.location || ''}
-                  onChange={(e) => setFormData({...formData, location: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Desenvolvedor</label>
-                <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  type="text" 
-                  value={formData.developer || ''}
-                  onChange={(e) => setFormData({...formData, developer: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Publisher</label>
-                <input 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
-                  type="text" 
-                  value={formData.publisher || ''}
-                  onChange={(e) => setFormData({...formData, publisher: e.target.value})}
-                />
-              </div>
-              <div className="col-span-2 space-y-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Sinopse</label>
-                <textarea 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary min-h-[120px] resize-none outline-none transition-all font-medium placeholder:opacity-50" 
-                  placeholder="Digite uma breve descrição do jogo..."
-                  value={formData.synopsis || ''}
-                  onChange={(e) => setFormData({...formData, synopsis: e.target.value})}
-                ></textarea>
-              </div>
-              <div className="col-span-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Gêneros</label>
-                <div className="flex flex-wrap gap-2 p-3 bg-surface-container-low border border-outline-variant rounded-lg">
-                  {formData.genres?.map(g => (
-                    <span key={g} className="px-3 py-1 bg-primary/10 text-primary rounded-full font-label-sm text-label-sm flex items-center gap-1">
-                      {g}
-                      <span 
-                        className="material-symbols-outlined text-[14px] cursor-pointer hover:opacity-70" 
-                        onClick={() => removeGenre(g)}
-                      >
-                        close
-                      </span>
-                    </span>
-                  ))}
-                  <div className="flex items-center gap-2 ml-2">
-                    <input 
-                      type="text" 
-                      value={newGenre}
-                      onChange={(e) => setNewGenre(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGenre())}
-                      className="bg-transparent border-none outline-none font-label-sm text-label-sm text-primary placeholder:text-primary/50 w-32"
-                      placeholder="+ Adicionar Gênero"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Status de Progresso</label>
-                <select 
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:ring-primary focus:border-primary outline-none cursor-pointer font-medium"
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value as GameStatus})}
-                >
-                  <option value="Jogando">Jogando</option>
-                  <option value="Backlog">Backlog</option>
-                  <option value="Completos">Completos</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider font-semibold">Avaliação</label>
-                <div className="flex items-center gap-1 h-[50px] text-primary">
-                  {[...Array(5)].map((_, i) => (
-                    <span 
-                      key={i}
-                      onClick={() => setFormData({...formData, rating: i + 1})}
-                      className="material-symbols-outlined cursor-pointer select-none text-3xl transition-transform hover:scale-110" 
-                      style={{ fontVariationSettings: `"FILL" ${i < (formData.rating || 0) ? 1 : 0}` }}
-                    >
-                      star
-                    </span>
-                  ))}
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="hours">Horas Jogadas</label>
+                <div className="relative">
+                  <input 
+                    className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                    id="hours" 
+                    min="0" 
+                    placeholder="0" 
+                    type="number"
+                    value={formData.playtime || 0}
+                    onChange={(e) => setFormData({...formData, playtime: Number(e.target.value)})}
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 font-body-sm text-on-surface-variant">h</span>
                 </div>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Gêneros</label>
+              <div className="flex flex-wrap gap-2 p-3 bg-surface-container-low border border-outline-variant/30 rounded-lg">
+                {formData.genres?.map(genre => (
+                  <span key={genre} className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full font-label-md text-label-md">
+                    {genre}
+                    <span 
+                      className="material-symbols-outlined text-[16px] cursor-pointer hover:opacity-70" 
+                      onClick={() => removeGenre(genre)}
+                    >
+                      close
+                    </span>
+                  </span>
+                ))}
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="+ Adicionar"
+                    value={newGenre}
+                    onChange={(e) => setNewGenre(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGenre())}
+                    className="bg-transparent border-none outline-none font-label-md text-label-md text-primary w-24 placeholder:text-primary/50"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status de Progresso</label>
+              <div className="flex p-1 bg-surface-container-low rounded-xl border border-outline-variant/30 h-[48px]">
+                {(['Backlog', 'Jogando', 'Completos'] as GameStatus[]).map((status) => (
+                  <button 
+                    key={status}
+                    className={`flex-1 py-2 px-4 rounded-lg font-label-md text-label-md transition-all ${
+                      formData.status === status 
+                        ? 'bg-white shadow-sm text-primary' 
+                        : 'text-on-surface-variant hover:bg-white/50'
+                    }`} 
+                    type="button"
+                    onClick={() => setFormData({...formData, status})}
+                  >
+                    {status === 'Completos' ? 'Completado' : status}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Progresso da Campanha</label>
+                <span className="font-label-md text-label-md text-primary">{formData.progress}%</span>
+              </div>
+              <input 
+                className="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" 
+                type="range"
+                min="0"
+                max="100"
+                value={formData.progress || 0}
+                onChange={(e) => setFormData({...formData, progress: Number(e.target.value)})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Sua Avaliação</label>
+              <div className="flex items-center gap-1 text-primary">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button 
+                    key={star}
+                    type="button"
+                    onClick={() => setFormData({...formData, rating: star})}
+                    className="outline-none"
+                  >
+                    <span 
+                      className={`material-symbols-outlined text-3xl transition-transform hover:scale-110 ${star <= (formData.rating || 0) ? 'fill' : ''}`}
+                      style={{ fontVariationSettings: `"FILL" ${star <= (formData.rating || 0) ? 1 : 0}` }}
+                    >
+                      star
+                    </span>
+                  </button>
+                ))}
+                <span className="ml-2 font-body-sm text-on-surface-variant">({formData.rating}/5)</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="synopsis">Sinopse</label>
+              <textarea 
+                ref={textareaRef}
+                className="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all min-h-[120px] max-h-[400px] resize-none outline-none overflow-y-auto" 
+                id="synopsis" 
+                placeholder="Uma breve descrição do jogo..."
+                value={formData.synopsis || ''}
+                onChange={(e) => setFormData({...formData, synopsis: e.target.value})}
+              />
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Form Actions Footer */}
+        <div className="bg-surface-container-low/50 border-t border-outline-variant/30 p-8 flex justify-between items-center">
+          <div>
+            {isEdit && onDelete && (
+               <button 
+                type="button"
+                onClick={() => { if(confirm('Excluir este jogo?')) onDelete(game!.id) }}
+                className="px-6 py-2.5 rounded-lg border border-error/30 text-error font-label-md text-label-md hover:bg-error/5 transition-all outline-none"
+              >
+                Excluir Jogo
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4">
+            <button 
+              className="px-8 py-2.5 rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-variant/50 transition-all outline-none" 
+              type="button"
+              onClick={onCancel}
+            >
+              Cancelar
+            </button>
+            <button 
+              className="px-8 py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all outline-none" 
+              type="submit"
+            >
+              {isEdit ? 'Salvar Alterações' : 'Salvar Jogo'}
+            </button>
+          </div>
+        </div>
+      </form>
     </motion.div>
   );
 }
 
 
 
-function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: (t: 'light' | 'dark') => void }) {
+// Lucky Draw Modal Component
+function LuckyDrawModal({ isOpen, game, onClose, onReDraw, onViewDetails }: { 
+  isOpen: boolean, 
+  game: Game | null, 
+  onClose: () => void,
+  onReDraw: () => void,
+  onViewDetails: (id: string) => void
+}) {
+  if (!isOpen || !game) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="relative bg-surface-container-low w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl border border-outline-variant/30"
+        >
+          <div className="flex flex-col md:flex-row h-full">
+            <div className="w-full md:w-1/2 aspect-[3/4] md:aspect-auto">
+              <img src={game.coverUrl} alt={game.title} className="w-full h-full object-cover" />
+            </div>
+            <div className="p-8 flex flex-col justify-center flex-1 space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-[0.2em]">
+                  <span className="material-symbols-outlined text-[16px]">stars</span>
+                  Recomendação do Hub
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight text-on-surface leading-tight">{game.title}</h2>
+                <div className="flex gap-2">
+                   <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[10px] font-bold uppercase">{game.platform}</span>
+                   <span className="px-2 py-0.5 bg-secondary/10 text-secondary rounded-md text-[10px] font-bold uppercase">{game.status === 'Backlog' ? 'No Backlog' : 'Jogando'}</span>
+                </div>
+              </div>
+              
+              <p className="text-on-surface-variant text-sm line-clamp-4 italic">
+                "{game.synopsis}"
+              </p>
+
+              <div className="space-y-3 pt-4">
+                <button 
+                  onClick={() => onViewDetails(game.id)}
+                  className="w-full py-4 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[20px]">visibility</span>
+                  Ver Detalhes
+                </button>
+                <button 
+                  onClick={onReDraw}
+                  className="w-full py-4 border border-outline-variant text-on-surface rounded-2xl font-bold text-sm hover:bg-surface-container-high transition-colors active:scale-95 transition-transform"
+                >
+                  Sortear Outro
+                </button>
+              </div>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 w-10 h-10 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-md"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+}
+
+function SettingsView({ 
+  theme, 
+  setTheme, 
+  userAvatar, 
+  setUserAvatar,
+  onExport,
+  onImport
+}: { 
+  theme: 'light' | 'dark', 
+  setTheme: (t: 'light' | 'dark') => void,
+  userAvatar: string,
+  setUserAvatar: (url: string) => void,
+  onExport: (full: boolean) => void,
+  onImport: (full: boolean) => void
+}) {
+  const DEFAULT_AVATAR = "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
+
+  const handleUpdateAvatar = () => {
+    const url = prompt("Insira a URL da nova foto de perfil:", userAvatar);
+    if (url !== null && url.trim() !== "") {
+      setUserAvatar(url);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
@@ -1210,10 +1492,47 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
         <h1 className="font-bold text-headline-sm text-on-surface">Configurações</h1>
       </div>
 
+      {/* Avatar Section */}
+      <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col md:flex-row gap-8 items-center">
+        <div className="relative group">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 shadow-lg bg-surface-container">
+            <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
+          </div>
+          <button 
+            onClick={handleUpdateAvatar}
+            className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex flex-col items-center justify-center text-xs font-bold"
+          >
+            <span className="material-symbols-outlined mb-1">add_a_photo</span>
+            Alterar
+          </button>
+        </div>
+        
+        <div className="flex-1 space-y-4 text-center md:text-left">
+          <div>
+            <h3 className="text-xl font-bold">Foto de Perfil</h3>
+            <p className="text-on-surface-variant text-sm">Personalize sua aparência no GamingHub.</p>
+          </div>
+          <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+            <button 
+              onClick={handleUpdateAvatar}
+              className="px-6 py-2 bg-primary text-on-primary rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-95"
+            >
+              Alterar Foto
+            </button>
+            <button 
+              onClick={() => setUserAvatar(DEFAULT_AVATAR)}
+              className="px-6 py-2 border border-outline-variant text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-all active:scale-95"
+            >
+              Remover Foto
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Profile Section */}
       <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
-          <UserCog className="w-8 h-8 text-primary" />
+          <span className="material-symbols-outlined text-primary text-3xl">person</span>
           <h2 className="text-xl font-bold text-on-surface">Editar perfil</h2>
         </div>
         <div className="grid grid-cols-1 gap-4">
@@ -1225,7 +1544,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
               className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface font-medium focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" 
             />
             <p className="text-sm text-on-surface-variant flex items-center gap-2 mt-2">
-              <Info className="w-4 h-4" />
+              <span className="material-symbols-outlined text-sm">info</span>
               Este app é offline e não necessita e-mail.
             </p>
           </div>
@@ -1236,7 +1555,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
       <div className="grid grid-cols-2 gap-6">
         <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
-            <Palette className="w-8 h-8 text-primary" />
+            <span className="material-symbols-outlined text-primary text-3xl">palette</span>
             <h2 className="text-xl font-bold text-on-surface">Aparência</h2>
           </div>
           <div className="space-y-4">
@@ -1248,7 +1567,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
                   theme === 'light' ? 'bg-white shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                <Sun className="w-4 h-4" />
+                <span className="material-symbols-outlined text-sm">light_mode</span>
                 Claro
               </button>
               <button 
@@ -1257,7 +1576,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
                   theme === 'dark' ? 'bg-white/10 shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
-                <Moon className="w-4 h-4" />
+                <span className="material-symbols-outlined text-sm">dark_mode</span>
                 Escuro
               </button>
             </div>
@@ -1266,7 +1585,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
 
         <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
-            <Languages className="w-8 h-8 text-primary" />
+            <span className="material-symbols-outlined text-primary text-3xl">language</span>
             <h2 className="text-xl font-bold text-on-surface">Preferências</h2>
           </div>
           <div className="space-y-2">
@@ -1280,7 +1599,7 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
                 <option>English (US)</option>
                 <option>Español</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant pointer-events-none" />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant pointer-events-none">expand_more</span>
             </div>
           </div>
         </section>
@@ -1289,19 +1608,25 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
       {/* Data Management */}
       <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
-          <Database className="w-8 h-8 text-primary" />
+          <span className="material-symbols-outlined text-primary text-3xl">database</span>
           <h2 className="text-xl font-bold text-on-surface">Backup</h2>
         </div>
         <div className="grid grid-cols-2 gap-10">
           <div className="space-y-4">
             <p className="text-sm text-on-surface-variant leading-relaxed">Proteja seus dados salvando uma cópia local da sua biblioteca.</p>
             <div className="flex gap-3">
-              <button className="flex-1 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
-                <Cloud className="w-4 h-4" />
+              <button 
+                onClick={() => onExport(true)}
+                className="flex-1 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+              >
+                <span className="material-symbols-outlined text-sm">cloud</span>
                 Criar Backup
               </button>
-              <button className="flex-1 py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low active:scale-95 transition-transform flex items-center justify-center gap-2">
-                <RotateCcw className="w-4 h-4" />
+              <button 
+                onClick={() => onImport(true)}
+                className="flex-1 py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low active:scale-95 transition-transform flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">rotate_left</span>
                 Restaurar
               </button>
             </div>
@@ -1309,12 +1634,18 @@ function SettingsView({ theme, setTheme }: { theme: 'light' | 'dark', setTheme: 
           <div className="space-y-4 border-l border-outline-variant/30 pl-10">
             <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Importar/exportar listas</p>
             <div className="flex flex-col gap-3">
-              <button className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2">
-                <FileUp className="w-4 h-4" />
+              <button 
+                onClick={() => onImport(false)}
+                className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">upload</span>
                 Importar Listas
               </button>
-              <button className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2">
-                <FileDown className="w-4 h-4" />
+              <button 
+                onClick={() => onExport(false)}
+                className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">download</span>
                 Exportar Listas
               </button>
             </div>
