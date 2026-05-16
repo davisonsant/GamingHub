@@ -96,6 +96,206 @@ const INITIAL_GAMES: Game[] = [
     genres: ['Roguelike', 'Deckbuilder', 'Poker'],
     trailerUrl: 'https://www.youtube.com/watch?v=H7S86t8X0p0',
     isPlatinum: false
+  },
+  {
+    id: '4',
+    title: 'Cyberpunk 2077',
+    genre: 'Action RPG',
+    status: 'Jogando',
+    playtime: 85,
+    progress: 45,
+    rating: 4,
+    coverUrl: 'https://images.unsplash.com/photo-1605898960710-9ec88f5f963a?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PC',
+    releaseDate: '10 de Dezembro de 2020',
+    developer: 'CD Projekt Red',
+    publisher: 'CD Projekt',
+    location: 'Steam',
+    synopsis: 'Cyberpunk 2077 é um RPG de ação e aventura em mundo aberto ambientado na megalópole de Night City, onde você joga como um mercenário focado na sobrevivência.',
+    genres: ['Open World', 'RPG', 'Cyberpunk'],
+    trailerUrl: 'https://www.youtube.com/watch?v=8X2kIfS6fb8',
+    isPlatinum: false
+  },
+  {
+    id: '5',
+    title: 'The Witcher 3: Wild Hunt',
+    genre: 'Action RPG',
+    status: 'Completos',
+    playtime: 250,
+    progress: 100,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PC',
+    releaseDate: '19 de Maio de 2015',
+    developer: 'CD Projekt Red',
+    publisher: 'CD Projekt',
+    location: 'GOG',
+    synopsis: 'Torne-se um caçador de monstros profissional e embarque em uma aventura épica para encontrar a criança da profecia em um vasto mundo aberto.',
+    genres: ['RPG', 'Open World', 'Fantasy'],
+    trailerUrl: 'https://www.youtube.com/watch?v=XHrskkHf958',
+    isPlatinum: true
+  },
+  {
+    id: '6',
+    title: 'Red Dead Redemption 2',
+    genre: 'Action Adventure',
+    status: 'Completos',
+    playtime: 180,
+    progress: 100,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1533972751724-9135a8410a4c?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'Xbox Series X',
+    releaseDate: '26 de Outubro de 2018',
+    developer: 'Rockstar Games',
+    publisher: 'Rockstar Games',
+    location: 'Xbox Library',
+    synopsis: 'Estados Unidos, 1899. O fim da era do velho oeste começou. Arthur Morgan e a gangue Van der Linde são forçados a fugir.',
+    genres: ['Action', 'Western', 'Open World'],
+    trailerUrl: 'https://www.youtube.com/watch?v=gmA6MrX81z4',
+    isPlatinum: true
+  },
+  {
+    id: '7',
+    title: 'Horizon Forbidden West',
+    genre: 'Action RPG',
+    status: 'Backlog',
+    playtime: 0,
+    progress: 0,
+    rating: 0,
+    coverUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: false,
+    platform: 'PlayStation 5',
+    releaseDate: '18 de Fevereiro de 2022',
+    developer: 'Guerrilla Games',
+    publisher: 'Sony Interactive Entertainment',
+    location: 'PS5 Library',
+    synopsis: 'Junte-se a Aloy enquanto ela enfrenta o Oeste Proibido — uma fronteira majestosa, mas perigosa, que esconde novas e misteriosas ameaças.',
+    genres: ['Action', 'RPG', 'Sci-Fi'],
+    trailerUrl: 'https://www.youtube.com/watch?v=Lq594XmpPBg',
+    isPlatinum: false
+  },
+  {
+    id: '8',
+    title: 'Ghost of Tsushima',
+    genre: 'Action Adventure',
+    status: 'Completos',
+    playtime: 60,
+    progress: 100,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1529661146023-4eca55d5147e?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PlayStation 5',
+    releaseDate: '17 de Julho de 2020',
+    developer: 'Sucker Punch Productions',
+    publisher: 'Sony Interactive Entertainment',
+    location: 'PS5 Library',
+    synopsis: 'No final do século XIII, o império mongol devastou nações inteiras em sua campanha para conquistar o Oriente. A ilha de Tsushima é tudo o que resta entre o Japão e uma invasão mongol maciça.',
+    genres: ['Action', 'Samurai', 'Open World'],
+    trailerUrl: 'https://www.youtube.com/watch?v=Zbq7BnsQcUw',
+    isPlatinum: true
+  },
+  {
+    id: '9',
+    title: 'Starfield',
+    genre: 'Action RPG',
+    status: 'Jogando',
+    playtime: 35,
+    progress: 20,
+    rating: 3,
+    coverUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: false,
+    platform: 'PC',
+    releaseDate: '6 de Setembro de 2023',
+    developer: 'Bethesda Game Studios',
+    publisher: 'Bethesda Softworks',
+    location: 'Game Pass',
+    synopsis: 'Starfield é o primeiro universo novo em 25 anos da Bethesda Game Studios, os criadores premiados de The Elder Scrolls V: Skyrim e Fallout 4.',
+    genres: ['RPG', 'Sci-Fi', 'Space'],
+    trailerUrl: 'https://www.youtube.com/watch?v=kfYEiTRgWX8',
+    isPlatinum: false
+  },
+  {
+    id: '10',
+    title: 'Baldur\'s Gate 3',
+    genre: 'RPG',
+    status: 'Jogando',
+    playtime: 120,
+    progress: 75,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PC',
+    releaseDate: '3 de Agosto de 2023',
+    developer: 'Larian Studios',
+    publisher: 'Larian Studios',
+    location: 'Steam',
+    synopsis: 'Reúna seu grupo e retorne aos Reinos Esquecidos em uma história de amizade e traição, sacrifício e sobrevivência, e a sedução do poder absoluto.',
+    genres: ['RPG', 'Tactical', 'Fantasy'],
+    trailerUrl: 'https://www.youtube.com/watch?v=1T22wNnyRS0',
+    isPlatinum: false
+  },
+  {
+    id: '11',
+    title: 'Resident Evil 4 Remake',
+    genre: 'Survival Horror',
+    status: 'Completos',
+    playtime: 25,
+    progress: 100,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PlayStation 5',
+    releaseDate: '24 de Março de 2023',
+    developer: 'Capcom',
+    publisher: 'Capcom',
+    location: 'PS5 Library',
+    synopsis: 'Seis anos se passaram desde o desastre biológico em Raccoon City. Leon S. Kennedy, um dos sobreviventes, foi enviado para resgatar a filha raptada do presidente.',
+    genres: ['Horror', 'Action', 'Survial'],
+    trailerUrl: 'https://www.youtube.com/watch?v=j5Xv2lM9ue4',
+    isPlatinum: true
+  },
+  {
+    id: '12',
+    title: 'Final Fantasy VII Rebirth',
+    genre: 'Action RPG',
+    status: 'Backlog',
+    playtime: 0,
+    progress: 0,
+    rating: 0,
+    coverUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: false,
+    platform: 'PlayStation 5',
+    releaseDate: '29 de Fevereiro de 2024',
+    developer: 'Square Enix',
+    publisher: 'Square Enix',
+    location: 'PS5 Library',
+    synopsis: 'A jornada para o desconhecido continua. Após escapar da cidade distópica de Midgar, Cloud e seus amigos embarcam em uma jornada pelo planeta.',
+    genres: ['RPG', 'Fantasy', 'Action'],
+    trailerUrl: 'https://www.youtube.com/watch?v=Xh0mE8MAs5U',
+    isPlatinum: false
+  },
+  {
+    id: '13',
+    title: 'Marvel\'s Spider-Man 2',
+    genre: 'Action Adventure',
+    status: 'Completos',
+    playtime: 30,
+    progress: 100,
+    rating: 5,
+    coverUrl: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80&w=600&h=800',
+    isFavorite: true,
+    platform: 'PlayStation 5',
+    releaseDate: '20 de Outubro de 2023',
+    developer: 'Insomniac Games',
+    publisher: 'Sony Interactive Entertainment',
+    location: 'PS5 Library',
+    synopsis: 'Os Spiders Peter Parker e Miles Morales retornam para uma nova aventura emocionante na aclamada franquia Marvel\'s Spider-Man.',
+    genres: ['Action', 'Superhero', 'Open World'],
+    trailerUrl: 'https://www.youtube.com/watch?v=qIQ3BOfk4qI',
+    isPlatinum: true
   }
 ];
 
@@ -114,6 +314,7 @@ export default function App() {
   const [sortBy, setSortBy] = useState<'Date' | 'Title' | 'Playtime' | 'Rating'>('Date');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showLuckyModal, setShowLuckyModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [luckyGame, setLuckyGame] = useState<Game | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -353,57 +554,75 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-[var(--spacing-sidebar-width)] bg-surface-container-low/80 backdrop-blur-xl border-r border-outline-variant/30 flex flex-col py-10 z-50">
-        <div className="px-6 mb-10">
-          <div className="flex items-center gap-3 text-primary font-display font-bold text-2xl tracking-tight">
-            <span className="material-symbols-outlined text-4xl">sports_esports</span>
-            <span>GamingHub</span>
-          </div>
-        </div>
-        
-        <nav className="flex-1 px-3 space-y-1">
-          <NavItem active={view === 'Library'} onClick={() => setView('Library')} icon={<span className="material-symbols-outlined">sports_esports</span>} label="Biblioteca" />
-          <NavItem active={view === 'Favorites'} onClick={() => setView('Favorites')} icon={<span className="material-symbols-outlined">favorite</span>} label="Favoritos" />
-          <NavItem active={view === 'Playing'} onClick={() => setView('Playing')} icon={<span className="material-symbols-outlined">play_circle</span>} label="Jogando" />
-          <NavItem active={view === 'Completed'} onClick={() => setView('Completed')} icon={<span className="material-symbols-outlined">check_circle</span>} label="Completos" />
-          <NavItem active={view === 'Backlog'} onClick={() => setView('Backlog')} icon={<span className="material-symbols-outlined">inbox</span>} label="Backlog" />
-          <NavItem active={view === 'Settings'} onClick={() => setView('Settings')} icon={<span className="material-symbols-outlined">settings</span>} label="Configurações" />
-        </nav>
+    <div className="min-h-screen bg-surface-container-lowest flex justify-center items-start lg:py-8 lg:px-4 overflow-x-hidden transition-colors duration-300">
+      <div className="w-full max-w-[var(--spacing-container-max-width)] min-h-screen lg:min-h-[860px] bg-background lg:rounded-[2.5rem] lg:shadow-2xl overflow-hidden flex flex-col lg:flex-row relative">
+        {/* Sidebar Backdrop for Mobile */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] lg:hidden"
+            />
+          )}
+        </AnimatePresence>
 
-        <div className="px-6 mt-auto">
-          <button 
-            onClick={handleLuckyDraw}
-            className="w-full py-3 bg-primary text-on-primary rounded-xl font-semibold text-sm transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[20px]">casino</span>
-            Sortear Jogo
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="ml-[var(--spacing-sidebar-width)] flex-1 flex flex-col min-h-screen relative">
-        {/* TopBar */}
-        <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 h-16 flex items-center justify-between px-10">
-          <div className="flex items-center gap-4 flex-1">
-            {view === 'Details' && (
-              <button onClick={() => setView('Library')} className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center">
-                <span className="material-symbols-outlined">arrow_back</span>
-              </button>
-            )}
-            <div className="relative w-full max-w-md">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
-              <input 
-                type="text" 
-                placeholder="Procurar na biblioteca..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-              />
+        {/* Sidebar */}
+        <aside className={`
+          fixed lg:sticky lg:top-0 h-screen w-[var(--spacing-sidebar-width)] 
+          bg-surface-container-low/95 lg:bg-surface-container-low/80 backdrop-blur-xl border-r border-outline-variant/30 
+          flex flex-col py-10 z-[60] lg:z-50 transition-transform duration-300 ease-in-out
+          ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="px-6 mb-10 flex items-center justify-between">
+            <div className="flex items-center gap-3 text-primary font-display font-bold text-2xl tracking-tight">
+              <span className="material-symbols-outlined text-4xl">sports_esports</span>
+              <span>GamingHub</span>
             </div>
+            <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden p-2 hover:bg-surface-container rounded-lg">
+              <span className="material-symbols-outlined">close</span>
+            </button>
           </div>
+          
+          <nav className="flex-1 px-3 space-y-1">
+            <NavItem active={view === 'Library'} onClick={() => { setView('Library'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">sports_esports</span>} label="Biblioteca" />
+            <NavItem active={view === 'Favorites'} onClick={() => { setView('Favorites'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">favorite</span>} label="Favoritos" />
+            <NavItem active={view === 'Playing'} onClick={() => { setView('Playing'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">play_circle</span>} label="Jogando" />
+            <NavItem active={view === 'Completed'} onClick={() => { setView('Completed'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">check_circle</span>} label="Completos" />
+            <NavItem active={view === 'Backlog'} onClick={() => { setView('Backlog'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">inbox</span>} label="Backlog" />
+            <NavItem active={view === 'Settings'} onClick={() => { setView('Settings'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">settings</span>} label="Configurações" />
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
+          {/* TopBar */}
+          <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 min-h-16 flex items-center justify-between px-4 lg:px-10 flex-wrap gap-4 py-2 lg:py-0">
+            <div className="flex items-center gap-2 lg:gap-4 flex-1 min-w-[200px]">
+              <button 
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2 hover:bg-surface-container rounded-lg transition-colors flex items-center justify-center mr-1"
+              >
+                <span className="material-symbols-outlined">menu</span>
+              </button>
+              {view === 'Details' && (
+                <button onClick={() => setView('Library')} className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                </button>
+              )}
+              <div className="relative w-full max-w-md">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+                <input 
+                  type="text" 
+                  placeholder="Procurar na biblioteca..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                />
+              </div>
+            </div>
 
           <div className="flex items-center gap-4">
             <button 
@@ -436,10 +655,11 @@ export default function App() {
             </button>
             <div className="h-6 w-px bg-outline-variant mx-2" />
             <button 
-              onClick={() => handleImport(false)}
-              className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-semibold hover:bg-surface-container transition-all"
+              onClick={() => handleLuckyDraw()}
+              className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all flex items-center gap-2"
             >
-              Importar
+              <span className="material-symbols-outlined text-[18px]">casino</span>
+              Sortear Jogo
             </button>
             <motion.button 
               whileHover={{ scale: 1.05 }}
@@ -465,7 +685,7 @@ export default function App() {
         </header>
 
         {/* Content Area */}
-        <div className="p-10 flex-1">
+        <div className="p-4 lg:p-10 flex-1">
           <AnimatePresence mode="wait">
             {(view === 'Library' || view === 'Favorites' || view === 'Playing' || view === 'Completed' || view === 'Backlog') && (
               <motion.div 
@@ -473,16 +693,16 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="space-y-8"
+                className="space-y-6 lg:space-y-8"
               >
                 {/* Header */}
                 <div className="mb-2">
-                  <h1 className="font-display font-bold text-headline-xl text-on-surface tracking-tight">Biblioteca</h1>
-                  <p className="text-on-surface-variant text-body-md mb-4">Sua coleção pessoal de jogos.</p>
+                  <h1 className="font-display font-bold text-headline-md lg:text-headline-xl text-on-surface tracking-tight">Biblioteca</h1>
+                  <p className="text-on-surface-variant text-body-sm lg:text-body-md mb-4">Sua coleção pessoal de jogos.</p>
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
                   <StatCard label="Total Jogos" value={stats.total} color="text-primary" icon="inventory_2" />
                   <StatCard label="Jogando" value={stats.playing} color="text-primary" icon="play_circle" />
                   <StatCard label="Completos" value={stats.completed} color="text-secondary" icon="check_circle" />
@@ -491,8 +711,8 @@ export default function App() {
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-surface-container-low/50 backdrop-blur-sm p-4 rounded-[1.5rem] border border-outline-variant/30 flex items-center justify-between shadow-sm overflow-x-auto no-scrollbar">
-                  <div className="flex gap-2 min-w-max">
+                <div className="bg-surface-container-low/50 backdrop-blur-sm p-4 rounded-[1.5rem] border border-outline-variant/30 flex flex-col lg:flex-row items-stretch lg:items-center justify-between shadow-sm overflow-hidden gap-4">
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
                     {allGenres.map(genre => {
                       const isTodos = genre === 'Todos';
                       const isActive = isTodos ? activeGenres.length === 0 : activeGenres.includes(genre);
@@ -523,7 +743,7 @@ export default function App() {
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-4 ml-8 pr-2">
+                  <div className="flex items-center gap-2 lg:gap-4 lg:ml-8 pr-2 overflow-x-auto lg:overflow-visible no-scrollbar pb-1 lg:pb-0">
                     {activeGenres.length > 1 && (
                       <button 
                         onClick={() => setActiveGenres([])}
@@ -569,7 +789,7 @@ export default function App() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="bg-surface-container-low/80 backdrop-blur-md p-6 rounded-2xl border border-outline-variant/30 shadow-2xl grid grid-cols-3 gap-8">
+                      <div className="bg-surface-container-low/80 backdrop-blur-md p-6 rounded-2xl border border-outline-variant/30 shadow-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                         <div className="space-y-3">
                           <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest">Plataforma</p>
                           <div className="relative">
@@ -644,11 +864,12 @@ export default function App() {
                       }
                     }
                   }}
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12 pr-4 overflow-y-auto max-h-[720px] custom-scrollbar"
                 >
                   {filteredGames.map(game => (
                     <motion.div
                       key={game.id}
+                      className="w-full"
                       variants={{
                         hidden: { opacity: 0, y: 20 },
                         show: { opacity: 1, y: 0 }
@@ -725,6 +946,7 @@ export default function App() {
           onCancel={() => setDeleteConfirmId(null)}
         />
       </main>
+      </div>
     </div>
   );
 }
@@ -822,11 +1044,11 @@ function GameCard({
         </motion.button>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-6 space-y-4">
         <div className="flex justify-between items-start">
           <div className="min-w-0 flex-1">
-            <h3 className="font-display font-bold text-sm text-on-surface line-clamp-1 transition-colors group-hover:text-primary tracking-tight">{game.title}</h3>
-            <p className="font-sans text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">{game.genre}</p>
+            <h3 className="font-display font-bold text-base lg:text-lg text-on-surface line-clamp-1 transition-colors group-hover:text-primary tracking-tight">{game.title}</h3>
+            <p className="font-sans text-[11px] text-on-surface-variant font-bold uppercase tracking-wider">{game.genre}</p>
           </div>
           <div className="flex items-center gap-0.5 text-primary shrink-0 ml-2">
             {[...Array(5)].map((_, i) => (
@@ -837,7 +1059,7 @@ function GameCard({
                 className="flex items-center justify-center font-semibold"
               >
                 <span 
-                  className="material-symbols-outlined text-[14px]" 
+                  className="material-symbols-outlined text-[16px]" 
                   style={{ fontVariationSettings: `"FILL" ${i < game.rating ? 1 : 0}` }}
                 >
                   star
@@ -847,19 +1069,19 @@ function GameCard({
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10">
-          <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant font-bold group-hover:text-primary transition-colors uppercase tracking-tight">
-            <span className="material-symbols-outlined text-[14px] opacity-70">schedule</span>
-            {game.playtime}h
+        <div className="flex items-center justify-between pt-3 border-t border-outline-variant/10">
+          <div className="flex items-center gap-2 text-[11px] text-on-surface-variant font-bold group-hover:text-primary transition-colors uppercase tracking-tight">
+            <span className="material-symbols-outlined text-[16px] opacity-70">schedule</span>
+            {game.playtime}h jogadas
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-bold uppercase tracking-tight opacity-70">
-             <span className="material-symbols-outlined text-[14px]">desktop_windows</span>
+          <div className="flex items-center gap-1.5 text-[11px] text-on-surface-variant font-bold uppercase tracking-tight opacity-70">
+             <span className="material-symbols-outlined text-[16px]">desktop_windows</span>
              {game.platform}
           </div>
         </div>
         {game.status === 'Jogando' && (
-           <div className="mt-2 space-y-1">
-             <div className="flex justify-between text-[8px] font-bold uppercase tracking-tighter text-on-surface-variant/60">
+           <div className="mt-3 space-y-2">
+             <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter text-on-surface-variant/60">
                <span>Progresso</span>
                <span>{game.progress}%</span>
              </div>
@@ -901,14 +1123,14 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         
-        <div className="absolute bottom-0 inset-x-0 p-10 flex justify-between items-end">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
+        <div className="absolute bottom-0 inset-x-0 p-4 lg:p-10 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 overflow-hidden">
+          <div className="space-y-3 lg:space-y-4">
+            <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+              <span className="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
                 {game.status}
               </span>
               {game.isPlatinum && (
-                <div className="bg-tertiary text-on-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+                <div className="bg-tertiary text-on-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 whitespace-nowrap">
                   <span className="material-symbols-outlined text-[14px]">workspace_premium</span>
                   Platinado
                 </div>
@@ -917,7 +1139,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
                 {[...Array(5)].map((_, i) => (
                   <span 
                     key={i} 
-                    className="material-symbols-outlined text-[18px]" 
+                    className="material-symbols-outlined text-[16px] lg:text-[18px]" 
                     style={{ fontVariationSettings: `"FILL" ${i < game.rating ? 1 : 0}` }}
                   >
                     star
@@ -926,40 +1148,40 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
               </div>
             </div>
             
-            <h1 className="text-white text-5xl font-bold tracking-tight">{game.title}</h1>
+            <h1 className="text-white text-3xl lg:text-5xl font-bold tracking-tight line-clamp-2">{game.title}</h1>
             
-            <div className="flex items-center gap-6 text-white/80 text-sm font-medium">
+            <div className="flex flex-wrap items-center gap-4 lg:gap-6 text-white/80 text-xs lg:text-sm font-medium">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
+                <span className="material-symbols-outlined text-[16px] lg:text-[18px]">schedule</span>
                 {game.playtime}h jogadas
               </div>
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">list_alt</span>
+                <span className="material-symbols-outlined text-[16px] lg:text-[18px]">list_alt</span>
                 {game.progress}% completo
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3 w-full lg:w-auto">
             <button 
               onClick={onEdit} 
-              className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-opacity-80 transition-all active:scale-95 shadow-lg"
+              className="flex-1 lg:flex-none px-4 lg:px-5 py-2 lg:py-2.5 bg-surface-container-highest text-on-surface rounded-xl font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:bg-opacity-80 transition-all active:scale-95 shadow-lg"
             >
-              <span className="material-symbols-outlined text-[20px]">edit</span>
-              Editar Jogo
+              <span className="material-symbols-outlined text-[18px] lg:text-[20px]">edit</span>
+              Editar
             </button>
             <button 
               onClick={() => onToggleFavorite(game.id)}
-              className="px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-all active:scale-95 shadow-lg"
+              className="flex-1 lg:flex-none px-4 lg:px-5 py-2 lg:py-2.5 bg-primary text-on-primary rounded-xl font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all active:scale-95 shadow-lg"
             >
-              <span className={`material-symbols-outlined text-[20px]` } style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
+              <span className={`material-symbols-outlined text-[18px] lg:text-[20px]` } style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
               Favoritar
             </button>
             <button 
               onClick={() => onDeleteRequest(game.id)}
-              className="px-4 py-2.5 bg-error/10 text-error border border-error/20 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-error/20 transition-all active:scale-95"
+              className="px-4 py-2 lg:py-2.5 bg-error/10 text-error border border-error/20 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-error/20 transition-all active:scale-95"
             >
-              <span className="material-symbols-outlined text-[20px]">delete</span>
+              <span className="material-symbols-outlined text-[18px] lg:text-[20px]">delete</span>
             </button>
             {game.trailerUrl && (
               <a 
@@ -977,23 +1199,23 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
       </section>
 
       {/* Grid Content */}
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-8 space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="col-span-1 lg:col-span-8 space-y-8">
           {/* Synopsis */}
-          <section className="bg-surface-container-low/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-outline-variant/30 shadow-sm">
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-6 lg:p-10 rounded-[2rem] lg:rounded-[2.5rem] border border-outline-variant/30 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1.5 h-8 bg-primary shadow-[0_0_12px_rgba(77,142,239,0.6)] rounded-full" />
-              <h3 className="font-display text-2xl font-bold tracking-tight text-on-surface">Sinopse</h3>
+              <h3 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-on-surface">Sinopse</h3>
             </div>
-            <p className="font-sans text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none line-clamp-10">
+            <p className="font-sans text-on-surface-variant leading-relaxed text-lg lg:text-xl font-medium opacity-90 max-w-none">
               {game.synopsis}
             </p>
           </section>
 
           {/* Technical Info */}
-          <section className="bg-surface-container-low/40 backdrop-blur-md p-8 rounded-3xl border border-outline-variant/30 shadow-sm">
-            <h3 className="font-display text-xl font-bold mb-8 text-on-surface">Informações Técnicas</h3>
-            <div className="grid grid-cols-2 gap-y-8 gap-x-6">
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-6 lg:p-8 rounded-3xl border border-outline-variant/30 shadow-sm">
+            <h3 className="font-display text-lg lg:text-xl font-bold mb-8 text-on-surface">Informações Técnicas</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-6">
               <DetailItem label="Plataformas" value={game.platform} />
               <DetailItem label="Lançamento" value={game.releaseDate} />
               <DetailItem label="Desenvolvedor" value={game.developer} />
@@ -1014,8 +1236,8 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
         </div>
 
         {/* Sidebar Space */}
-        <div className="col-span-4 space-y-8">
-          <section className="bg-surface-container-low/40 backdrop-blur-md p-8 rounded-3xl border border-outline-variant/30 shadow-sm space-y-6">
+        <div className="col-span-1 lg:col-span-4 space-y-8">
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-6 lg:p-8 rounded-3xl border border-outline-variant/30 shadow-sm space-y-6">
             <h3 className="font-display text-lg font-bold text-on-surface">Progresso</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-end">
@@ -1120,13 +1342,13 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-margin-desktop max-w-[container-max-width] mx-auto"
+      className="p-4 lg:p-margin-desktop max-w-[var(--spacing-container-max-width)] mx-auto"
     >
-      <div className="mb-8">
-        <h1 className="font-headline-lg text-headline-lg text-on-surface">
+      <div className="mb-6 lg:mb-8">
+        <h1 className="font-headline-md lg:text-headline-lg text-on-surface">
           {isEdit ? `Editar Jogo: ${formData.title}` : 'Adicionar Novo Jogo'}
         </h1>
-        <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+        <p className="font-body-sm lg:text-body-md text-on-surface-variant mt-2">
           {isEdit ? 'Atualize as informações do seu jogo na biblioteca.' : 'Preencha as informações para catalogar sua nova experiência.'}
         </p>
       </div>
@@ -1135,9 +1357,9 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
         onSubmit={(e) => { e.preventDefault(); onSave(formData); }}
         className="bg-surface-container-low/50 backdrop-blur-md rounded-[1.5rem] border border-outline-variant/30 shadow-2xl overflow-hidden"
       >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 lg:p-8">
           {/* Left Column: Cover Upload */}
-          <div className="md:col-span-4 space-y-4">
+          <div className="lg:col-span-4 space-y-4">
             <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Capa do Jogo</label>
             <input 
               type="file"
@@ -1676,7 +1898,7 @@ function SettingsView({
       </section>
 
       {/* Appearance & Preferences */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
             <span className="material-symbols-outlined text-primary text-3xl">palette</span>
@@ -1735,10 +1957,10 @@ function SettingsView({
           <span className="material-symbols-outlined text-primary text-3xl">database</span>
           <h2 className="font-display text-xl font-bold text-on-surface">Backup</h2>
         </div>
-        <div className="grid grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
           <div className="space-y-4">
             <p className="text-sm text-on-surface-variant leading-relaxed">Proteja seus dados salvando uma cópia local da sua biblioteca.</p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button 
                 onClick={() => onExport(true)}
                 className="flex-1 py-3 bg-primary text-on-primary rounded-xl font-bold text-xs active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
@@ -1755,19 +1977,19 @@ function SettingsView({
               </button>
             </div>
           </div>
-          <div className="space-y-4 border-l border-outline-variant/30 pl-10">
+          <div className="space-y-4 border-t lg:border-t-0 lg:border-l border-outline-variant/30 pt-6 lg:pt-0 lg:pl-10">
             <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Importar/exportar listas</p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
               <button 
                 onClick={() => onImport(false)}
-                className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-sm">upload</span>
                 Importar Listas
               </button>
               <button 
                 onClick={() => onExport(false)}
-                className="w-full py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-3 border border-outline-variant text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-low transition-all flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-sm">download</span>
                 Exportar Listas

@@ -40,7 +40,7 @@
 
   --spacing-margin-mobile: 1rem;
   --spacing-margin-desktop: 2rem;
-  --spacing-container-max-width: 1280px;
+  --spacing-container-max-width: 1200px;
   --spacing-gutter: 1.5rem;
   --spacing-stack-gap: 1rem;
   --spacing-sidebar-width: 280px;
@@ -197,5 +197,26 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+    opacity: 0.5;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
   }
 }
