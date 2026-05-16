@@ -1084,6 +1084,18 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
 
   const [newGenre, setNewGenre] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, coverUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -1127,19 +1139,23 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
           {/* Left Column: Cover Upload */}
           <div className="md:col-span-4 space-y-4">
             <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Capa do Jogo</label>
+            <input 
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
             <div 
               className="relative group cursor-pointer aspect-[3/4] bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all overflow-hidden"
-              onClick={() => {
-                const url = prompt("Cole a URL da capa do jogo:", formData.coverUrl || "");
-                if (url !== null) setFormData({ ...formData, coverUrl: url });
-              }}
+              onClick={() => fileInputRef.current?.click()}
             >
               {formData.coverUrl ? (
                 <img src={formData.coverUrl} alt="Capa" className="w-full h-full object-cover" />
               ) : (
                 <>
                   <span className="material-symbols-outlined text-4xl mb-2">add_photo_alternate</span>
-                  <span className="font-body-sm text-body-sm px-4 text-center">Clique para enviar a capa (URL)</span>
+                  <span className="font-body-sm text-body-sm px-4 text-center">Clique para enviar a capa</span>
                 </>
               )}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
@@ -1147,7 +1163,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
                 <span className="font-label-md">Alterar Capa</span>
               </div>
             </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant/70 text-center">Formato recomendado: 3:4. Clique para inserir URL.</p>
+            <p className="font-body-sm text-body-sm text-on-surface-variant/70 text-center">Formato recomendado: 3:4. Clique para enviar do computador.</p>
             
             <div className="pt-4 border-t border-outline-variant/20 space-y-4">
               <button 
