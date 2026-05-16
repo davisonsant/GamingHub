@@ -355,9 +355,9 @@ export default function App() {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col py-10 z-50">
+      <aside className="fixed left-0 top-0 h-full w-[var(--spacing-sidebar-width)] bg-surface-container-low/80 backdrop-blur-xl border-r border-outline-variant/30 flex flex-col py-10 z-50">
         <div className="px-6 mb-10">
-          <div className="flex items-center gap-3 text-primary font-bold text-2xl tracking-tight">
+          <div className="flex items-center gap-3 text-primary font-display font-bold text-2xl tracking-tight">
             <span className="material-symbols-outlined text-4xl">sports_esports</span>
             <span>GamingHub</span>
           </div>
@@ -384,9 +384,9 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-[280px] flex-1 flex flex-col min-h-screen relative">
+      <main className="ml-[var(--spacing-sidebar-width)] flex-1 flex flex-col min-h-screen relative">
         {/* TopBar */}
-        <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant h-16 flex items-center justify-between px-10">
+        <header className="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 h-16 flex items-center justify-between px-10">
           <div className="flex items-center gap-4 flex-1">
             {view === 'Details' && (
               <button onClick={() => setView('Library')} className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center">
@@ -475,17 +475,23 @@ export default function App() {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-8"
               >
+                {/* Header */}
+                <div className="mb-0">
+                  <h1 className="font-display font-bold text-headline-xl text-on-surface tracking-tight">Biblioteca</h1>
+                  <p className="text-on-surface-variant text-body-md">Sua coleção pessoal de aventuras digitais.</p>
+                </div>
+
                 {/* Stats */}
                 <div className="grid grid-cols-5 gap-6">
-                  <StatCard label="Total Jogos" value={stats.total} color="text-primary" />
-                  <StatCard label="Jogando" value={stats.playing} color="text-primary" />
-                  <StatCard label="Completos" value={stats.completed} color="text-tertiary" />
-                  <StatCard label="Backlog" value={stats.backlog} color="text-secondary" />
-                  <StatCard label="Total Tempo" value={`${stats.totalTime}h`} color="text-primary" />
+                  <StatCard label="Total Jogos" value={stats.total} color="text-primary" icon="inventory_2" />
+                  <StatCard label="Jogando" value={stats.playing} color="text-primary" icon="play_circle" />
+                  <StatCard label="Completos" value={stats.completed} color="text-secondary" icon="check_circle" />
+                  <StatCard label="Backlog" value={stats.backlog} color="text-tertiary" icon="inbox" />
+                  <StatCard label="Total Tempo" value={`${stats.totalTime}h`} color="text-primary" icon="schedule" />
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-white dark:bg-surface-container-low p-4 rounded-2xl border border-outline-variant/30 flex items-center justify-between shadow-sm overflow-x-auto no-scrollbar">
+                <div className="bg-surface-container-low/50 backdrop-blur-sm p-4 rounded-[1.5rem] border border-outline-variant/30 flex items-center justify-between shadow-sm overflow-x-auto no-scrollbar">
                   <div className="flex gap-2 min-w-max">
                     {allGenres.map(genre => {
                       const isTodos = genre === 'Todos';
@@ -505,8 +511,10 @@ export default function App() {
                               );
                             }
                           }}
-                          className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 whitespace-nowrap ${
-                            isActive ? 'bg-primary/10 text-primary ring-1 ring-primary/20' : 'text-outline hover:bg-surface-container'
+                          className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+                            isActive 
+                              ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105' 
+                              : 'text-on-surface-variant hover:bg-surface-container-high border border-outline-variant/10'
                           }`}
                         >
                           {!isTodos && activeGenres.includes(genre) && <span className="material-symbols-outlined text-[14px]">check_circle</span>}
@@ -515,36 +523,39 @@ export default function App() {
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-4 ml-4">
+                  <div className="flex items-center gap-4 ml-8 pr-2">
                     {activeGenres.length > 1 && (
                       <button 
                         onClick={() => setActiveGenres([])}
-                        className="text-[10px] font-bold text-primary hover:underline"
+                        className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider"
                       >
                         Limpar Seleção
                       </button>
                     )}
                     <button 
                       onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                      className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
-                        showAdvancedFilters ? 'bg-primary/10 border-primary/20 text-primary' : 'border-outline-variant text-outline hover:bg-surface-container'
+                      className={`flex items-center gap-2 px-5 py-2.5 border rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                        showAdvancedFilters 
+                          ? 'bg-primary/10 border-primary/40 text-primary' 
+                          : 'border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high'
                       }`}
                     >
-                      Filtros Avançados
+                      <span className="material-symbols-outlined text-[18px]">filter_list</span>
+                      Filtros
                       <span className={`material-symbols-outlined transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
                     <div className="relative">
                       <select 
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-xs font-semibold text-outline hover:bg-surface-container dark:bg-surface-container-low transition-all whitespace-nowrap appearance-none outline-none pr-10 cursor-pointer"
+                        className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant/30 rounded-xl text-xs font-bold text-on-surface-variant bg-transparent hover:bg-surface-container-high transition-all whitespace-nowrap appearance-none outline-none pr-10 cursor-pointer"
                       >
-                        <option value="Date">Data de Adição</option>
+                        <option value="Date">Recentes</option>
                         <option value="Title">Título (A-Z)</option>
-                        <option value="Playtime">Tempo de Jogo (Maior)</option>
-                        <option value="Rating">Avaliação (Maior)</option>
+                        <option value="Playtime">Horas</option>
+                        <option value="Rating">Avaliação</option>
                       </select>
-                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[18px]">expand_more</span>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[18px] opacity-50">sort</span>
                     </div>
                   </div>
                 </div>
@@ -738,11 +749,14 @@ function NavItem({ active, icon, label, onClick }: { active: boolean, icon: Reac
   );
 }
 
-function StatCard({ label, value, color }: { label: string, value: string | number, color: string }) {
+function StatCard({ label, value, color, icon }: { label: string, value: string | number, color: string, icon?: string }) {
   return (
-    <div className="bg-white p-6 rounded-2xl border border-outline-variant/30 shadow-sm transition-transform hover:scale-[1.02]">
-      <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">{label}</p>
-      <h3 className={`text-3xl font-bold ${color} tracking-tight`}>{value}</h3>
+    <div className="bg-surface-container-low/50 backdrop-blur-sm p-6 rounded-3xl border border-outline-variant/30 shadow-sm flex flex-col gap-1 group hover:border-primary/30 transition-all">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">{label}</p>
+        {icon && <span className={`material-symbols-outlined text-sm ${color} opacity-50`}>{icon}</span>}
+      </div>
+      <p className={`text-3xl font-display font-bold tracking-tight ${color} group-hover:scale-105 transition-transform origin-left`}>{value}</p>
     </div>
   );
 }
@@ -768,11 +782,12 @@ function GameCard({
       layoutId={game.id}
       onClick={onClick}
       whileHover={{ 
-        y: -8,
-        transition: { duration: 0.2, ease: "easeOut" }
+        y: -12,
+        scale: 1.02,
+        transition: { duration: 0.3, ease: "easeOut" }
       }}
       whileTap={{ scale: 0.98 }}
-      className="group bg-white dark:bg-surface-container-low rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden hover:shadow-xl transition-all cursor-pointer"
+      className="group bg-surface-container-low/40 backdrop-blur-md rounded-[1.5rem] border border-outline-variant/30 shadow-sm overflow-hidden hover:shadow-2xl hover:border-primary/50 transition-all cursor-pointer"
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <motion.img 
@@ -810,8 +825,8 @@ function GameCard({
       <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-sm text-on-surface line-clamp-1 transition-colors group-hover:text-primary">{game.title}</h3>
-            <p className="text-[10px] text-outline font-medium truncate">{game.genre}</p>
+            <h3 className="font-display font-bold text-sm text-on-surface line-clamp-1 transition-colors group-hover:text-primary tracking-tight">{game.title}</h3>
+            <p className="font-sans text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">{game.genre}</p>
           </div>
           <div className="flex items-center gap-0.5 text-primary shrink-0 ml-2">
             {[...Array(5)].map((_, i) => (
@@ -832,22 +847,32 @@ function GameCard({
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-[10px] text-outline font-medium group-hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[14px] group-hover:animate-pulse">schedule</span>
+        <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10">
+          <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant font-bold group-hover:text-primary transition-colors uppercase tracking-tight">
+            <span className="material-symbols-outlined text-[14px] opacity-70">schedule</span>
             {game.playtime}h
           </div>
-          {game.status === 'Jogando' && (
-             <div className="w-16 h-1 bg-surface-container rounded-full overflow-hidden">
+          <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-bold uppercase tracking-tight opacity-70">
+             <span className="material-symbols-outlined text-[14px]">desktop_windows</span>
+             {game.platform}
+          </div>
+        </div>
+        {game.status === 'Jogando' && (
+           <div className="mt-2 space-y-1">
+             <div className="flex justify-between text-[8px] font-bold uppercase tracking-tighter text-on-surface-variant/60">
+               <span>Progresso</span>
+               <span>{game.progress}%</span>
+             </div>
+             <div className="w-full h-1 bg-surface-container-highest/20 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${game.progress}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-primary" 
+                  className="h-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.5)]" 
                 />
              </div>
-          )}
-        </div>
+           </div>
+        )}
       </div>
     </motion.div>
   );
@@ -955,19 +980,19 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-8 space-y-8">
           {/* Synopsis */}
-          <section className="bg-white dark:bg-surface-container-low p-10 rounded-[2.5rem] border border-outline-variant/30 shadow-sm">
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-outline-variant/30 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-1.5 h-8 bg-primary rounded-full" />
-              <h3 className="text-2xl font-bold tracking-tight">Sinopse</h3>
+              <div className="w-1.5 h-8 bg-primary shadow-[0_0_12px_rgba(173,198,255,0.6)] rounded-full" />
+              <h3 className="font-display text-2xl font-bold tracking-tight text-on-surface">Sinopse</h3>
             </div>
-            <p className="text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none line-clamp-10">
+            <p className="font-sans text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none line-clamp-10">
               {game.synopsis}
             </p>
           </section>
 
           {/* Technical Info */}
-          <section className="bg-white dark:bg-surface-container-low p-8 rounded-3xl border border-outline-variant/30 shadow-sm">
-            <h3 className="text-xl font-bold mb-8">Informações Técnicas</h3>
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-8 rounded-3xl border border-outline-variant/30 shadow-sm">
+            <h3 className="font-display text-xl font-bold mb-8 text-on-surface">Informações Técnicas</h3>
             <div className="grid grid-cols-2 gap-y-8 gap-x-6">
               <DetailItem label="Plataformas" value={game.platform} />
               <DetailItem label="Lançamento" value={game.releaseDate} />
@@ -975,10 +1000,10 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
               <DetailItem label="Publicador" value={game.publisher} />
               <DetailItem label="Localização" value={game.location} />
               <div className="space-y-2">
-                <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest">Gêneros</p>
+                <p className="font-sans text-[10px] font-bold text-on-surface-variant uppercase tracking-widest opacity-60">Gêneros</p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {game.genres.map(g => (
-                    <span key={g} className="px-2.5 py-0.5 bg-surface-container-high text-on-surface-variant rounded-full text-[10px] font-bold">
+                    <span key={g} className="px-3 py-1 bg-surface-container-highest/20 text-on-surface rounded-full text-[10px] font-bold border border-outline-variant/10">
                       {g}
                     </span>
                   ))}
@@ -990,8 +1015,8 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
 
         {/* Sidebar Space */}
         <div className="col-span-4 space-y-8">
-          <section className="bg-white dark:bg-surface-container-low p-8 rounded-3xl border border-outline-variant/30 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold">Progresso</h3>
+          <section className="bg-surface-container-low/40 backdrop-blur-md p-8 rounded-3xl border border-outline-variant/30 shadow-sm space-y-6">
+            <h3 className="font-display text-lg font-bold text-on-surface">Progresso</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <span className="font-medium text-sm text-on-surface">Concluído</span>
@@ -1556,7 +1581,7 @@ function SettingsView({
       className="max-w-4xl mx-auto space-y-6"
     >
       <div className="mb-8">
-        <h1 className="font-bold text-headline-sm text-on-surface">Configurações</h1>
+        <h1 className="font-display font-bold text-headline-md text-on-surface tracking-tight">Configurações</h1>
       </div>
 
       {/* Avatar Section */}
