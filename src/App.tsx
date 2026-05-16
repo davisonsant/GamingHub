@@ -554,8 +554,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-container-lowest flex justify-center items-start lg:py-8 lg:px-4 overflow-x-hidden transition-colors duration-300">
-      <div className="w-full max-w-[var(--spacing-container-max-width)] min-h-screen lg:min-h-[860px] bg-background lg:rounded-[2.5rem] lg:shadow-2xl overflow-hidden flex flex-col lg:flex-row relative">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row relative overflow-x-hidden transition-colors duration-300">
         {/* Sidebar Backdrop for Mobile */}
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -946,7 +945,6 @@ export default function App() {
           onCancel={() => setDeleteConfirmId(null)}
         />
       </main>
-      </div>
     </div>
   );
 }

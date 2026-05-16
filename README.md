@@ -1,75 +1,72 @@
-# GamingHub
+# GamingHub - Sua Biblioteca de Jogos Pessoal
 
-GamingHub é um gerenciador sofisticado de biblioteca de jogos pessoal, projetado para ajudar você a organizar sua coleção, acompanhar o progresso em cada título e gerenciar seu backlog com uma interface moderna e imersiva.
+GamingHub é uma aplicação web moderna e elegante para gerenciar sua coleção de jogos. Desenvolvida com **React**, **TypeScript** e **Tailwind CSS**, ela oferece uma experiência fluida e responsiva para catalogar, organizar e descobrir novos jogos na sua biblioteca.
 
-O aplicativo utiliza o tema **Nexus Terminal**, inspirado nas interfaces HUD de jogos AAA modernos (High-Performance Gaming Aesthetics), combinando cores profundas, transparências de vidro (Glassmorphism) e efeitos neon vibrantes.
+## 🚀 Funcionalidades
 
-## 🚀 Funcionalidades Principais
-
-- **Gerenciamento de Biblioteca:** Organize seus jogos por plataforma, gênero e status.
-- **Acompanhamento de Progresso:** Visualize seu tempo de jogo, conquistas e barra de progresso em tempo real.
-- **Tema Nexus Terminal:** Uma estética "Void-Centric" com azul elétrico e verde neon sobre ardósia profunda.
-- **Design Glassmorphism:** Superfícies com desfoque de fundo (backdrop blur) que criam profundidade e hierarquia.
-- **Interface Responsiva:** Otimizada para desktop com uma barra lateral fixa e conteúdo fluído.
-
-## 📸 Screenshots
-
-> *Nota: Os placeholders abaixo representam as áreas principais da aplicação.*
-
-### Dashboard Principal
-![GamingHub Dashboard](https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200&h=600)
-*Visão geral da coleção com estatísticas rápidas e o tema Nexus Terminal aplicado.*
-
-### Detalhes do Jogo
-![GamingHub Library](https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&q=80&w=1200&h=600)
-*Visualização detalhada de um título selecionado com estatísticas técnicas e sinopse.*
+- **Gerenciamento de Biblioteca**: Adicione, edite e remova jogos da sua coleção.
+- **Filtros Avançados**: Filtre por gênero, plataforma, desenvolvedora e ano de lançamento.
+- **Favoritos e Progresso**: Marque seus jogos favoritos e acompanhe seu progresso de jogo e conquistas (Platinado).
+- **Sorteio Aleatório**: Não sabe o que jogar? Use a função "Sortear Jogo" para escolher um jogo aleatório da sua biblioteca.
+- **Importação/Exportação**: Faça backup dos seus dados ou importe listas em formato JSON.
+- **Modo Escuro/Claro**: Escolha o tema que melhor se adapta ao seu ambiente.
+- **Design Responsivo**: Use em qualquer dispositivo, desde celulares até desktops ultra-wide.
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **React 19** - Biblioteca para interfaces de usuário.
-- **Vite** - Build tool ultrarrápida.
-- **Tailwind CSS 4** - Framework CSS utilitário para design personalizado.
-- **Motion (Framer Motion)** - Análises e transições fluidas.
-- **Lucide React** - Conjunto de ícones consistentes.
-- **TypeScript** - Segurança de tipos e melhor experiência de desenvolvimento.
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS** (Estilização)
+- **Framer Motion** (Animações)
+- **Lucide React** & **Material Symbols** (Ícones)
+- **Vite** (Build tool)
 
-## 📦 Como Instalar
+## 📦 Instalação Local
 
-Siga os passos abaixo para rodar o projeto localmente:
+Siga os passos abaixo para rodar o projeto na sua máquina:
 
 ### Pré-requisitos
 
-- **Node.js** (versão 18 ou superior recomendada)
+- **Node.js** (versão 18 ou superior)
 - **npm** ou **yarn**
 
-### Instalação
+### Passos
 
-1. Clone o repositório:
-   ```bash
-   git clone [url-do-repositorio]
-   cd gaminghub
-   ```
-
-2. Instale as dependências:
+1. **Clone o repositório ou baixe os arquivos.**
+2. **Abra o terminal na pasta do projeto.**
+3. **Instale as dependências:**
    ```bash
    npm install
    ```
-
-3. Inicie o servidor de desenvolvimento:
+4. **Inicie o servidor de desenvolvimento:**
    ```bash
    npm run dev
    ```
+5. **Abra no seu navegador:**
+   O projeto estará rodando em `http://localhost:3000` (ou na porta indicada no terminal).
 
-O aplicativo estará disponível em `http://localhost:3000`.
+## 🔨 Build para Produção
 
-### Build para Produção
+Para gerar a versão otimizada para publicação:
 
-Para gerar a versão otimizada para produção:
 ```bash
 npm run build
 ```
-Os arquivos gerados estarão na pasta `dist/`.
+
+Os arquivos estáticos serão gerados na pasta `dist/`.
+
+## ⚙️ Configurações e Tutorial
+
+### Adicionando um Jogo
+1. Clique no botão **"+"** no canto superior direito.
+2. Preencha o formulário com o título, sinopse, plataforma e outras informações.
+3. Clique em **"Cadastrar Jogo"**.
+
+### Sorteando um Jogo
+Se estiver indeciso, clique no botão **"Sortear Jogo"** na barra superior. O sistema escolherá um jogo aleatório da sua lista filtrada.
+
+### Backup dos Dados
+Vá em **Configurações > Backup** para exportar sua biblioteca completa. Isso baixará um arquivo `.json` que pode ser restaurado futuramente no mesmo menu.
 
 ---
-
-Desenvolvido para entusiastas de jogos que valorizam precisão técnica e estética pro-grade.
+Desenvolvido por **Davison Sant**.
