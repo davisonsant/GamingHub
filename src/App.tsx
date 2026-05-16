@@ -476,9 +476,9 @@ export default function App() {
                 className="space-y-8"
               >
                 {/* Header */}
-                <div className="mb-0">
+                <div className="mb-2">
                   <h1 className="font-display font-bold text-headline-xl text-on-surface tracking-tight">Biblioteca</h1>
-                  <p className="text-on-surface-variant text-body-md">Sua coleção pessoal de aventuras digitais.</p>
+                  <p className="text-on-surface-variant text-body-md mb-4">Sua coleção pessoal de jogos.</p>
                 </div>
 
                 {/* Stats */}
