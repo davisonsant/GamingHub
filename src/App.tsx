@@ -569,7 +569,7 @@ export default function App() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="bg-white dark:bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 shadow-sm grid grid-cols-3 gap-8">
+                      <div className="bg-surface-container-low/80 backdrop-blur-md p-6 rounded-2xl border border-outline-variant/30 shadow-2xl grid grid-cols-3 gap-8">
                         <div className="space-y-3">
                           <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest">Plataforma</p>
                           <div className="relative">
@@ -744,7 +744,7 @@ function NavItem({ active, icon, label, onClick }: { active: boolean, icon: Reac
         {icon}
       </div>
       <span>{label}</span>
-      {active && <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(0,88,190,0.5)]" />}
+      {active && <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(77,142,239,0.5)]" />}
     </button>
   );
 }
@@ -868,7 +868,7 @@ function GameCard({
                   initial={{ width: 0 }}
                   animate={{ width: `${game.progress}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.5)]" 
+                  className="h-full bg-secondary shadow-[0_0_8px_rgba(127,207,173,0.5)]" 
                 />
              </div>
            </div>
@@ -943,7 +943,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
           <div className="flex items-center gap-3">
             <button 
               onClick={onEdit} 
-              className="px-5 py-2.5 bg-white text-on-surface rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container transition-all active:scale-95 shadow-lg"
+              className="px-5 py-2.5 bg-surface-container-highest text-on-surface rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-opacity-80 transition-all active:scale-95 shadow-lg"
             >
               <span className="material-symbols-outlined text-[20px]">edit</span>
               Editar Jogo
@@ -982,7 +982,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
           {/* Synopsis */}
           <section className="bg-surface-container-low/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-outline-variant/30 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-1.5 h-8 bg-primary shadow-[0_0_12px_rgba(173,198,255,0.6)] rounded-full" />
+              <div className="w-1.5 h-8 bg-primary shadow-[0_0_12px_rgba(77,142,239,0.6)] rounded-full" />
               <h3 className="font-display text-2xl font-bold tracking-tight text-on-surface">Sinopse</h3>
             </div>
             <p className="font-sans text-on-surface-variant leading-relaxed text-xl font-medium opacity-90 max-w-none line-clamp-10">
@@ -1133,7 +1133,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: {
 
       <form 
         onSubmit={(e) => { e.preventDefault(); onSave(formData); }}
-        className="bg-white dark:bg-surface-container-low rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden"
+        className="bg-surface-container-low/50 backdrop-blur-md rounded-[1.5rem] border border-outline-variant/30 shadow-2xl overflow-hidden"
       >
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-8">
           {/* Left Column: Cover Upload */}
@@ -1582,11 +1582,20 @@ function SettingsView({
   onImport: (full: boolean) => void
 }) {
   const DEFAULT_AVATAR = "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpdateAvatar = () => {
-    const url = prompt("Insira a URL da nova foto de perfil:", userAvatar);
-    if (url !== null && url.trim() !== "") {
-      setUserAvatar(url);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUserAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -1601,7 +1610,14 @@ function SettingsView({
       </div>
 
       {/* Avatar Section */}
-      <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col md:flex-row gap-8 items-center">
+      <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col md:flex-row gap-8 items-center">
+        <input 
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
         <div className="relative group">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 shadow-lg bg-surface-container">
             <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
@@ -1638,10 +1654,10 @@ function SettingsView({
       </section>
 
       {/* Profile Section */}
-      <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
+      <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
           <span className="material-symbols-outlined text-primary text-3xl">person</span>
-          <h2 className="text-xl font-bold text-on-surface">Editar perfil</h2>
+          <h2 className="font-display text-xl font-bold text-on-surface">Editar perfil</h2>
         </div>
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
@@ -1661,10 +1677,10 @@ function SettingsView({
 
       {/* Appearance & Preferences */}
       <div className="grid grid-cols-2 gap-6">
-        <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
+        <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
             <span className="material-symbols-outlined text-primary text-3xl">palette</span>
-            <h2 className="text-xl font-bold text-on-surface">Aparência</h2>
+            <h2 className="font-display text-xl font-bold text-on-surface">Aparência</h2>
           </div>
           <div className="space-y-4">
             <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Modo escuro e claro</p>
@@ -1672,7 +1688,7 @@ function SettingsView({
               <button 
                 onClick={() => setTheme('light')}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  theme === 'light' ? 'bg-white shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'
+                  theme === 'light' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">light_mode</span>
@@ -1681,7 +1697,7 @@ function SettingsView({
               <button 
                 onClick={() => setTheme('dark')}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  theme === 'dark' ? 'bg-white/10 shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'
+                  theme === 'dark' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">dark_mode</span>
@@ -1691,10 +1707,10 @@ function SettingsView({
           </div>
         </section>
 
-        <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
+        <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
             <span className="material-symbols-outlined text-primary text-3xl">language</span>
-            <h2 className="text-xl font-bold text-on-surface">Preferências</h2>
+            <h2 className="font-display text-xl font-bold text-on-surface">Preferências</h2>
           </div>
           <div className="space-y-2">
             <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Idioma</label>
@@ -1714,10 +1730,10 @@ function SettingsView({
       </div>
 
       {/* Data Management */}
-      <section className="bg-white dark:bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
+      <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
           <span className="material-symbols-outlined text-primary text-3xl">database</span>
-          <h2 className="text-xl font-bold text-on-surface">Backup</h2>
+          <h2 className="font-display text-xl font-bold text-on-surface">Backup</h2>
         </div>
         <div className="grid grid-cols-2 gap-10">
           <div className="space-y-4">
