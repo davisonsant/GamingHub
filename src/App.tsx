@@ -115,6 +115,7 @@ export default function App() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showLuckyModal, setShowLuckyModal] = useState(false);
   const [luckyGame, setLuckyGame] = useState<Game | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -661,7 +662,7 @@ export default function App() {
                 onEdit={() => setView('Edit')}
                 onBack={() => setView('Library')}
                 onToggleFavorite={handleToggleFavorite}
-                onDelete={handleDeleteGame}
+                onDeleteRequest={(id) => setDeleteConfirmId(id)}
               />
             )}
 
@@ -671,7 +672,7 @@ export default function App() {
                 onSave={handleSaveGame}
                 onCancel={() => setView(view === 'Edit' ? 'Details' : 'Library')}
                 isEdit={view === 'Edit'}
-                onDelete={handleDeleteGame}
+                onDeleteRequest={(id) => setDeleteConfirmId(id)}
               />
             )}
 
@@ -698,6 +699,19 @@ export default function App() {
             setShowLuckyModal(false);
             navigateToDetails(id);
           }}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal 
+          isOpen={!!deleteConfirmId}
+          gameTitle={games.find(g => g.id === deleteConfirmId)?.title || ''}
+          onConfirm={() => {
+            if (deleteConfirmId) {
+              handleDeleteGame(deleteConfirmId);
+              setDeleteConfirmId(null);
+            }
+          }}
+          onCancel={() => setDeleteConfirmId(null)}
         />
       </main>
     </div>
@@ -839,12 +853,12 @@ function GameCard({
   );
 }
 
-function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: { 
+function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteRequest }: { 
   game: Game, 
   onEdit: () => void, 
   onBack: () => void,
   onToggleFavorite: (id: string) => void,
-  onDelete: (id: string) => void
+  onDeleteRequest: (id: string) => void
 }) {
   return (
     <motion.div 
@@ -915,6 +929,12 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDelete }: {
             >
               <span className={`material-symbols-outlined text-[20px]` } style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
               Favoritar
+            </button>
+            <button 
+              onClick={() => onDeleteRequest(game.id)}
+              className="px-4 py-2.5 bg-error/10 text-error border border-error/20 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-error/20 transition-all active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[20px]">delete</span>
             </button>
             {game.trailerUrl && (
               <a 
@@ -1012,12 +1032,12 @@ function DetailItem({ label, value }: { label: string, value: string }) {
   );
 }
 
-function GameFormView({ game, onSave, onCancel, isEdit, onDelete }: { 
+function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest }: { 
   game?: Game, 
   onSave: (data: Partial<Game>) => void, 
   onCancel: () => void,
   isEdit: boolean,
-  onDelete?: (id: string) => void
+  onDeleteRequest?: (id: string) => void
 }) {
   const [formData, setFormData] = useState<Partial<Game>>(game || {
     title: '',
@@ -1341,10 +1361,10 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDelete }: {
         {/* Form Actions Footer */}
         <div className="bg-surface-container-low/50 border-t border-outline-variant/30 p-8 flex justify-between items-center">
           <div>
-            {isEdit && onDelete && (
+            {isEdit && onDeleteRequest && (
                <button 
                 type="button"
-                onClick={() => { if(confirm('Excluir este jogo?')) onDelete(game!.id) }}
+                onClick={() => onDeleteRequest(game!.id)}
                 className="px-6 py-2.5 rounded-lg border border-error/30 text-error font-label-md text-label-md hover:bg-error/5 transition-all outline-none"
               >
                 Excluir Jogo
@@ -1444,6 +1464,61 @@ function LuckyDrawModal({ isOpen, game, onClose, onReDraw, onViewDetails }: {
           >
             <span className="material-symbols-outlined">close</span>
           </button>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+}
+
+// Delete Confirmation Modal Component
+function DeleteConfirmModal({ isOpen, gameTitle, onConfirm, onCancel }: {
+  isOpen: boolean,
+  gameTitle: string,
+  onConfirm: () => void,
+  onCancel: () => void
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onCancel}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="relative bg-surface-container-low w-full max-w-md rounded-[2rem] p-8 shadow-2xl border border-outline-variant/30 text-center"
+        >
+          <div className="w-16 h-16 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-4xl">delete_forever</span>
+          </div>
+          
+          <h2 className="text-2xl font-bold tracking-tight text-on-surface mb-2">Excluir Jogo?</h2>
+          <p className="text-on-surface-variant text-sm mb-8">
+            Tem certeza que deseja excluir <span className="font-bold text-on-surface">"{gameTitle}"</span>? 
+            Esta ação não pode ser desfeita.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <button 
+              onClick={onConfirm}
+              className="w-full py-4 bg-error text-white rounded-2xl font-bold text-sm shadow-lg shadow-error/20 active:scale-95 transition-transform"
+            >
+              Sim, Excluir Jogo
+            </button>
+            <button 
+              onClick={onCancel}
+              className="w-full py-4 border border-outline-variant text-on-surface rounded-2xl font-bold text-sm hover:bg-surface-container-high transition-colors active:scale-95 transition-transform"
+            >
+              Cancelar
+            </button>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>
