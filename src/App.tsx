@@ -333,10 +333,18 @@ export default function App() {
     return "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
   });
 
-  // Persist avatar
+  const [userName, setUserName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('userName') || "Usuário Gamer";
+    }
+    return "Usuário Gamer";
+  });
+
+  // Persist avatar and name
   useEffect(() => {
     localStorage.setItem('userAvatar', userAvatar);
-  }, [userAvatar]);
+    localStorage.setItem('userName', userName);
+  }, [userAvatar, userName]);
 
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -914,6 +922,8 @@ export default function App() {
                 setTheme={setTheme} 
                 userAvatar={userAvatar} 
                 setUserAvatar={setUserAvatar}
+                userName={userName}
+                setUserName={setUserName}
                 onExport={handleExport}
                 onImport={handleImport}
               />
@@ -1793,6 +1803,8 @@ function SettingsView({
   setTheme, 
   userAvatar, 
   setUserAvatar,
+  userName,
+  setUserName,
   onExport,
   onImport
 }: { 
@@ -1800,11 +1812,25 @@ function SettingsView({
   setTheme: (t: 'light' | 'dark') => void,
   userAvatar: string,
   setUserAvatar: (url: string) => void,
+  userName: string,
+  setUserName: (name: string) => void,
   onExport: (full: boolean) => void,
   onImport: (full: boolean) => void
 }) {
   const DEFAULT_AVATAR = "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [localTheme, setLocalTheme] = useState<'light' | 'dark'>(theme);
+  const [localAvatar, setLocalAvatar] = useState<string>(userAvatar);
+  const [localName, setLocalName] = useState<string>(userName);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Sync with props if they change elsewhere
+  useEffect(() => {
+    setLocalTheme(theme);
+    setLocalAvatar(userAvatar);
+    setLocalName(userName);
+  }, [theme, userAvatar, userName]);
 
   const handleUpdateAvatar = () => {
     fileInputRef.current?.click();
@@ -1815,20 +1841,44 @@ function SettingsView({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUserAvatar(reader.result as string);
+        setLocalAvatar(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleApply = () => {
+    setTheme(localTheme);
+    setUserAvatar(localAvatar);
+    setUserName(localName);
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 3000);
   };
 
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="max-w-4xl mx-auto space-y-6"
+      className="max-w-4xl mx-auto space-y-6 pb-20"
     >
-      <div className="mb-8">
-        <h1 className="font-display font-bold text-headline-md text-on-surface tracking-tight">Configurações</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="font-display font-bold text-headline-md text-on-surface tracking-tight">Configurações</h1>
+          <p className="text-on-surface-variant text-sm">Gerencie sua conta e preferências de visualização.</p>
+        </div>
+        <AnimatePresence>
+          {isSaved && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2 text-green-500 font-bold text-sm bg-green-500/10 px-4 py-2 rounded-full"
+            >
+              <span className="material-symbols-outlined text-sm">check_circle</span>
+              Alterações aplicadas!
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Avatar Section */}
@@ -1842,7 +1892,7 @@ function SettingsView({
         />
         <div className="relative group">
           <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 shadow-lg bg-surface-container">
-            <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
+            <img src={localAvatar} alt="Profile" className="w-full h-full object-cover" />
           </div>
           <button 
             onClick={handleUpdateAvatar}
@@ -1866,7 +1916,7 @@ function SettingsView({
               Alterar Foto
             </button>
             <button 
-              onClick={() => setUserAvatar(DEFAULT_AVATAR)}
+              onClick={() => setLocalAvatar(DEFAULT_AVATAR)}
               className="px-6 py-2 border border-outline-variant text-on-surface rounded-xl font-bold text-sm hover:bg-surface-container-high transition-all active:scale-95"
             >
               Remover Foto
@@ -1886,7 +1936,8 @@ function SettingsView({
             <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Nome</label>
             <input 
               type="text" 
-              defaultValue="Usuário Gamer" 
+              value={localName}
+              onChange={(e) => setLocalName(e.target.value)}
               className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface font-medium focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" 
             />
             <p className="text-sm text-on-surface-variant flex items-center gap-2 mt-2">
@@ -1908,18 +1959,18 @@ function SettingsView({
             <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Modo escuro e claro</p>
             <div className="flex bg-surface-container-low p-1 rounded-xl">
               <button 
-                onClick={() => setTheme('light')}
+                onClick={() => setLocalTheme('light')}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  theme === 'light' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
+                  localTheme === 'light' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">light_mode</span>
                 Claro
               </button>
               <button 
-                onClick={() => setTheme('dark')}
+                onClick={() => setLocalTheme('dark')}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                  theme === 'dark' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
+                  localTheme === 'dark' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-sm">dark_mode</span>
@@ -1998,6 +2049,26 @@ function SettingsView({
           </div>
         </div>
       </section>
+
+      {/* Floating Apply Action */}
+      <div className="fixed bottom-10 inset-x-0 flex justify-center z-50 pointer-events-none">
+        <motion.div 
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          className="bg-surface-container-high/90 backdrop-blur-xl border border-outline-variant/30 p-4 rounded-3xl shadow-2xl flex items-center gap-6 pointer-events-auto"
+        >
+          <p className="text-xs font-bold text-on-surface-variant ml-4 hidden md:block">
+            Você tem alterações não salvas.
+          </p>
+          <button 
+            onClick={handleApply}
+            className="px-10 py-3 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-xl shadow-primary/30 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[20px]">save</span>
+            Aplicar Alterações
+          </button>
+        </motion.div>
+      </div>
 
       <div className="text-center py-6">
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
