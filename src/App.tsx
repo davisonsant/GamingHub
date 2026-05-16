@@ -111,6 +111,7 @@ export default function App() {
   const [activePlatform, setActivePlatform] = useState<string>('Todas');
   const [activeDeveloper, setActiveDeveloper] = useState<string>('Todos');
   const [activeYear, setActiveYear] = useState<string>('Todos');
+  const [sortBy, setSortBy] = useState<'Date' | 'Title' | 'Playtime' | 'Rating'>('Date');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showLuckyModal, setShowLuckyModal] = useState(false);
   const [luckyGame, setLuckyGame] = useState<Game | null>(null);
@@ -136,26 +137,6 @@ export default function App() {
   }, [userAvatar]);
 
   const mainRef = useRef<HTMLDivElement>(null);
-  const [showScrollBottom, setShowScrollBottom] = useState(true);
-
-  const scrollToPosition = (position: 'top' | 'bottom') => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({
-        top: position === 'top' ? 0 : document.body.scrollHeight,
-        behavior: 'smooth'
-      });
-      setShowScrollBottom(position === 'top');
-    }
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isAtBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
-      setShowScrollBottom(!isAtBottom);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Apply theme
   useEffect(() => {
@@ -216,8 +197,23 @@ export default function App() {
       list = list.filter(g => g.releaseDate.includes(activeYear));
     }
 
+    // Sort
+    list = [...list].sort((a, b) => {
+      switch (sortBy) {
+        case 'Title':
+          return a.title.localeCompare(b.title);
+        case 'Playtime':
+          return (b.playtime || 0) - (a.playtime || 0);
+        case 'Rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'Date':
+        default:
+          return b.id.localeCompare(a.id); // Assuming ID order roughly reflects addition order for this mock context
+      }
+    });
+
     return list;
-  }, [games, view, searchQuery, activeGenres, activePlatform, activeDeveloper, activeYear]);
+  }, [games, view, searchQuery, activeGenres, activePlatform, activeDeveloper, activeYear, sortBy]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -536,10 +532,19 @@ export default function App() {
                       Filtros Avançados
                       <span className={`material-symbols-outlined transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-xs font-semibold text-outline hover:bg-surface-container transition-all whitespace-nowrap">
-                      Ordenar por: Data adicionado
-                      <span className="material-symbols-outlined">expand_more</span>
-                    </button>
+                    <div className="relative">
+                      <select 
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as any)}
+                        className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-xs font-semibold text-outline hover:bg-surface-container dark:bg-surface-container-low transition-all whitespace-nowrap appearance-none outline-none pr-10 cursor-pointer"
+                      >
+                        <option value="Date">Data de Adição</option>
+                        <option value="Title">Título (A-Z)</option>
+                        <option value="Playtime">Tempo de Jogo (Maior)</option>
+                        <option value="Rating">Avaliação (Maior)</option>
+                      </select>
+                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[18px]">expand_more</span>
+                    </div>
                   </div>
                 </div>
 
@@ -694,19 +699,6 @@ export default function App() {
             navigateToDetails(id);
           }}
         />
-
-        {/* Floating Scroll Button */}
-        <div className="fixed bottom-8 right-8 z-[60] flex flex-col gap-3">
-          <button 
-            onClick={() => scrollToPosition(showScrollBottom ? 'bottom' : 'top')}
-            className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90"
-            title={showScrollBottom ? "Rolar para baixo" : "Rolar para cima"}
-          >
-            <span className={`material-symbols-outlined transition-transform duration-300 ${!showScrollBottom ? 'rotate-180' : ''}`}>
-              expand_more
-            </span>
-          </button>
-        </div>
       </main>
     </div>
   );

@@ -1,104 +1,20 @@
-# 🎮 GamingHub
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-Uma biblioteca de jogos moderna e leve para catalogar, organizar e gerenciar sua coleção de games localmente — sem necessidade de internet.
+# Run and deploy your AI Studio app
 
-![GamingHub Screenshot](./assets/screenshot.png)
+This contains everything you need to run your app locally.
 
----
+View your app in AI Studio: https://ai.studio/apps/2e55b151-4b4b-4d8b-aac2-e9605a919d02
 
-## 📌 Sobre o Projeto
+## Run Locally
 
-O **GamingHub** foi criado para oferecer uma experiência simples, rápida e organizada para jogadores que desejam manter sua coleção de jogos centralizada em um único lugar.
+**Prerequisites:**  Node.js
 
-Diferente de launchers tradicionais, o projeto funciona totalmente **offline**, permitindo acesso à sua biblioteca sem depender de servidores externos ou conexão com a internet.
 
----
-
-## ✨ Funcionalidades
-
-- 📚 Catalogar jogos instalados manualmente
-- 🖼️ Exibição com capa, banner e informações do jogo
-- 🔍 Sistema de pesquisa rápida
-- 🗂️ Organização por categorias e favoritos
-- 🎮 Inicialização de jogos diretamente pela biblioteca
-- 🌙 Interface moderna e intuitiva
-- ⚡ Funcionamento leve e rápido
-- 🔒 Totalmente offline
-
----
-
-## 🖥️ Screenshot
-
-### Biblioteca Principal
-
-![Biblioteca de Jogos](./assets/library-preview.png)
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-- Electron
-- React
-- TypeScript
-- Node.js
-- SQLite (armazenamento local)
-
----
-
-## 📂 Estrutura do Projeto
-
-```bash
-GamingHub/
-├── assets/
-├── src/
-├── database/
-├── public/
-├── package.json
-└── README.md
-
-⚙️ Instalação
-
-Clone o repositório:
-
-git clone https://github.com/seu-usuario/GamingHub.git
-
-Entre na pasta do projeto:
-
-cd GamingHub
-
-Instale as dependências:
-
-npm install
-
-Execute o projeto:
-
-npm run dev
-
-🎯 Objetivo
-
-O objetivo do GamingHub é oferecer uma alternativa leve e prática para gerenciamento de jogos, focando em:
-
-Simplicidade
-Performance
-Organização
-Uso offline
-Experiência moderna
-📌 Futuras Funcionalidades
-🎨 Temas personalizados
-☁️ Backup local/exportação
-🏆 Sistema de tempo jogado
-🎮 Detecção automática de jogos
-🕹️ Suporte a emuladores
-🤝 Contribuição
-
-Contribuições são bem-vindas!
-
-Sinta-se livre para abrir Issues, Pull Requests ou sugerir melhorias.
-
-📄 Licença
-
-Este projeto está sob a licença MIT.
-
-👨‍💻 Autor
-
-Desenvolvido por Davison
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
