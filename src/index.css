@@ -120,15 +120,15 @@
     --on-tertiary: #ffffff;
     --on-tertiary-container: #f5fff6;
     
-    --background: #f0f2f5;
-    --on-background: #1a1c1e;
+    --background: #f7f9fb;
+    --on-background: #191c1e;
     
-    --surface: #f0f2f5;
-    --on-surface: #1a1c1e;
-    --surface-container-low: #e8ebef;
-    --surface-container: #dfe2e6;
-    --surface-container-high: #d6d9dd;
-    --surface-container-highest: #ced1d4;
+    --surface: #f7f9fb;
+    --on-surface: #191c1e;
+    --surface-container-low: #f2f4f6;
+    --surface-container: #eceef0;
+    --surface-container-high: #e6e8ea;
+    --surface-container-highest: #e0e3e5;
 
     --outline: #727785;
     --outline-variant: #c2c6d6;
