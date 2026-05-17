@@ -14,7 +14,7 @@ function createWindow() {
       contextIsolation: true,
     },
     title: "GamingHub",
-    icon: path.join(__dirname, 'dist/icon.ico') // Optional: add an icon later
+    icon: path.join(__dirname, 'public/icon.ico') // Icon for the app window
   });
 
   // In production, load the built index.html
