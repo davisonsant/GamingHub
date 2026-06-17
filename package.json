@@ -1,0 +1,106 @@
+{
+  "name": "gaminghub",
+  "private": true,
+  "version": "1.1.7",
+  "description": "GamingHub",
+  "author": "Davison Sant",
+  "type": "module",
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/davisonsant/GamingHub/"
+},
+  "main": "electron-main.js",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "start": "node dist/server.cjs",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:win64": "npm run build && electron-builder --win --x64",
+    "electron:build:win32": "npm run build && electron-builder --win --ia32",
+    "electron:build:portable": "npm run build && electron-builder --win portable",
+    "electron:build:linux": "npm run build && electron-builder --linux",
+    "electron:build:all": "npm run build && electron-builder --win --linux",
+    "android:init": "npx cap init GamingHub com.gaminghub.app --web-dir dist",
+    "android:add": "npx cap add android",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "build": {
+    "appId": "com.gaminghub.app",
+    "productName": "GamingHub",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.js",
+      "package.json",
+      "public/**/*"
+    ],
+    "win": {
+      "icon": "public/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "public/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Game"
+    }
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@google/genai": "^1.29.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^5.0.4",
+    "dexie": "^4.4.2",
+    "dexie-react-hooks": "^4.4.0",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "jimp": "^1.6.1",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "png-to-ico": "^3.0.1",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
+    "electron": "^42.1.0",
+    "electron-builder": "^26.8.1",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3",
+    "wait-on": "^9.0.10"
+  }
+}

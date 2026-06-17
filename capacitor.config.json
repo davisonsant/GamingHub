@@ -1,0 +1,8 @@
+{
+  "appId": "com.gaminghub.app",
+  "appName": "GamingHub - Biblioteca de Jogos",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

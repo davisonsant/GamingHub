@@ -1,0 +1,6 @@
+{
+  "name": "GamingHub - Biblioteca de Jogos",
+  "description": "A sophisticated personal game library manager to track your collection, backlog, and progress with a beautiful, modern interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
