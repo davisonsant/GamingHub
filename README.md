@@ -187,4 +187,4 @@ Para personalizar metadados ou branding antes de distribuir:
 
 Este projeto é de uso livre e pessoal para entusiastas de tecnologia, design e jogos.
 
-Desenvolvido com carinho por [Davison Sant](https://github.com/davisonsant). 🚀
+Desenvolvido por [Davison Sant](https://github.com/davisonsant). 🚀
