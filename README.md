@@ -1,24 +1,24 @@
 <div align="center">
 
-<img src="./docs/logo.png" width="144"/>
+<img src="./resources/logo.png" width="144"/>
 
   <h1 align="center">GamingHub</h1>
 
   <p align="center">
-    <strong>O GamingHub é uma plataforma de jogos de código aberto criada para ser a ferramenta completa que você precisa para gerenciar sua biblioteca de jogos. O GamingHub foi desenvolvido em Node.js (Electron, React, Typescript) e Python.</strong>
+    <strong>GamingHub is an open-source gaming platform created to be the single tool that you need in order to manage your gaming library. GamingHub is written in Node.js (Electron, React, Typescript) and Python.</strong>
   </p>
 
 ![GamingHub Home Page](./docs/screenshot.png)
 
   <p align="center">
-    <strong>O aplicativo tem uma interface moderna em Modo Escuro, projetada para oferecer conforto visual, imersão e uma experiência premium para gerenciar sua biblioteca de jogos.</strong>
+    <strong>features a modern Dark Mode interface, designed to offer visual comfort, immersion, and a premium experience for managing your gaming library.</strong>
   </p>
 
 ![GamingHub Home Page](./docs/screenshot_dark_mode.png)
 
 </div>
 
-# 🎮 características GamingHub
+# 🎮 features GamingHub
 
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6-purple.svg)](https://vite.dev/)
@@ -29,7 +29,7 @@
 
 O **GamingHub** é um ecossistema avançado de gerenciamento de coleções e bibliotecas de jogos pessoais. Projetado para gamers entusiastas, críticos e colecionadores, ele permite catalogar títulos, acompanhar o progresso de jogatina, administrar o seu *backlog*, catalogar suas mídias físicas e analisar estatísticas detalhadas sobre seus hábitos de jogo.
 
-Tudo isso envelopado sob os conceitos de um design moderno e minimalista, estruturado para destacar sua biblioteca. O visual traz um layout limpo com cantos arredondados nos cards e painéis, transições suaves e tipografia marcante. Além disso, adapta-se perfeitamente à sua preferência através de um elegante Modo Escuro (Dark Mode), com tons profundos e discretos de cinza-escuro que reduzem o cansaço visual, e um Modo Claro (Light Mode) brilhante e minimalista focado na clareza, mantendo sempre o azul vibrante como cor de destaque nos elementos principais.
+Tudo isso envelopado sob os conceitos do inovador tema **Nexus Terminal** — uma estética cyber-HUD inspirada em painéis de jogos de ficção científica (AAA Modern High-Performance Aesthetics), com superfícies de vidro translúcidas (Glassmorphism), transições fluidas e contrastes de neon intensos sobre tons profundos de ardósia e espaço.
 
 ---
 

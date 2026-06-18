@@ -47,208 +47,7 @@ function getPlatformStyle(platform: string) {
 }
 
 // Mock Data for initial seed
-const INITIAL_GAMES: Game[] = [
-  {
-    id: '1',
-    title: 'Elden Ring',
-    genre: 'Action RPG',
-    status: 'Completos',
-    playtime: 145,
-    progress: 100,
-    rating: 5,
-    coverUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbNdauzzNgJ7FgbsRoJQXQn6pvy4JVtPZWa03JtGo2v6wskphETT_LSyh1Vgtcl67jzuPNGH1uQ-8ZZnC7-6_F8BOdkO_ydM0KW3FYUP4b3NDAYDjpHiD90jy27k3vddfPFQMlZUiIn9JPxsCm3HvXV9FLlbrom7ETnE9-F8GNJ2Eg_eY7mwlwi90yhGNqwLNpki-BGEkqQA69JGeDxD4bO-hs6Gb8uGSzGFheQTNzBwlLmLpIBNFjRFO8WD5lML-hxnh4VxdykjM',
-    isFavorite: true,
-    platform: ['PC'],
-    releaseDate: '25 de Fevereiro de 2022',
-    developer: 'FromSoftware',
-    publisher: 'Bandai Namco',
-    location: 'Steam',
-    synopsis: 'O Anel Prístino foi destruído. Nas Terras Entre, governadas pela Rainha Marika, a Eterna, o Anel Prístino, a fonte da Térvore, foi despedaçado.',
-    genres: ['Action', 'RPG', 'Open World'],
-    trailerUrl: 'https://www.youtube.com/watch?v=K37Zp99S9Is',
-    isPlatinum: true
-  },
-  {
-    id: '2',
-    title: 'God of War Ragnarök',
-    genre: 'Action Adventure',
-    status: 'Jogando',
-    playtime: 42,
-    progress: 65,
-    rating: 4,
-    coverUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCDWUcFUYvtRVCFsuncKfeDLNhtmxvhJSnRumOCKmY_43u287sswHOCgKYJzadHy6JLJK-2JK58Ol0Wb33nMWhc4SPc7EIxBDibMSs4gUegfD2kZN9OgYVN2KW2-DmSie8Or_Bfccsdk5otvN4gXItYXEbCgfO8uZJDE1tXhbgRIpL6pPnojGKmNyBGG13XXoITAZUzR_4spPTMeNMYAoqazm_fftMW1MlnwtMeOoOO9KDoPZlh3Cf54Fh3tk-ydSwgEn9AExREsjs',
-    isFavorite: true,
-    platform: ['PlayStation 5'],
-    releaseDate: '9 de Novembro de 2022',
-    developer: 'Santa Monica Studio',
-    publisher: 'Sony Interactive Entertainment',
-    location: 'PS5 Library',
-    synopsis: 'Kratos e Atreus devem viajar pelos Nove Reinos em busca de respostas enquanto as forças asgardianas se preparam para uma batalha profetizada que acabará com o mundo.',
-    genres: ['Action', 'Adventure', 'Hack and Slash'],
-    trailerUrl: 'https://www.youtube.com/watch?v=hfJ4Km46A-0',
-    isPlatinum: true
-  },
-  {
-    id: '3',
-    title: 'Balatro',
-    genre: 'Roguelike Deckbuilder',
-    status: 'Backlog',
-    playtime: 12,
-    progress: 10,
-    rating: 5,
-    coverUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB6OtfNAJV0RCPRcJgKjWFqGwPoOV-cJECTuOWqn078YaiEo80ua3c0cNb4TVJZXVX5i24VwCFrICpmUQ6QOxMHydXL9FRknwicfuIHHBg7ASdyH9W4J9ZyUjYplOL4NZM3EckuLjgeEKmXFJVKVk979xOey-GY4XPfy15QXbJtgbn4eeuiJBCme0F_lCVbplboQxMK2uYlQiqz-J607xosigrBkyJSAxV_8Uhqh6wpPpwzhZT7CIsBVVaiMniXoTLKPeVaqdEZIp4',
-    isFavorite: true,
-    platform: ['PC'],
-    releaseDate: '20 de Fevereiro de 2024',
-    developer: 'LocalThunk',
-    publisher: 'Playstack',
-    location: 'HD Externo',
-    synopsis: 'Balatro é um roguelike de poker hipnótico onde se joga mãos de poker ilegais, se descobrem jokers que mudam o jogo e se desencadeiam combos viciantes e adrenalínicos.',
-    genres: ['Roguelike', 'Deckbuilder', 'Poker'],
-    trailerUrl: 'https://www.youtube.com/watch?v=H7S86t8X0p0',
-    isPlatinum: false
-  },
-  {
-    id: '4',
-    title: 'Cyberpunk 2077',
-    genre: 'Action RPG',
-    status: 'Jogando',
-    playtime: 85,
-    progress: 45,
-    rating: 4,
-    coverUrl: 'https://images.unsplash.com/photo-1605898960710-9ec88f5f963a?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: true,
-    platform: ['PC'],
-    releaseDate: '10 de Dezembro de 2020',
-    developer: 'CD Projekt Red',
-    publisher: 'CD Projekt',
-    location: 'Steam',
-    synopsis: 'Cyberpunk 2077 é um RPG de ação e aventura em mundo aberto ambientado na megalópole de Night City, onde você joga como um mercenário focado na sobrevivência.',
-    genres: ['Open World', 'RPG', 'Cyberpunk'],
-    trailerUrl: 'https://www.youtube.com/watch?v=8X2kIfS6fb8',
-    isPlatinum: false
-  },
-  {
-    id: '5',
-    title: 'The Witcher 3: Wild Hunt',
-    genre: 'Action RPG',
-    status: 'Completos',
-    playtime: 250,
-    progress: 100,
-    rating: 5,
-    coverUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: true,
-    platform: ['PC'],
-    releaseDate: '19 de Maio de 2015',
-    developer: 'CD Projekt Red',
-    publisher: 'CD Projekt',
-    location: 'GOG',
-    synopsis: 'Torne-se um caçador de monstros profissional e embarque em uma aventura épica para encontrar a criança da profecia em um vasto mundo aberto.',
-    genres: ['RPG', 'Open World', 'Fantasy'],
-    trailerUrl: 'https://www.youtube.com/watch?v=XHrskkHf958',
-    isPlatinum: true
-  },
-  {
-    id: '6',
-    title: 'Red Dead Redemption 2',
-    genre: 'Action Adventure',
-    status: 'Completos',
-    playtime: 180,
-    progress: 100,
-    rating: 5,
-    coverUrl: 'https://images.unsplash.com/photo-1533972751724-9135a8410a4c?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: true,
-    platform: ['Xbox Series X'],
-    releaseDate: '26 de Outubro de 2018',
-    developer: 'Rockstar Games',
-    publisher: 'Rockstar Games',
-    location: 'Xbox Library',
-    synopsis: 'Estados Unidos, 1899. O fim da era do velho oeste começou. Arthur Morgan e a gangue Van der Linde são forçados a fugir.',
-    genres: ['Action', 'Western', 'Open World'],
-    trailerUrl: 'https://www.youtube.com/watch?v=gmA6MrX81z4',
-    isPlatinum: true
-  },
-  {
-    id: '7',
-    title: 'Horizon Forbidden West',
-    genre: 'Action RPG',
-    status: 'Backlog',
-    playtime: 0,
-    progress: 0,
-    rating: 0,
-    coverUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: false,
-    platform: ['PlayStation 5'],
-    releaseDate: '18 de Fevereiro de 2022',
-    developer: 'Guerrilla Games',
-    publisher: 'Sony Interactive Entertainment',
-    location: 'PS5 Library',
-    synopsis: 'Junte-se a Aloy enquanto ela enfrenta o Oeste Proibido — uma fronteira majestosa, mas perigosa, que esconde novas e misteriosas ameaças.',
-    genres: ['Action', 'RPG', 'Sci-Fi'],
-    trailerUrl: 'https://www.youtube.com/watch?v=Lq594XmpPBg',
-    isPlatinum: false
-  },
-  {
-    id: '8',
-    title: 'Ghost of Tsushima',
-    genre: 'Action Adventure',
-    status: 'Completos',
-    playtime: 60,
-    progress: 100,
-    rating: 5,
-    coverUrl: 'https://images.unsplash.com/photo-1529661146023-4eca55d5147e?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: true,
-    platform: ['PlayStation 5'],
-    releaseDate: '17 de Julho de 2020',
-    developer: 'Sucker Punch Productions',
-    publisher: 'Sony Interactive Entertainment',
-    location: 'PS5 Library',
-    synopsis: 'No final do século XIII, o império mongol devastou nações inteiras em sua campanha para conquistar o Oriente. A ilha de Tsushima é tudo o que resta entre o Japão e uma invasão mongol maciça.',
-    genres: ['Action', 'Samurai', 'Open World'],
-    trailerUrl: 'https://www.youtube.com/watch?v=Zbq7BnsQcUw',
-    isPlatinum: true
-  },
-  {
-    id: '9',
-    title: 'Starfield',
-    genre: 'Action RPG',
-    status: 'Jogando',
-    playtime: 35,
-    progress: 20,
-    rating: 3,
-    coverUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: false,
-    platform: ['PC'],
-    releaseDate: '6 de Setembro de 2023',
-    developer: 'Bethesda Game Studios',
-    publisher: 'Bethesda Softworks',
-    location: 'Game Pass',
-    synopsis: 'Starfield é o primeiro universo novo em 25 anos da Bethesda Game Studios, os criadores premiados de The Elder Scrolls V: Skyrim e Fallout 4.',
-    genres: ['RPG', 'Sci-Fi', 'Space'],
-    trailerUrl: 'https://www.youtube.com/watch?v=kfYEiTRgWX8',
-    isPlatinum: false
-  },
-  {
-    id: '10',
-    title: 'Baldur\'s Gate 3',
-    genre: 'RPG',
-    status: 'Jogando',
-    playtime: 120,
-    progress: 75,
-    rating: 5,
-    coverUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=600&h=800',
-    isFavorite: true,
-    platform: ['PC'],
-    releaseDate: '3 de Agosto de 2023',
-    developer: 'Larian Studios',
-    publisher: 'Larian Studios',
-    location: 'Steam',
-    synopsis: 'Reúna seu grupo e retorne aos Reinos Esquecidos em uma história de amizade e traição, sacrifício e sobrevivência, e a sedução do poder absoluto.',
-    genres: ['RPG', 'Tactical', 'Fantasy'],
-    trailerUrl: 'https://www.youtube.com/watch?v=1T22wNnyRS0',
-    isPlatinum: false
-  }
-];
+const INITIAL_GAMES: Game[] = [];
 
 const INITIAL_DISKS: Disk[] = [
   { id: '1', label: 'Windows', letter: 'C', totalGB: 464, usedGB: 404 },
@@ -475,6 +274,43 @@ function GamerTrophy({ level }: { level: number }) {
   );
 }
 
+const openExternalLink = (url: string, e?: React.MouseEvent) => {
+  if (e) {
+    e.preventDefault();
+  }
+  try {
+    const isElectron = typeof window !== 'undefined' && (
+      (window as any).navigator?.userAgent?.toLowerCase().indexOf(' electron/') > -1 ||
+      (window as any).process?.versions?.electron ||
+      (window as any).electron
+    );
+    if (isElectron) {
+      const electronAPI = (window as any).electron;
+      if (electronAPI && typeof electronAPI.openExternal === 'function') {
+        electronAPI.openExternal(url);
+        return;
+      }
+      if (electronAPI && electronAPI.shell && typeof electronAPI.shell.openExternal === 'function') {
+        electronAPI.shell.openExternal(url);
+        return;
+      }
+      if (typeof (window as any).require === 'function') {
+        const { shell } = (window as any).require('electron');
+        shell.openExternal(url);
+        return;
+      }
+    }
+    if ((window as any).__TAURI__) {
+      (window as any).__TAURI__.shell.open(url);
+      return;
+    }
+  } catch (err) {
+    console.error("Failed to open external link, falling back to window.open", err);
+  }
+  const win = window.open(url, '_blank', 'noopener,noreferrer');
+  if (win) win.focus();
+};
+
 export default function App() {
   const games = useLiveQuery(() => db.games.toArray()) || [];
   const disks = useLiveQuery(() => db.disks.toArray()) || [];
@@ -490,7 +326,17 @@ export default function App() {
   const [activeDeveloper, setActiveDeveloper] = useState<string>('Todos');
   const [activeYear, setActiveYear] = useState<string>('Todos');
   const [platinumFilter, setPlatinumFilter] = useState<'all' | 'platinum' | 'not_platinum'>('all');
-  const [sortBy, setSortBy] = useState<'Date' | 'Title' | 'Playtime' | 'Rating'>('Date');
+  const [sortBy, setSortByState] = useState<'Date' | 'Title' | 'Playtime' | 'Rating'>(() => {
+    const saved = localStorage.getItem('gaminghub_sortBy');
+    return (saved === 'Date' || saved === 'Title' || saved === 'Playtime' || saved === 'Rating')
+      ? saved
+      : 'Date';
+  });
+
+  const setSortBy = (val: 'Date' | 'Title' | 'Playtime' | 'Rating') => {
+    setSortByState(val);
+    localStorage.setItem('gaminghub_sortBy', val);
+  };
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showLuckyModal, setShowLuckyModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -510,6 +356,45 @@ export default function App() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'up-to-date' | 'error' | 'no-release'>('idle');
   const [latestReleaseData, setLatestReleaseData] = useState<any>(null);
+  const [hasUpdateBadge, setHasUpdateBadge] = useState(false);
+
+  // Silent update checker to show red badge
+  useEffect(() => {
+    const silentCheck = async () => {
+      try {
+        const res = await fetch('https://api.github.com/repos/davisonsant/GamingHub/releases/latest', {
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
+          const current = "1.2.0";
+          const latestParts = latestTag.split('.').map(Number);
+          const currentParts = current.split('.').map(Number);
+          let isNewer = false;
+          for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
+            const lp = latestParts[i] || 0;
+            const cp = currentParts[i] || 0;
+            if (lp > cp) {
+              isNewer = true;
+              break;
+            } else if (lp < cp) {
+              break;
+            }
+          }
+          if (isNewer) {
+            setHasUpdateBadge(true);
+          }
+        }
+      } catch (e) {
+        console.error("Silent update check failed:", e);
+      }
+    };
+    const tId = setTimeout(silentCheck, 3000);
+    return () => clearTimeout(tId);
+  }, []);
 
   // Settings State Managers
   const theme = settings?.theme || 'light';
@@ -520,6 +405,175 @@ export default function App() {
   // Translation Hook
   const t = (translations[language as keyof typeof translations] || ptBR) as TranslationKeys;
 
+  const getTooltip = (key: 'library' | 'favorites' | 'playing' | 'completed' | 'backlog' | 'statistics' | 'ranking' | 'storage' | 'roadmap' | 'settings' | 'randomGameBtn' | 'addGameBtn' | 'profileBtn') => {
+    const lang = language;
+    const isPt = lang === 'Português (Brasil)';
+    const isEs = lang === 'Español';
+    const isFr = lang === 'Français';
+    const isRu = lang === 'Русский';
+    const isZh = lang === '简体中文';
+    const isAr = lang === 'العربية';
+    const isJa = lang === '日本語';
+    const isTr = lang === 'Türkçe';
+
+    const tooltips = {
+      library: {
+        pt: "Exibe sua coleção de jogos, jogos concluídos, backlog e tempo total.",
+        en: "Displays your collection of games, completed games, backlog, and total play time.",
+        es: "Muestra tu colección de juegos, juegos completados, backlog y tiempo total.",
+        fr: "Affiche votre collection de jeux, jeux terminés, backlog et temps total.",
+        ru: "Показывает вашу коллекцию игр, пройденные игры, бэклог и общее время.",
+        zh: "显示您的游戏收藏、已完成的游戏、待玩清单 and 总游戏时间。",
+        ar: "يعرض مجموعة ألعابك، والألعاب المكتملة، والمتراكمة، وإجمالي وقت اللعب.",
+        ja: "ゲームのコレクション、完了したゲーム、バックログ、および合計プレイ時間を表示します。",
+        tr: "Oyun koleksiyonunuzu, tamamlanan oyunları, birikmiş işleri ve toplam oyun süresini görüntüler."
+      },
+      favorites: {
+        pt: "Exibe seus jogos marcados como favoritos.",
+        en: "Displays your games marked as favorites.",
+        es: "Muestra tus juegos marcados como favoritos.",
+        fr: "Affiche vos jeux favoris.",
+        ru: "Показывает ваши избранные игры.",
+        zh: "显示您标记为收藏的游戏。",
+        ar: "يعرض ألعابك المفضلة.",
+        ja: "お気に入りに登録されたゲームを表示します。",
+        tr: "Favori olarak işaretlenmiş oyunlarınızı görüntüler."
+      },
+      playing: {
+        pt: "Exibe os jogos que você está jogando atualmente.",
+        en: "Displays the games you are currently playing.",
+        es: "Muestra los juegos que estás jugando actualmente.",
+        fr: "Affiche les jeux auxquels vous jouez actuellement.",
+        ru: "Показывает игры, в которые вы сейчас играете.",
+        zh: "显示您当前正在玩的游戏。",
+        ar: "يعرض الألعاب التي تلعبها حاليًا.",
+        ja: "現在プレイ中のゲームを表示します。",
+        tr: "Şu anda oynadığınız oyunları görüntüler."
+      },
+      completed: {
+        pt: "Exibe os jogos que você já completou ou platinou.",
+        en: "Displays the games you have completed or platinumed.",
+        es: "Muestra los juegos que ya has completado o platinado.",
+        fr: "Affiche les jeux que vous avez terminés ou platinés.",
+        ru: "Показывает завершенные или платиновые игры.",
+        zh: "显示您已通关或获得白金奖杯的游戏。",
+        ar: "يعرض الألعاب التي أكملتها أو حصلت على البلاتينية فيها.",
+        ja: "完了またはプラチナを獲得したゲームを表示します。",
+        tr: "Tamamladığınız veya platin aldığınız oyunları görüntüler."
+      },
+      backlog: {
+        pt: "Exibe sua lista de jogos pendentes salvos no backlog.",
+        en: "Displays your pending list of games saved in your backlog.",
+        es: "Muestra tu lista de juegos pendientes guardados en el backlog.",
+        fr: "Affiche votre liste de jeux en attente dans le backlog.",
+        ru: "Показывает ваш список отложенных игр (бэклог).",
+        zh: "显示您待玩清单中保存的待玩游戏。",
+        ar: "يعرض قائمة الألعاب المعلقة المحفوظة في قائمة الألعاب المتراكمة.",
+        ja: "バックログに保存されている未完了のゲームを表示します。",
+        tr: "Birikmiş işlerinizde kayıtlı olan bekleyen oyunlar listenizi görüntüler."
+      },
+      statistics: {
+        pt: "Exibe relatórios visuais e estatísticas detalhadas sobre o tempo de jogo e conclusão.",
+        en: "Displays visual reports and detailed statistics about play time and completion.",
+        es: "Muestra informes visuales y estadísticas detalladas sobre el tempo de juego y completado.",
+        fr: "Affiche des rapports visuels et des statistiques détaillées sur le temps de jeu.",
+        ru: "Показывает визуальные отчеты и статистику игрового времени.",
+        zh: "显示有关游戏时间和通关进度的可视化报告和详细统计信息。",
+        ar: "يعرض التقارير المرئية والإحصاءات التفصيلية حول وقت اللعب وإكمال الألعاب.",
+        ja: "プレイ時間と完了に関する視覚的なレポートと詳細な統計を表示します。",
+        tr: "Oyun süresi ve tamamlanma hakkında görsel raporlar ve ayrıntılı istatistikler görüntüler."
+      },
+      ranking: {
+        pt: "Exibe o ranking global e classificação de notas de sua coleção de jogos.",
+        en: "Displays the global ranking and rating classification of your game collection.",
+        es: "Muestra la clasificación global de notas de tu colección de juegos.",
+        fr: "Affiche le classement mondial et les notes de votre collection.",
+        ru: "Показывает глобальный рейтинг и оценки вашей коллекции игр.",
+        zh: "显示您的游戏收藏的全局排行和评分分类。",
+        ar: "يعرض التصنيف العالمي وتقييم مجموعة ألعابك.",
+        ja: "ゲームコレクションのグローバルランキングと評価分類を表示します。",
+        tr: "Oyun koleksiyonunuzun genel sıralamasını ve derecelendirme sınıflandırmasını görüntüler."
+      },
+      storage: {
+        pt: "Exibe informações de espaço e localização de armazenamento das mídias dos jogos.",
+        en: "Displays disk space allocation and physical storage location of game files.",
+        es: "Muestra información de asignación de espacio y almacenamiento de tus juegos.",
+        fr: "Affiche les informations d'espace disque et l'emplacement de stockage des jeux.",
+        ru: "Показывает распределение дискового пространства и место хранения файлов игр.",
+        zh: "显示磁盘空间分配和游戏文件的物理存储位置。",
+        ar: "يعرض تخصيص مساحة القرص وموقع التخزين الفعلي لملفات الألعاب.",
+        ja: "ディスクスペースの割り当てとゲームファイルの物理的な保存場所を表示します。",
+        tr: "Disk alanı tahsisini ve oyun dosyalarının fiziksel depolama konumunu görüntüler."
+      },
+      roadmap: {
+        pt: "Exibe o roteiro de objetivos e conquistas de próximos jogos a serem platinados.",
+        en: "Displays your future timeline of goals and achievements to platinum games.",
+        es: "Muestra tu hoja de ruta de objetivos y logros para próximos juegos a platinar.",
+        fr: "Affiche la feuille de route des objectifs et succès des prochains jeux à platiner.",
+        ru: "Показывает дорожную карту целей и достижений для будущих платин в играх.",
+        zh: "显示您的下一个需要打出白金奖杯的游戏的目标和成就路线图。",
+        ar: "يعرض جدولك الزمني للأهداف والإنجازات القادمة للحصول على البلاتين في الألعاب.",
+        ja: "プラチナを獲得するための目標と実積のロードマップを表示します。",
+        tr: "Gelecekte platin alacağınız oyunlara yönelik hedefler ve başarılar yol haritasını görüntüler."
+      },
+      settings: {
+        pt: "Acesse as configurações do sistema, preferências de idioma, tema e backups.",
+        en: "Access system settings, language preferences, appearance themes, and backups.",
+        es: "Accede a la configuración del sistema, preferencias de idioma, temas y copias de seguridad.",
+        fr: "Accédez aux paramètres système, préférences de langue, thèmes et sauvegardes.",
+        ru: "Перейти к настройкам системы, языковым предпочтениям, темам оформления и резервным копиям.",
+        zh: "访问系统设置、语言偏好、外观主题和备份。",
+        ar: "الوصول إلى إعدادات النظام، وتفضيلات اللغة، وموضوع المظهر، والنسخ الاحتياطية.",
+        ja: "システム設定、言語設定、テーマ、およびバックアップにアクセスします。",
+        tr: "Sistem ayarlarına, dil tercihlerine, görünüm temalarına ve yedeklemelere erişin."
+      },
+      randomGameBtn: {
+        pt: "Sorteie um jogo para jogar.",
+        en: "Roll a random game to play.",
+        es: "Sortea un juego para jugar.",
+        fr: "Tirez un jeu au sort pour jouer.",
+        ru: "Выбрать случайную игру.",
+        zh: "随机抽取一个游戏来玩。",
+        ar: "سحب لعبة عشوائية للعب.",
+        ja: "プレイするゲームをランダムに抽選します。",
+        tr: "Oynamak için rastgele bir oyun seçin."
+      },
+      addGameBtn: {
+        pt: "Adicione um novo jogo à sua coleção.",
+        en: "Add a new game to your collection.",
+        es: "Añade un nuevo juego a tu colección.",
+        fr: "Ajouter un nouveau jeu à votre collection.",
+        ru: "Добавить новую игру в коллекцию.",
+        zh: "向您的收藏中添加一个新游戏。",
+        ar: "أضf لعبة جديدة إلى مجموعتك.",
+        ja: "新しいゲームをコレクションに追加します。",
+        tr: "Koleksiyonunuza yeni bir oyun ekleyin."
+      },
+      profileBtn: {
+        pt: "Acesse suas configurações de perfil.",
+        en: "Access your profile settings.",
+        es: "Accede a la configuración de tu perfil.",
+        fr: "Accéder aux paramètres de votre profil.",
+        ru: "Перейти к настройкам профиля.",
+        zh: "访问您的个人资料设置。",
+        ar: "الوصول إلى إعدادات ملفك الشخصي.",
+        ja: "プロフィール設定にアクセスします。",
+        tr: "Profil ayarlarınıza erişin."
+      }
+    };
+
+    const item = tooltips[key];
+    if (isPt) return item.pt;
+    if (isEs) return item.es;
+    if (isFr) return item.fr;
+    if (isRu) return item.ru;
+    if (isZh) return item.zh;
+    if (isAr) return item.ar;
+    if (isJa) return item.ja;
+    if (isTr) return item.tr;
+    return item.en; // English fallback
+  };
+
   // Set page title
   useEffect(() => {
     document.title = "GamingHub | Sua coleção gamer, organizada do seu jeito.";
@@ -528,10 +582,10 @@ export default function App() {
   // Seeding Database
   useEffect(() => {
     const seed = async () => {
-      const dbSeeded10 = localStorage.getItem('gaminghub_db_seeded_10games');
-      if (!dbSeeded10) {
+      const dbEmptyV118 = localStorage.getItem('gaminghub_db_empty_v118');
+      if (!dbEmptyV118) {
         await db.games.clear();
-        await db.games.bulkPut(INITIAL_GAMES);
+        localStorage.setItem('gaminghub_db_empty_v118', 'true');
         localStorage.setItem('gaminghub_db_seeded_10games', 'true');
       }
       const diskCount = await db.disks.count();
@@ -552,20 +606,78 @@ export default function App() {
       const roadmapCount = await db.roadmap.count();
       if (roadmapCount === 0) {
         await db.roadmap.bulkPut([
-          { id: '1', title: 'Novos Temas', date: 'Q2 2024', description: 'Personalização avançada de cores e fontes.', status: 'completed', priority: 'Q3' },
-          { id: '2', title: 'Integração Web', date: 'Q3 2024', description: 'Sincronização com Steam e PlayStation Network.', status: 'in-progress', priority: 'Q2' },
-          { id: '3', title: 'Modo Multiplayer', date: 'Q4 2024', description: 'Compare sua biblioteca com amigos.', status: 'planned', priority: 'Q1' },
+          { id: '1', title: 'Novos Temas', date: 'Q3 2026', description: 'Personalização avançada de cores e fontes.', status: 'completed', priority: 'Q3' },
+          { id: '2', title: 'Integração Web', date: 'Q2 2026', description: 'Sincronização com Steam e PlayStation Network.', status: 'in-progress', priority: 'Q2' },
+          { id: '3', title: 'Modo Multiplayer', date: 'Q1 2026', description: 'Compare sua biblioteca com amigos.', status: 'planned', priority: 'Q1' },
+          { id: '4', title: 'Sincronização de capas e informações Steam', date: 'Q1 2026', description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.', status: 'planned', priority: 'Q1' }
         ]);
+      } else {
+        const r1 = await db.roadmap.get('1');
+        if (r1 && r1.date === 'Q2 2024') {
+          await db.roadmap.update('1', { date: 'Q3 2026' });
+        }
+        const r2 = await db.roadmap.get('2');
+        if (r2 && r2.date === 'Q3 2024') {
+          await db.roadmap.update('2', { date: 'Q2 2026' });
+        }
+        const r3 = await db.roadmap.get('3');
+        if (r3 && r3.date === 'Q4 2024') {
+          await db.roadmap.update('3', { date: 'Q1 2026' });
+        }
+        const r4 = await db.roadmap.get('4');
+        if (!r4) {
+          await db.roadmap.put({
+            id: '4',
+            title: 'Sincronização de capas e informações Steam',
+            date: 'Q1 2026',
+            description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.',
+            status: 'planned',
+            priority: 'Q1'
+          });
+        }
       }
 
-      const changelogCount = await db.changelog.count();
-      if (changelogCount === 0) {
-        await db.changelog.bulkPut([
-          { id: '1', version: '1.0.0', date: '2024-01-01', changes: ['Lançamento inicial', 'Gerenciamento de biblioteca', 'Modo escuro'] },
-          { id: '2', version: '1.0.1', date: '2024-02-15', changes: ['Melhorias de desempenho', 'Correção de filtros'] },
-          { id: '3', version: '1.0.5', date: '2024-05-19', changes: ['Nova tela de estatísticas', 'Melhorias visuais', 'Correções no ranking'] },
-        ]);
-      }
+      await db.changelog.put({ id: '1', version: '1.0.0', date: '2024-01-01', changes: ['Lançamento inicial', 'Gerenciamento de biblioteca', 'Modo escuro'] });
+      await db.changelog.put({ id: '2', version: '1.0.1', date: '2024-02-15', changes: ['Melhorias de desempenho', 'Correção de filtros'] });
+      await db.changelog.put({ 
+        id: '3', 
+        version: '1.1.7', 
+        date: '2026-05-19', 
+        changes: [
+          'Nova tela de estatísticas',
+          'Melhorias visuais',
+          'Correções no ranking',
+          'Adicionado idioma russo',
+          'Adicionado idioma chinês',
+          'Adicionado função atualização automática',
+          'Pequenas correções',
+          'Corrigido o problema de travamento na obtenção de troféus quando o alvo da ação não existia.'
+        ] 
+      });
+      await db.changelog.put({ 
+        id: '4', 
+        version: '1.1.9', 
+        date: '2026-06-17', 
+        changes: [
+          'Dicionário Temático Multilíngue (getTooltip)',
+          'Menus de Navegação do Painel Lateral (Sidebar)',
+          'Botões de Ação Principais da Barra Superior (Header)',
+          'Dynamic Database Installation Modes',
+          'Sinalização Visual de Atualizações',
+          'Fluxo de Atualização Interativo',
+          'Architectural & Visual Layout'
+        ] 
+      });
+      await db.changelog.put({ 
+        id: '5', 
+        version: '1.2.0', 
+        date: '2026-06-20', 
+        changes: [
+          'Botão Sincronizar Informações',
+          'Otimização do banco de dados',
+          'Ícone do app re-criado em dimensão 256x256'
+        ] 
+      });
     };
     seed();
   }, []);
@@ -595,6 +707,7 @@ export default function App() {
   const checkForUpdates = async () => {
     setUpdateStatus('checking');
     setShowUpdateModal(true);
+    setHasUpdateBadge(false);
     try {
       const res = await fetch('https://api.github.com/repos/davisonsant/GamingHub/releases/latest', {
         headers: {
@@ -609,7 +722,7 @@ export default function App() {
       const data = await res.json();
       
       const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-      const current = "1.1.7";
+      const current = "1.2.0";
       
       const latestParts = latestTag.split('.').map(Number);
       const currentParts = current.split('.').map(Number);
@@ -944,6 +1057,10 @@ export default function App() {
     setSelectedGameId(null);
   };
 
+  const handleUpdateGameFields = async (id: string, updates: Partial<Game>) => {
+    await db.games.update(id, updates);
+  };
+
   const handleSaveGame = async (gameData: Partial<Game>) => {
     if (view === 'Edit' && selectedGameId) {
       const { id, ...updates } = gameData;
@@ -1193,16 +1310,16 @@ export default function App() {
           </div>
           
           <nav className="flex-1 px-3 space-y-1">
-            <NavItem active={view === 'Library'} onClick={() => { setView('Library'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">sports_esports</span>} label={t.library} />
-            <NavItem active={view === 'Favorites'} onClick={() => { setView('Favorites'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">favorite</span>} label={t.favorites} />
-            <NavItem active={view === 'Playing'} onClick={() => { setView('Playing'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">play_circle</span>} label={t.playing} />
-            <NavItem active={view === 'Completed'} onClick={() => { setView('Completed'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">check_circle</span>} label={t.completed} />
-            <NavItem active={view === 'Backlog'} onClick={() => { setView('Backlog'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">inbox</span>} label={t.backlog} />
-            <NavItem active={view === 'Stats'} onClick={() => { setView('Stats'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">insights</span>} label={t.statistics} />
-            <NavItem active={view === 'Ranking'} onClick={() => { setView('Ranking'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">auto_awesome_motion</span>} label={t.ranking} />
-            <NavItem active={view === 'Storage'} onClick={() => { setView('Storage'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">storage</span>} label={t.storage} />
-            <NavItem active={view === 'Roadmap'} onClick={() => { setView('Roadmap'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">map</span>} label={t.roadmap} />
-            <NavItem active={view === 'Settings'} onClick={() => { setView('Settings'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">settings</span>} label={t.settings} />
+            <NavItem active={view === 'Library'} onClick={() => { setView('Library'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">sports_esports</span>} label={t.library} tooltip={getTooltip('library')} />
+            <NavItem active={view === 'Favorites'} onClick={() => { setView('Favorites'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">favorite</span>} label={t.favorites} tooltip={getTooltip('favorites')} />
+            <NavItem active={view === 'Playing'} onClick={() => { setView('Playing'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">play_circle</span>} label={t.playing} tooltip={getTooltip('playing')} />
+            <NavItem active={view === 'Completed'} onClick={() => { setView('Completed'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">check_circle</span>} label={t.completed} tooltip={getTooltip('completed')} />
+            <NavItem active={view === 'Backlog'} onClick={() => { setView('Backlog'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">inbox</span>} label={t.backlog} tooltip={getTooltip('backlog')} />
+            <NavItem active={view === 'Stats'} onClick={() => { setView('Stats'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">insights</span>} label={t.statistics} tooltip={getTooltip('statistics')} />
+            <NavItem active={view === 'Ranking'} onClick={() => { setView('Ranking'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">auto_awesome_motion</span>} label={t.ranking} tooltip={getTooltip('ranking')} />
+            <NavItem active={view === 'Storage'} onClick={() => { setView('Storage'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">storage</span>} label={t.storage} tooltip={getTooltip('storage')} />
+            <NavItem active={view === 'Roadmap'} onClick={() => { setView('Roadmap'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">map</span>} label={t.roadmap} tooltip={getTooltip('roadmap')} />
+            <NavItem active={view === 'Settings'} onClick={() => { setView('Settings'); setMobileMenuOpen(false); }} icon={<span className="material-symbols-outlined">settings</span>} label={t.settings} tooltip={getTooltip('settings')} />
           </nav>
         </aside>
 
@@ -1262,8 +1379,12 @@ export default function App() {
               title={language === 'English (US)' ? 'Check for updates' : 'Verificar atualizações'}
             >
               <span className="material-symbols-outlined group-hover:scale-110 group-active:scale-95 transition-transform">system_update_alt</span>
+              {hasUpdateBadge && (
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-surface animate-pulse" />
+              )}
             </button>
             <button
+              onClick={() => setShowBugReportModal(true)}
               className="p-2 hover:bg-surface-container rounded-full transition-colors flex items-center justify-center"
               title={t.bugReportTitle}
             >
@@ -1272,6 +1393,7 @@ export default function App() {
             <div className="h-6 w-px bg-outline-variant mx-2" />
             <button 
               onClick={() => handleLuckyDraw()}
+              title={getTooltip('randomGameBtn')}
               className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-[18px]">casino</span>
@@ -1281,6 +1403,7 @@ export default function App() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setView('Add')}
+              title={getTooltip('addGameBtn')}
               className="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold shadow-sm hover:brightness-110 transition-all"
             >
               {t.addGame}
@@ -1288,6 +1411,7 @@ export default function App() {
             <div className="flex items-center gap-2 ml-2">
               <button 
                 onClick={() => setView('Settings')}
+                title={getTooltip('profileBtn')}
                 className="w-8 h-8 rounded-full border border-outline-variant shadow-sm hover:ring-2 hover:ring-primary/30 transition-all overflow-hidden active:scale-95 cursor-pointer outline-none"
               >
                 <img 
@@ -2034,26 +2158,9 @@ export default function App() {
                 {/* Roadmap Specific Section */}
                 {view === 'Roadmap' && (
                   <div className="space-y-12 pb-20">
-                    <div className="flex justify-end gap-3">
-                      <button 
-                        onClick={() => setShowAddRoadmapModal(true)}
-                        className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all flex items-center gap-2"
-                      >
-                        <span className="material-symbols-outlined">add</span>
-                        {t.addRoadmapItem}
-                      </button>
-                      <button 
-                        onClick={() => setShowAddChangelogModal(true)}
-                        className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all flex items-center gap-2"
-                      >
-                        <span className="material-symbols-outlined">history</span>
-                        {t.addChangelogEntry}
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="grid grid-cols-1 gap-8">
                       {/* Timeline Side */}
-                      <div className="lg:col-span-8 space-y-8">
+                      <div className="space-y-8">
                         <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-[2.5rem] border border-outline-variant/20 shadow-sm">
                           <h3 className="text-2xl font-black text-on-surface tracking-tighter mb-10 flex items-center gap-3">
                             <span className="material-symbols-outlined text-primary">timeline</span>
@@ -2064,8 +2171,8 @@ export default function App() {
                             {roadmapItems.sort((a,b) => a.date.localeCompare(b.date)).map((item) => (
                               <div key={item.id} className="relative">
                                 <div className={`absolute -left-[37px] top-1.5 w-6 h-6 rounded-full border-4 border-surface-container flex items-center justify-center shadow-sm z-10 ${
-                                  item.status === 'completed' ? 'bg-emerald-500' :
-                                  item.status === 'in-progress' ? 'bg-primary' : 'bg-outline'
+                                  item.status === 'completed' ? 'bg-green-500' :
+                                  item.status === 'in-progress' ? 'bg-blue-500' : 'bg-red-500'
                                 }`}>
                                   {item.status === 'completed' && <span className="material-symbols-outlined text-[12px] text-white">check</span>}
                                 </div>
@@ -2088,65 +2195,18 @@ export default function App() {
                                   <p className="text-sm text-on-surface-variant/80 leading-relaxed">{item.description}</p>
                                   <div className="mt-4 flex items-center justify-between">
                                     <span className={`text-[9px] font-black uppercase tracking-widest ${
-                                      item.status === 'completed' ? 'text-emerald-500' :
-                                      item.status === 'in-progress' ? 'text-primary' : 'text-on-surface-variant/40'
+                                      item.status === 'completed' ? 'text-green-500' :
+                                      item.status === 'in-progress' ? 'text-blue-500' : 'text-red-500'
                                     }`}>
                                       {item.status === 'completed' ? t.completedStatus :
                                        item.status === 'in-progress' ? t.inProgress : t.planned}
                                     </span>
-                                    <div className="flex gap-1">
-                                      <button 
-                                        onClick={() => { setEditingRoadmapItem(item); setShowAddRoadmapModal(true); }}
-                                        className="p-2 hover:bg-surface-container rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                                      >
-                                        <span className="material-symbols-outlined text-[18px]">edit</span>
-                                      </button>
-                                      <button 
-                                        onClick={() => { if(confirm(t.confirm || 'Excluir?')) handleDeleteRoadmapItem(item.id); }}
-                                        className="p-2 hover:bg-error/10 text-error rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                                      >
-                                        <span className="material-symbols-outlined text-[18px]">delete</span>
-                                      </button>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
                             ))}
                           </div>
                         </section>
-                      </div>
-
-                      {/* Info Side */}
-                      <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-surface-container p-8 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col gap-4">
-                           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
-                             <span className="material-symbols-outlined text-4xl text-primary font-variation-fill">map</span>
-                           </div>
-                           <h3 className="text-xl font-bold text-on-surface">{t.roadmap}</h3>
-                           <p className="text-sm text-on-surface-variant leading-relaxed">
-                             {language === 'English (US)' 
-                               ? 'Our journey to build the ultimate gaming dashboard. Here you can track upcoming features and improvements.'
-                               : 'Nossa jornada para construir o melhor dashboard gamer. Aqui você pode acompanhar os próximos recursos e melhorias.'}
-                           </p>
-                        </div>
-
-                        <div className="bg-surface-container-low/60 rounded-3xl p-6 border border-outline-variant/20">
-                          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-on-surface-variant mb-4">{language === 'English (US)' ? 'Quick Stats' : 'Estatísticas Rápidas'}</h4>
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center p-3 bg-surface-container-high/40 rounded-xl">
-                              <span className="text-xs font-bold text-on-surface-variant">{t.planned}</span>
-                              <span className="text-sm font-black text-on-surface">{roadmapItems.filter(i => i.status === 'planned').length}</span>
-                            </div>
-                            <div className="flex justify-between items-center p-3 bg-surface-container-high/40 rounded-xl">
-                              <span className="text-xs font-bold text-on-surface-variant">{t.inProgress}</span>
-                              <span className="text-sm font-black text-primary">{roadmapItems.filter(i => i.status === 'in-progress').length}</span>
-                            </div>
-                            <div className="flex justify-between items-center p-3 bg-surface-container-high/40 rounded-xl">
-                              <span className="text-xs font-bold text-on-surface-variant">{t.completedStatus}</span>
-                              <span className="text-sm font-black text-emerald-500">{roadmapItems.filter(i => i.status === 'completed').length}</span>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
 
@@ -2169,12 +2229,7 @@ export default function App() {
                                  </div>
                                  <span className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest">{entry.date}</span>
                                </div>
-                               <button 
-                                 onClick={() => { setEditingChangelogEntry(entry); setShowAddChangelogModal(true); }}
-                                 className="p-2 hover:bg-surface-container rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                               >
-                                 <span className="material-symbols-outlined text-[18px]">edit</span>
-                               </button>
+
                              </div>
                              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-8">
                                {entry.changes.map((change, idx) => (
@@ -2204,6 +2259,7 @@ export default function App() {
                 onToggleFavorite={handleToggleFavorite}
                 onDeleteRequest={(id) => setDeleteConfirmId(id)}
                 onGenreClick={handleGenreClick}
+                onUpdateGame={handleUpdateGameFields}
               />
             )}
 
@@ -2397,10 +2453,11 @@ export default function App() {
 }
 
 // Sub-components
-function NavItem({ active, icon, label, onClick }: { active: boolean, icon: ReactNode, label: string, onClick: () => void }) {
+function NavItem({ active, icon, label, onClick, tooltip }: { active: boolean, icon: ReactNode, label: string, onClick: () => void, tooltip?: string }) {
   return (
     <button 
       onClick={onClick}
+      title={tooltip || label}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group ${
         active 
           ? 'bg-primary/10 text-primary' 
@@ -2601,16 +2658,74 @@ function GameCard({
   );
 }
 
-function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteRequest, onGenreClick, t }: { 
+function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteRequest, onGenreClick, onUpdateGame, t }: { 
   game: Game, 
   onEdit: () => void, 
   onBack: () => void,
   onToggleFavorite: (id: string) => void,
   onDeleteRequest: (id: string) => void,
   onGenreClick: (genre: string) => void,
+  onUpdateGame?: (id: string, updates: Partial<Game>) => Promise<void>,
   t: TranslationKeys
 }) {
   const language = localStorage.getItem('gaminghub_language') || 'Português (Brasil)';
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncError(null);
+    setSyncSuccess(false);
+    try {
+      const response = await fetch(`/api/sync-game?title=${encodeURIComponent(game.title)}&lang=${encodeURIComponent(language)}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Erro ao sincronizar informações do jogo");
+      }
+      
+      const updates: Partial<Game> = {};
+      let updatedSomething = false;
+      
+      if (data.developer && game.developer !== data.developer) {
+        updates.developer = data.developer;
+        updatedSomething = true;
+      }
+      if (data.publisher && game.publisher !== data.publisher) {
+        updates.publisher = data.publisher;
+        updatedSomething = true;
+      }
+      if (data.releaseDate && game.releaseDate !== String(data.releaseDate)) {
+        updates.releaseDate = String(data.releaseDate);
+        updatedSomething = true;
+      }
+      if (Array.isArray(data.genres) && data.genres.length > 0 && JSON.stringify(game.genres) !== JSON.stringify(data.genres)) {
+        updates.genres = data.genres;
+        updatedSomething = true;
+      }
+      if (data.synopsis && game.synopsis !== data.synopsis) {
+        updates.synopsis = data.synopsis;
+        updatedSomething = true;
+      }
+      if (data.coverUrl && game.coverUrl !== data.coverUrl) {
+        updates.coverUrl = data.coverUrl;
+        updatedSomething = true;
+      }
+
+      if (updatedSomething) {
+        await onUpdateGame?.(game.id, updates);
+        setSyncSuccess(true);
+      } else {
+        setSyncError("As informações do jogo já estão sincronizadas com o banco de dados oficial.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSyncError(err.message || "Erro de conexão com o servidor de sincronização.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -2621,7 +2736,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden shadow-2xl h-[380px] group">
         <img 
-          src={game.coverUrl} 
+          src={game.coverUrl || '/public/icon.png'} 
           alt={game.title} 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
         />
@@ -2668,6 +2783,14 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
 
           <div className="flex flex-wrap items-center gap-2 lg:gap-3 w-full lg:w-auto">
             <button 
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="flex-1 lg:flex-none px-4 lg:px-5 py-2 lg:py-2.5 bg-secondary text-on-secondary rounded-xl font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all active:scale-95 shadow-lg disabled:opacity-50"
+            >
+              <span className={`material-symbols-outlined text-[18px] lg:text-[20px] ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+              {isSyncing ? 'Sincronizando...' : 'Sincronizar Informações'}
+            </button>
+            <button 
               onClick={onEdit} 
               className="flex-1 lg:flex-none px-4 lg:px-5 py-2 lg:py-2.5 bg-surface-container-highest text-on-surface rounded-xl font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:bg-opacity-80 transition-all active:scale-95 shadow-lg"
             >
@@ -2692,6 +2815,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
                 href={game.trailerUrl} 
                 target="_blank" 
                 rel="noreferrer"
+                onClick={(e) => openExternalLink(game.trailerUrl, e)}
                 className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-xl font-bold text-sm backdrop-blur-md transition-all active:scale-95 flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-[20px]">play_circle</span>
@@ -2701,6 +2825,26 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
           </div>
         </div>
       </section>
+
+      {/* Sync Status Feedback Banners */}
+      {syncSuccess && (
+        <div className="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-medium rounded-xl p-4 text-xs flex items-center justify-between gap-3 max-w-full">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[18px]">verified</span>
+            <span>Campos em branco preenchidos automaticamente com sucesso!</span>
+          </div>
+          <button onClick={() => setSyncSuccess(false)} className="material-symbols-outlined text-[16px] hover:opacity-75">close</button>
+        </div>
+      )}
+      {syncError && (
+        <div className="bg-error/10 border border-error/20 text-error font-medium rounded-xl p-4 text-xs flex items-center justify-between gap-3 max-w-full">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[18px]">warning</span>
+            <span>{syncError}</span>
+          </div>
+          <button onClick={() => setSyncError(null)} className="material-symbols-outlined text-[16px] hover:opacity-75">close</button>
+        </div>
+      )}
 
       {/* Grid Content */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -2839,6 +2983,71 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
 
   const [newGenre, setNewGenre] = useState('');
   const [newPlatform, setNewPlatform] = useState('');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState(false);
+
+  const handleSyncGameInfo = async () => {
+    if (!formData.title?.trim()) {
+      setSyncError("Por favor, digite o título do jogo para sincronizar.");
+      return;
+    }
+    setIsSyncing(true);
+    setSyncError(null);
+    setSyncSuccess(false);
+
+    try {
+      const response = await fetch(`/api/sync-game?title=${encodeURIComponent(formData.title)}&lang=${encodeURIComponent(language)}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Erro ao sincronizar informações.");
+      }
+
+      setFormData(prev => {
+        const next = { ...prev };
+        let filledAny = false;
+
+        if (data.developer && next.developer !== data.developer) {
+          next.developer = data.developer;
+          filledAny = true;
+        }
+        if (data.publisher && next.publisher !== data.publisher) {
+          next.publisher = data.publisher;
+          filledAny = true;
+        }
+        if (data.releaseDate && next.releaseDate !== String(data.releaseDate)) {
+          next.releaseDate = String(data.releaseDate);
+          filledAny = true;
+        }
+        if (Array.isArray(data.genres) && data.genres.length > 0 && JSON.stringify(next.genres) !== JSON.stringify(data.genres)) {
+          next.genres = data.genres;
+          filledAny = true;
+        }
+        if (data.synopsis && next.synopsis !== data.synopsis) {
+          next.synopsis = data.synopsis;
+          filledAny = true;
+        }
+        if (data.coverUrl && next.coverUrl !== data.coverUrl) {
+          next.coverUrl = data.coverUrl;
+          filledAny = true;
+        }
+
+        if (filledAny) {
+          setSyncSuccess(true);
+        } else {
+          setSyncError("As informações sincronizadas já eram idênticas às preenchidas.");
+        }
+
+        return next;
+      });
+    } catch (err: any) {
+      console.error(err);
+      setSyncError(err.message || "Erro de conexão com o servidor de sincronização.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -2941,7 +3150,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
             <div className="pt-4 border-t border-outline-variant/20 space-y-4">
               <button 
                 type="button"
-                onClick={() => formData.trailerUrl && window.open(formData.trailerUrl, '_blank')}
+                onClick={(e) => formData.trailerUrl && openExternalLink(formData.trailerUrl, e)}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95 outline-none"
               >
                 <span className="material-symbols-outlined">play_circle</span>
@@ -2972,17 +3181,30 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
           {/* Right Column: Form Fields */}
           <div className="md:col-span-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 col-span-1 md:col-span-2">
                 <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="title">{t.gameTitle}</label>
-                <input 
-                  className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
-                  id="title" 
-                  placeholder="Ex: Elden Ring" 
-                  type="text"
-                  value={formData.title || ''}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  required
-                />
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input 
+                    className="flex-1 bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                    id="title" 
+                    placeholder="Ex: Elden Ring" 
+                    type="text"
+                    value={formData.title || ''}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSyncGameInfo}
+                    disabled={isSyncing || !formData.title?.trim()}
+                    className="px-5 py-2.5 bg-secondary text-on-secondary rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                  >
+                    <span className={`material-symbols-outlined text-[16px] ${isSyncing ? 'animate-spin' : ''}`}>sync</span>
+                    {isSyncing ? 'Sincronizando...' : 'Sincronizar Informações'}
+                  </button>
+                </div>
+                {syncSuccess && <p className="text-xs text-green-500 font-medium mt-1">Campos em branco preenchidos automaticamente com sucesso!</p>}
+                {syncError && <p className="text-xs text-error font-medium mt-1">{syncError}</p>}
               </div>
               <div className="space-y-2">
                 <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">{t.platforms}</label>
@@ -3729,7 +3951,7 @@ function SettingsView({
 
       <div className="text-center py-6">
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
-          GAMINGHUB V1.1.7 • 2026 • {t.developedBy} DAVISON SANT
+          GAMINGHUB V1.2.0 • 2026 • {t.developedBy} DAVISON SANT
         </p>
       </div>
     </motion.div>
@@ -3753,6 +3975,126 @@ function UpdateModal({
 }) {
   const language = localStorage.getItem('gaminghub_language') || 'Português (Brasil)';
   const isPt = language !== 'English (US)';
+
+  const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [downloadingName, setDownloadingName] = useState<string>('');
+  const [isDone, setIsDone] = useState(false);
+  const [updateMode, setUpdateMode] = useState<'preserve' | 'clean'>('preserve');
+
+  const startDownload = async (url: string, filename: string) => {
+    try {
+      if (updateMode === 'clean') {
+        const confirmClean = window.confirm(
+          isPt 
+            ? "Você selecionou 'Instalação Limpa'. Isso apagará PERMANENTEMENTE todos os jogos cadastrados, categorias, conquistas e mídias salvos localmente. Tem certeza que deseja prosseguir?" 
+            : "You selected 'Clean Installation'. This will PERMANENTLY erase all locally stored games, categories, achievements, and media. Are you sure you want to proceed?"
+        );
+        if (!confirmClean) return;
+        
+        await db.games.clear();
+        await db.roadmap.clear();
+        await db.changelog.clear();
+        await db.disks.clear();
+        await db.disks.bulkPut(INITIAL_DISKS);
+        
+        alert(
+          isPt 
+            ? "O banco de dados foi completamente resetado e formatado com sucesso! Iniciando download..." 
+            : "Database has been completely reset and reformatted! Starting download..."
+        );
+      } else {
+        alert(
+          isPt
+            ? "Excelente escolha! Sua biblioteca e personalizações estão 100% salvas e preservadas nas tabelas de banco de dados. Iniciando download..."
+            : "Excellent choice! Your library and customizations are 100% safe and preserved in database tables. Starting download..."
+        );
+      }
+
+      setDownloadProgress(0);
+      setDownloadingName(filename);
+      setIsDone(false);
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Direct download fetch response was not ok");
+      }
+      
+      const contentLength = response.headers.get('content-length');
+      if (!contentLength) {
+        openExternalLink(url);
+        setDownloadProgress(null);
+        return;
+      }
+      
+      const total = parseInt(contentLength, 10);
+      let loaded = 0;
+      
+      const reader = response.body?.getReader();
+      if (!reader) {
+        openExternalLink(url);
+        setDownloadProgress(null);
+        return;
+      }
+      
+      const chunks = [];
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value) {
+          chunks.push(value);
+          loaded += value.length;
+          setDownloadProgress(Math.round((loaded / total) * 100));
+        }
+      }
+      
+      const blob = new Blob(chunks);
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+      setIsDone(true);
+      setTimeout(() => {
+        setDownloadProgress(null);
+        setIsDone(false);
+        try {
+          const isElectron = typeof window !== 'undefined' && (
+            (window as any).navigator?.userAgent?.toLowerCase().indexOf(' electron/') > -1 ||
+            (window as any).process?.versions?.electron ||
+            (window as any).electron
+          );
+          if (isElectron) {
+            const electronAPI = (window as any).electron;
+            if (electronAPI && typeof electronAPI.closeApp === 'function') {
+              electronAPI.closeApp();
+            } else if (typeof (window as any).require === 'function') {
+              const { remote, app } = (window as any).require('electron');
+              const currentApp = app || (remote && remote.app);
+              if (currentApp) currentApp.quit();
+              else {
+                const currentWindow = remote && remote.getCurrentWindow();
+                if (currentWindow) currentWindow.close();
+                else window.close();
+              }
+            } else {
+              window.close();
+            }
+          } else {
+            window.close();
+          }
+        } catch (closeErr) {
+          console.warn("Could not automatically close application window:", closeErr);
+        }
+      }, 4000);
+    } catch (err) {
+      console.warn("Direct download failed, falling back to openExternalLink", err);
+      openExternalLink(url);
+      setDownloadProgress(null);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -3847,9 +4189,17 @@ function UpdateModal({
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
                   {isPt 
-                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.1.7.' 
-                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.1.7.'}
+                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.2.0.' 
+                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.2.0.'}
                 </p>
+                <div className="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-medium rounded-xl p-4 text-xs flex items-center gap-2.5 max-w-md mx-auto">
+                  <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                  <span>
+                    {isPt 
+                      ? 'Seu banco de dados e biblioteca salvos localmente serão totalmente preservados e nunca serão perdidos ao atualizar.' 
+                      : 'Your local database and saved library will be fully preserved and never lost during updates.'}
+                  </span>
+                </div>
                 <p className="text-xs text-on-surface-variant/80 italic">
                   {isPt 
                     ? 'Para habilitar atualizações em tempo real com download e instalação de arquivos, configure tags e releases em seu repositório: https://github.com/davisonsant/GamingHub/releases' 
@@ -3891,7 +4241,7 @@ function UpdateModal({
                     : 'Congratulations! You are already running the latest available version of GamingHub.'}
                 </p>
                 <div className="inline-block px-4 py-1 bg-surface-container-high rounded-full border border-outline-variant/30 text-xs font-mono font-bold text-on-surface-variant mt-2">
-                  v1.1.7 (Latest)
+                  v1.2.0 (Latest)
                 </div>
               </div>
               <div className="flex justify-center pt-2">
@@ -3917,8 +4267,8 @@ function UpdateModal({
                   </h3>
                   <p className="text-sm text-on-surface-variant">
                     {isPt 
-                      ? `Uma rota de atualização direta foi encontrada! Versão atual v1.1.7 → Nova versão ${data?.tag_name}`
-                      : `An update path was found! Current version v1.1.7 → New version ${data?.tag_name}`}
+                      ? `Uma rota de atualização direta foi encontrada! Versão atual v1.2.0 → Nova versão ${data?.tag_name}`
+                      : `An update path was found! Current version v1.2.0 → New version ${data?.tag_name}`}
                   </p>
                 </div>
               </div>
@@ -3935,85 +4285,225 @@ function UpdateModal({
                 </div>
               )}
 
-              {/* Download Executables */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-on-surface uppercase tracking-wider">
-                  {isPt ? 'Baixar e Instalar Automaticamente:' : 'Download and Auto Install:'}
-                </h4>
-                
-                {assets.length === 0 ? (
-                  <p className="text-xs text-on-surface-variant/70 italic text-center py-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
+              {/* Choice of Installation */}
+              <div className="space-y-6">
+                {/* Installation Option Picker */}
+                <div className="space-y-3 bg-surface-container-high/60 p-5 rounded-2xl border border-outline-variant/10">
+                  <h4 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">settings_backup_restore</span>
+                    {isPt ? 'Tipo de Instalação (Banco de Dados)' : 'Installation Type (Database)'}
+                  </h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
                     {isPt 
-                      ? 'Nenhum executável anexado a esta release ainda. Baixe diretamente da página de lançamentos.' 
-                      : 'No executables parsed for this release yet. Check the main page.'}
+                      ? 'Decida se prefere manter seus jogos e conquistas existentes ou realizar uma formatação completa.' 
+                      : 'Decide whether you prefer to keep your existing games and achievements or perform a full wipe.'}
                   </p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {assets.map((asset: any) => {
-                      const nameLower = asset.name.toLowerCase();
-                      let icon = 'download';
-                      let platformLabel = 'General';
-                      let color = 'hover:border-primary/50 text-on-surface bg-surface-container-high/40 hover:bg-surface-container-high';
-                      
-                      if (nameLower.endsWith('.exe')) {
-                        icon = 'desktop_windows';
-                        platformLabel = nameLower.includes('portable') ? 'Windows (Portable)' : 'Windows (Installer)';
-                        color = 'border-blue-500/20 hover:border-blue-500/60 hover:bg-blue-500/5 text-blue-600 dark:text-blue-400 bg-blue-500/5';
-                      } else if (nameLower.endsWith('.deb')) {
-                        icon = 'terminal';
-                        platformLabel = 'Debian/Ubuntu Linux (.deb)';
-                        color = 'border-emerald-500/20 hover:border-emerald-500/60 hover:bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5';
-                      } else if (nameLower.endsWith('.appimage')) {
-                        icon = 'terminal';
-                        platformLabel = 'Linux AppImage';
-                        color = 'border-fuchsia-500/20 hover:border-fuchsia-500/60 hover:bg-fuchsia-500/5 text-fuchsia-600 dark:text-fuchsia-400 bg-fuchsia-500/5';
-                      } else if (nameLower.endsWith('.zip') || nameLower.endsWith('.rar')) {
-                        icon = 'archive';
-                        platformLabel = 'Compressed Archive';
-                      }
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                    {/* Mode Preserve */}
+                    <button
+                      type="button"
+                      onClick={() => setUpdateMode('preserve')}
+                      className={`flex items-start gap-3 p-4 rounded-xl border text-left transition-all ${
+                        updateMode === 'preserve' 
+                          ? 'border-primary bg-primary/5 text-on-surface' 
+                          : 'border-outline-variant/20 hover:border-outline-variant bg-surface-container hover:bg-surface-container-high'
+                      }`}
+                    >
+                      <div className="mt-0.5 flex shrink-0 items-center justify-center">
+                        <span className={`material-symbols-outlined text-[20px] ${updateMode === 'preserve' ? 'text-primary' : 'text-outline'}`}>
+                          {updateMode === 'preserve' ? 'radio_button_checked' : 'radio_button_unchecked'}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm tracking-tight text-on-surface">
+                          {isPt ? 'Manter Banco de Dados' : 'Keep Database'}
+                        </p>
+                        <p className="text-[11px] text-on-surface-variant leading-normal mt-0.5">
+                          {isPt 
+                            ? 'Preserva 100% de seus jogos salvos, conquistas, histórico e configurações intactos.' 
+                            : 'Preserves 100% of your saved games, achievements, history and settings intact.'}
+                        </p>
+                      </div>
+                    </button>
 
-                      const sizeMB = (asset.size / (1024 * 1024)).toFixed(1);
+                    {/* Mode Clean */}
+                    <button
+                      type="button"
+                      onClick={() => setUpdateMode('clean')}
+                      className={`flex items-start gap-3 p-4 rounded-xl border text-left transition-all ${
+                        updateMode === 'clean' 
+                          ? 'border-error bg-error/5 text-on-surface' 
+                          : 'border-outline-variant/20 hover:border-outline-variant bg-surface-container hover:bg-surface-container-high'
+                      }`}
+                    >
+                      <div className="mt-0.5 flex shrink-0 items-center justify-center">
+                        <span className={`material-symbols-outlined text-[20px] ${updateMode === 'clean' ? 'text-error' : 'text-outline'}`}>
+                          {updateMode === 'clean' ? 'radio_button_checked' : 'radio_button_unchecked'}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm tracking-tight text-on-surface">
+                          {isPt ? 'Instalação Limpa' : 'Clean Installation'}
+                        </p>
+                        <p className="text-[11px] text-on-surface-variant leading-normal mt-0.5">
+                          {isPt 
+                            ? 'Zera todo o banco de dados local para começar com uma biblioteca em branco.' 
+                            : 'Re-initializes all local database tables to start with an empty library.'}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
 
+                {/* Option 1: Automatic Download & Install */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[18px]">download_for_offline</span>
+                    {isPt ? 'Opção 1: Instalação Automática (Baixar Direto)' : 'Option 1: Automatic Installation (Direct Download)'}
+                  </h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                    {isPt 
+                      ? 'Baixe a atualização diretamente pelo aplicativo com monitoramento em tempo real.' 
+                      : 'Download the update directly through the app featuring real-time download tracking.'}
+                  </p>
+
+                  {(() => {
+                    const exeAssets = assets.filter((a: any) => a.name.toLowerCase().endsWith('.exe'));
+                    let target = exeAssets.find((a: any) => {
+                      const name = a.name.toLowerCase();
+                      return (name.includes('setup') || name.includes('install')) && !name.includes('portable');
+                    });
+                    if (!target) {
+                      target = exeAssets.find((a: any) => !a.name.toLowerCase().includes('portable'));
+                    }
+                    if (!target) {
+                      target = exeAssets[0];
+                    }
+                    if (!target) {
+                      target = assets[0];
+                    }
+
+                    if (!target) {
                       return (
-                        <a 
-                          key={asset.id}
-                          href={asset.browser_download_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`flex items-center justify-between p-4 border rounded-xl outline-none hover:shadow-lg transition-all scale-100 active:scale-98 ${color}`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="material-symbols-outlined text-2xl shrink-0">{icon}</span>
-                            <div className="text-left">
-                              <p className="font-bold text-sm tracking-tight truncate max-w-[180px]" title={asset.name}>
-                                {asset.name}
-                              </p>
-                              <p className="text-[11px] opacity-70">
-                                {platformLabel}
-                              </p>
+                        <p className="text-xs text-on-surface-variant/70 italic text-center py-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
+                          {isPt 
+                            ? 'Nenhum executável anexado a esta release ainda. Utilize a Opção 2 abaixo.' 
+                            : 'No executables attached to this release yet. Please use Option 2 below.'}
+                        </p>
+                      );
+                    }
+
+                    const isThisDownloading = downloadProgress !== null && downloadingName === target.name;
+                    const sizeMB = (target.size / (1024 * 1024)).toFixed(1);
+
+                    return (
+                      <div className="space-y-4 pt-1">
+                        {downloadProgress !== null && isThisDownloading ? (
+                          <div className="p-5 border rounded-2xl border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400 relative overflow-hidden shadow-md">
+                            <div className="flex items-center justify-between w-full gap-3">
+                              <div className="flex items-center gap-3.5 min-w-0">
+                                <span className="material-symbols-outlined text-[28px] shrink-0 text-blue-500">desktop_windows</span>
+                                <div className="text-left min-w-0">
+                                  <p className="font-bold text-sm tracking-tight truncate max-w-[280px]" title={target.name}>
+                                    {target.name}
+                                  </p>
+                                  <p className="text-[11px] opacity-75 font-semibold">
+                                    {isPt ? 'Windows (Instalador)' : 'Windows (Installer)'}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className="text-xs font-mono font-bold opacity-90 bg-blue-500/10 px-2.5 py-0.5 rounded-md shrink-0">
+                                {sizeMB} MB
+                              </span>
+                            </div>
+
+                            <div className="mt-4.5 w-full">
+                              <div className="w-full bg-blue-500/15 h-2.5 rounded-full overflow-hidden relative">
+                                <div 
+                                  className="bg-blue-500 h-full transition-all duration-150 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"
+                                  style={{ width: `${downloadProgress}%` }}
+                                />
+                              </div>
+                              <div className="mt-2.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 flex justify-between w-full uppercase tracking-wider">
+                                <span>
+                                  {isDone 
+                                    ? (isPt ? 'Concluído! Fechando o aplicativo...' : 'Done! Closing the application...') 
+                                    : (isPt ? 'Baixando...' : 'Downloading...')}
+                                </span>
+                                <span>{downloadProgress}%</span>
+                              </div>
                             </div>
                           </div>
-                          <span className="text-xs font-mono font-medium opacity-80 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
-                            {sizeMB} MB
-                          </span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                )}
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-1">
+                            <button
+                              onClick={() => startDownload(target.browser_download_url, target.name)}
+                              className="flex items-center justify-center gap-2.5 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-98 transition-all duration-150 outline-none cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">system_update_alt</span>
+                              {isPt ? 'Atualizar Agora' : 'Update Now'}
+                            </button>
+
+                            <button
+                              onClick={onClose}
+                              className="px-6 py-3.5 border border-outline-variant/30 hover:border-outline-variant bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-bold text-sm rounded-xl active:scale-98 transition-all duration-150 outline-none cursor-pointer"
+                            >
+                              {isPt ? 'Atualizar Depois' : 'Update Later'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Option 2: Manual Update / Redirection */}
+                <div className="space-y-3 bg-surface-container/50 p-5 rounded-2xl border border-outline-variant/10">
+                  <h4 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
+                    <span className="material-symbols-outlined text-outline text-[18px]">open_in_new</span>
+                    {isPt ? 'Opção 2: Instalação Manual (Redirecionamento)' : 'Option 2: Manual Installation (Redirection)'}
+                  </h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                    {isPt 
+                      ? 'Se preferir, saia temporariamente do aplicativo e faça o download manualmente acessando diretamente a página de releases do repositório no GitHub.' 
+                      : 'If you prefer, leave the application and perform the download and installation manually on the official GitHub page.'}
+                  </p>
+                </div>
               </div>
 
-              {/* General release URL button */}
+              {/* Main action triggers */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-outline-variant/10">
-                <a 
-                  href={data?.html_url || "https://github.com/davisonsant/GamingHub/releases/"}
-                  target="_blank"
-                  rel="noreferrer"
+                <button 
+                  onClick={async (e) => {
+                    if (updateMode === 'clean') {
+                      const confirmClean = window.confirm(
+                        isPt 
+                          ? "Você escolheu 'Instalação Limpa'. Deseja deletar agora todo o seu banco de dados local antes de ir para o GitHub?" 
+                          : "You chose 'Clean Installation'. Do you want to delete all your local database now before redirecting to GitHub?"
+                      );
+                      if (confirmClean) {
+                        await db.games.clear();
+                        await db.roadmap.clear();
+                        await db.changelog.clear();
+                        await db.disks.clear();
+                        await db.disks.bulkPut(INITIAL_DISKS);
+                        alert(isPt ? "Banco de dados limpo com sucesso!" : "Database cleared successfully!");
+                      }
+                    } else {
+                      alert(
+                        isPt 
+                          ? "Iniciando instalação manual. Seus dados cadastrados estão preservados e seguros!" 
+                          : "Starting manual installation. Your registered data is preserved and secure!"
+                      );
+                    }
+                    openExternalLink(data?.html_url || "https://github.com/davisonsant/GamingHub/releases/", e);
+                  }}
                   className="flex-1 py-3 px-4 bg-primary text-on-primary font-bold text-sm rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 outline-none shadow-xl shadow-primary/25"
                 >
                   <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                  {isPt ? 'Ver release no GitHub' : 'View release on GitHub'}
-                </a>
+                  {isPt ? 'Ir para o Repositório GitHub (Manual)' : 'Go to GitHub Repository (Manual)'}
+                </button>
                 <button 
                   onClick={onClose}
                   className="flex-1 py-3 px-4 border border-outline-variant hover:bg-surface-container font-bold text-sm rounded-xl transition-all outline-none"
@@ -4047,7 +4537,7 @@ function BugReportModal({ isOpen, onClose, t }: { isOpen: boolean, onClose: () =
         body: JSON.stringify({ 
           description,
           timestamp: new Date().toISOString(),
-          app: 'GamingHub V1.1.7',
+          app: 'GamingHub V1.2.0',
           userAgent: navigator.userAgent
         })
       });

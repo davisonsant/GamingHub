@@ -1,8 +1,8 @@
 {
   "name": "gaminghub",
   "private": true,
-  "version": "1.1.8",
-  "description": "O GamingHub é uma biblioteca gamer local criada para organizar, gerenciar e iniciar seus jogos em uma interface moderna, rápida e intuitiva. Centralize sua coleção, acompanhe seu progresso e tenha todos os seus jogos em um único lugar.",
+  "version": "1.2.0",
+  "description": "GamingHub",
   "author": "Davison Sant",
   "type": "module",
   "repository": {
