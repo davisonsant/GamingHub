@@ -46,6 +46,22 @@ function getPlatformStyle(platform: string) {
   return 'bg-primary/10 text-primary border-primary/20';
 }
 
+function getApiUrl(path: string): string {
+  if (typeof window === 'undefined') return path;
+  const origin = window.location.origin;
+  
+  // Se estiver executando no preview do Google AI Studio (que roda sob o domínio run.app ou googleusercontent),
+  // usa-se o próprio origin atual (onde o Express e Vite rodam juntos no contêiner).
+  const isCloudRun = origin.includes('run.app') || origin.includes('googleusercontent') || origin.includes('aistudio');
+  
+  let baseOrigin = isCloudRun 
+    ? origin 
+    : 'http://127.0.0.1:3000';
+  
+  const base = baseOrigin.replace(/\/$/, '');
+  return `${base}${path}`;
+}
+
 // Mock Data for initial seed
 const INITIAL_GAMES: Game[] = [];
 
@@ -370,7 +386,7 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-          const current = "1.2.0";
+          const current = "1.3.0";
           const latestParts = latestTag.split('.').map(Number);
           const currentParts = current.split('.').map(Number);
           let isNewer = false;
@@ -392,8 +408,7 @@ export default function App() {
         console.error("Silent update check failed:", e);
       }
     };
-    const tId = setTimeout(silentCheck, 3000);
-    return () => clearTimeout(tId);
+    silentCheck();
   }, []);
 
   // Settings State Managers
@@ -609,7 +624,7 @@ export default function App() {
           { id: '1', title: 'Novos Temas', date: 'Q3 2026', description: 'Personalização avançada de cores e fontes.', status: 'completed', priority: 'Q3' },
           { id: '2', title: 'Integração Web', date: 'Q2 2026', description: 'Sincronização com Steam e PlayStation Network.', status: 'in-progress', priority: 'Q2' },
           { id: '3', title: 'Modo Multiplayer', date: 'Q1 2026', description: 'Compare sua biblioteca com amigos.', status: 'planned', priority: 'Q1' },
-          { id: '4', title: 'Sincronização de capas e informações Steam', date: 'Q1 2026', description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.', status: 'planned', priority: 'Q1' }
+          { id: '4', title: 'Sincronização de capas e informações Steam', date: 'Q1 2026', description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.', status: 'completed', priority: 'Q1' }
         ]);
       } else {
         const r1 = await db.roadmap.get('1');
@@ -631,9 +646,11 @@ export default function App() {
             title: 'Sincronização de capas e informações Steam',
             date: 'Q1 2026',
             description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.',
-            status: 'planned',
+            status: 'completed',
             priority: 'Q1'
           });
+        } else if (r4.status !== 'completed') {
+          await db.roadmap.update('4', { status: 'completed' });
         }
       }
 
@@ -671,12 +688,36 @@ export default function App() {
       await db.changelog.put({ 
         id: '5', 
         version: '1.2.0', 
-        date: '2026-06-20', 
+        date: '2026-06-18', 
         changes: [
           'Botão Sincronizar Informações',
           'Otimização do banco de dados',
           'Ícone do app re-criado em dimensão 256x256'
         ] 
+      });
+      await db.changelog.put({ 
+        id: '6', 
+        version: '1.2.1', 
+        date: '2026-06-18', 
+        changes: [
+          'Ajuste no layout dos cards dos jogos para formato de quadrado perfeito modernos (aspect-square) e pontas totalmente retas',
+          'Exibição de jogos otimizada para 5 colunas por fileira',
+          'Compactação visual do cabeçalho de filtros de gêneros e botões de ordenação para maior elegância',
+          'Transformação dos blocos de estatísticas da Biblioteca (Jogando, Concluído e Backlog) em botões interativos de navegação direta',
+          'Sinalização no Roadmap do status "Concluído" para a Sincronização de capas e informações Steam',
+          'Implementação de dicionário tradutor interno para tradução de sinopses de jogos ao utilizar Sincronizar Informações'
+        ] 
+      });
+      await db.changelog.put({
+        id: '7',
+        version: '1.3.0',
+        date: '2026-06-19',
+        changes: [
+          'Sistema de atualização automática modernizado (com download via servidor local e instalação silenciosa automática ao fechar)',
+          'Balão vermelho indicativo de atualização pendente exibido de forma imediata assim que o app inicia',
+          'Aprimoramento de robustez do filtro de categorias e gêneros para evitar bugs inesperados',
+          'Elevação do número de versão global para v1.3.0'
+        ]
       });
     };
     seed();
@@ -722,7 +763,7 @@ export default function App() {
       const data = await res.json();
       
       const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-      const current = "1.2.0";
+      const current = "1.3.0";
       
       const latestParts = latestTag.split('.').map(Number);
       const currentParts = current.split('.').map(Number);
@@ -965,43 +1006,47 @@ export default function App() {
 
     // Genre
     if (activeGenres.length > 0) {
-      list = list.filter(g => g.genres.some(genre => activeGenres.includes(genre)));
+      list = list.filter(g => g && g.genres && Array.isArray(g.genres) && g.genres.some(genre => activeGenres.includes(genre)));
     }
 
     // Platform
     if (activePlatform !== 'Todas') {
-      list = list.filter(g => g.platform && g.platform.includes(activePlatform));
+      list = list.filter(g => {
+        if (!g || !g.platform) return false;
+        if (Array.isArray(g.platform)) return g.platform.includes(activePlatform);
+        return String(g.platform).includes(activePlatform);
+      });
     }
 
     // Developer
     if (activeDeveloper !== 'Todos') {
-      list = list.filter(g => g.developer === activeDeveloper);
+      list = list.filter(g => g && g.developer && g.developer === activeDeveloper);
     }
 
     // Year
     if (activeYear !== 'Todos') {
-      list = list.filter(g => g.releaseDate.includes(activeYear));
+      list = list.filter(g => g && g.releaseDate && String(g.releaseDate).includes(activeYear));
     }
 
     // Platinum
     if (platinumFilter === 'platinum') {
-      list = list.filter(g => g.isPlatinum === true);
+      list = list.filter(g => g && g.isPlatinum === true);
     } else if (platinumFilter === 'not_platinum') {
-      list = list.filter(g => g.isPlatinum !== true);
+      list = list.filter(g => g && g.isPlatinum !== true);
     }
 
     // Sort
     list = [...list].sort((a, b) => {
       switch (sortBy) {
         case 'Title':
-          return a.title.localeCompare(b.title);
+          return (a.title || "").localeCompare(b.title || "");
         case 'Playtime':
           return (b.playtime || 0) - (a.playtime || 0);
         case 'Rating':
           return (b.rating || 0) - (a.rating || 0);
         case 'Date':
         default:
-          return b.id.localeCompare(a.id); // Assuming ID order roughly reflects addition order for this mock context
+          return (b.id || "").localeCompare(a.id || "");
       }
     });
 
@@ -1010,7 +1055,13 @@ export default function App() {
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
-    games.forEach(g => g.genres.forEach(genre => genres.add(genre)));
+    games.forEach(g => {
+      if (g && Array.isArray(g.genres)) {
+        g.genres.forEach(genre => {
+          if (genre) genres.add(genre);
+        });
+      }
+    });
     return ['Todos', ...Array.from(genres)];
   }, [games]);
 
@@ -1453,15 +1504,15 @@ export default function App() {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
                   <StatCard label={t.totalGames} value={stats.total} color="text-primary" icon="inventory_2" />
-                  <StatCard label={t.playing} value={stats.playing} color="text-primary" icon="play_circle" />
-                  <StatCard label={t.completed} value={stats.completed} color="text-primary" icon="check_circle" />
-                  <StatCard label={t.backlog} value={stats.backlog} color="text-primary" icon="inbox" />
+                  <StatCard label={t.playing} value={stats.playing} color="text-primary" icon="play_circle" onClick={() => setView('Playing')} />
+                  <StatCard label={t.completed} value={stats.completed} color="text-primary" icon="check_circle" onClick={() => setView('Completed')} />
+                  <StatCard label={t.backlog} value={stats.backlog} color="text-primary" icon="inbox" onClick={() => setView('Backlog')} />
                   <StatCard label={t.totalTime} value={`${stats.totalTime}h`} color="text-primary" icon="schedule" />
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-surface-container-low border border-outline-variant/10 p-3 rounded-lg flex flex-col lg:flex-row items-stretch lg:items-center justify-between shadow-sm gap-4">
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+                <div className="bg-surface-container-low border border-outline-variant/10 p-2 rounded-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between shadow-sm gap-3">
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1.5 lg:pb-0">
                     {allGenres.map(genre => {
                       const isTodos = genre === 'Todos';
                       const isActive = isTodos ? activeGenres.length === 0 : activeGenres.includes(genre);
@@ -1480,19 +1531,19 @@ export default function App() {
                               );
                             }
                           }}
-                          className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+                          className={`px-3.5 py-1.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
                             isActive 
-                              ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105' 
+                              ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 scale-102' 
                               : 'text-on-surface-variant hover:bg-surface-container-high border border-outline-variant/10'
                           }`}
                         >
-                          {!isTodos && activeGenres.includes(genre) && <span className="material-symbols-outlined text-[14px]">check_circle</span>}
+                          {!isTodos && activeGenres.includes(genre) && <span className="material-symbols-outlined text-[12px]">check_circle</span>}
                           {genre}
                         </button>
                       );
                     })}
                   </div>
-                  <div className="flex items-center gap-2 lg:gap-4 lg:ml-8 pr-2 overflow-x-auto lg:overflow-visible no-scrollbar pb-1 lg:pb-0">
+                  <div className="flex items-center gap-2 lg:gap-3 lg:ml-6 pr-2 overflow-x-auto lg:overflow-visible no-scrollbar pb-1 lg:pb-0">
                     {activeGenres.length > 1 && (
                       <button 
                         onClick={() => setActiveGenres([])}
@@ -1503,28 +1554,28 @@ export default function App() {
                     )}
                     <button 
                       onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                      className={`flex items-center gap-2 px-5 py-2.5 border rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${
                         showAdvancedFilters 
                           ? 'bg-primary/10 border-primary/40 text-primary' 
                           : 'border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-[18px]">filter_list</span>
+                      <span className="material-symbols-outlined text-[16px]">filter_list</span>
                       Filtros
-                      <span className={`material-symbols-outlined transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}>expand_more</span>
+                      <span className={`material-symbols-outlined text-[16px] transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}>expand_more</span>
                     </button>
                     <div className="relative">
                       <select 
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="flex items-center gap-2 px-5 py-2.5 border border-outline-variant/30 rounded-xl text-xs font-bold text-on-surface-variant bg-transparent hover:bg-surface-container-high transition-all whitespace-nowrap appearance-none outline-none pr-10 cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-outline-variant/30 rounded-lg text-[11px] font-bold text-on-surface-variant bg-transparent hover:bg-surface-container-high transition-all whitespace-nowrap appearance-none outline-none pr-8 cursor-pointer"
                       >
                         <option value="Date">Recentes</option>
                         <option value="Title">Título (A-Z)</option>
                         <option value="Playtime">Horas</option>
                         <option value="Rating">Avaliação</option>
                       </select>
-                      <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[18px] opacity-50">sort</span>
+                      <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[16px] opacity-50">sort</span>
                     </div>
                   </div>
                 </div>
@@ -1648,7 +1699,7 @@ export default function App() {
                       }
                     }
                   }}
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6 pb-12"
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4 lg:gap-6 pb-12"
                 >
                   {filteredGames.map(game => (
                     <motion.div
@@ -2473,13 +2524,35 @@ function NavItem({ active, icon, label, onClick, tooltip }: { active: boolean, i
   );
 }
 
-function StatCard({ label, value, color, icon }: { label: string, value: string | number, color: string, icon?: string }) {
+function StatCard({ label, value, color, icon, onClick }: { label: string, value: string | number, color: string, icon?: string, onClick?: () => void }) {
+  const className = `bg-surface-container-low/40 backdrop-blur-sm p-6 rounded-[2rem] border border-outline-variant/10 shadow-sm flex flex-col gap-4 group transition-all text-left w-full h-full ${
+    onClick 
+      ? 'cursor-pointer hover:border-primary/60 hover:bg-surface-container-low/60 active:scale-[0.98]' 
+      : 'cursor-default hover:border-primary/40'
+  }`;
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={className}>
+        <div className="flex items-center justify-between w-full">
+          <p className="text-[11px] font-bold text-on-surface-variant uppercase tracking-[0.15em] opacity-80">{label}</p>
+          {icon && (
+            <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+              <span className={`material-symbols-outlined text-[20px] ${color} opacity-90`}>{icon}</span>
+            </div>
+          )}
+        </div>
+        <p className={`text-4xl font-display font-bold tracking-tight ${color} group-hover:scale-105 transition-transform origin-left`}>{value}</p>
+      </button>
+    );
+  }
+
   return (
-    <div className="bg-surface-container-low/40 backdrop-blur-sm p-6 rounded-[2rem] border border-outline-variant/10 shadow-sm flex flex-col gap-4 group hover:border-primary/40 transition-all cursor-default">
-      <div className="flex items-center justify-between">
+    <div className={className}>
+      <div className="flex items-center justify-between w-full">
         <p className="text-[11px] font-bold text-on-surface-variant uppercase tracking-[0.15em] opacity-80">{label}</p>
         {icon && (
-          <div className={`w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center`}>
+          <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
             <span className={`material-symbols-outlined text-[20px] ${color} opacity-90`}>{icon}</span>
           </div>
         )}
@@ -2552,9 +2625,9 @@ function GameCard({
         transition: { duration: 0.2, ease: "easeOut" }
       }}
       whileTap={{ scale: 0.98 }}
-      className="group bg-surface-container-low border border-outline-variant/10 rounded-xl shadow-sm overflow-hidden hover:shadow-xl hover:border-primary/40 transition-all cursor-pointer flex flex-col"
+      className="group bg-surface-container-low border border-outline-variant/10 rounded-none shadow-sm overflow-hidden hover:shadow-xl hover:border-primary/40 transition-all cursor-pointer flex flex-col"
     >
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-square overflow-hidden rounded-none">
         <motion.img 
           src={game.coverUrl} 
           alt={game.title} 
@@ -2678,7 +2751,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
     setSyncError(null);
     setSyncSuccess(false);
     try {
-      const response = await fetch(`/api/sync-game?title=${encodeURIComponent(game.title)}&lang=${encodeURIComponent(language)}`);
+      const response = await fetch(getApiUrl(`/api/sync-game?title=${encodeURIComponent(game.title)}&lang=${encodeURIComponent(language)}`));
       const data = await response.json();
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Erro ao sincronizar informações do jogo");
@@ -2997,7 +3070,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
     setSyncSuccess(false);
 
     try {
-      const response = await fetch(`/api/sync-game?title=${encodeURIComponent(formData.title)}&lang=${encodeURIComponent(language)}`);
+      const response = await fetch(getApiUrl(`/api/sync-game?title=${encodeURIComponent(formData.title)}&lang=${encodeURIComponent(language)}`));
       const data = await response.json();
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Erro ao sincronizar informações.");
@@ -3951,7 +4024,7 @@ function SettingsView({
 
       <div className="text-center py-6">
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
-          GAMINGHUB V1.2.0 • 2026 • {t.developedBy} DAVISON SANT
+          GAMINGHUB V1.3.0 • 2026 • {t.developedBy} DAVISON SANT
         </p>
       </div>
     </motion.div>
@@ -4014,83 +4087,40 @@ function UpdateModal({
       setDownloadingName(filename);
       setIsDone(false);
       
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Direct download fetch response was not ok");
+      const res = await fetch('/api/updater/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, filename })
+      });
+      
+      if (!res.ok) {
+        throw new Error("HTTP error starting updater on backend");
       }
-      
-      const contentLength = response.headers.get('content-length');
-      if (!contentLength) {
-        openExternalLink(url);
-        setDownloadProgress(null);
-        return;
-      }
-      
-      const total = parseInt(contentLength, 10);
-      let loaded = 0;
-      
-      const reader = response.body?.getReader();
-      if (!reader) {
-        openExternalLink(url);
-        setDownloadProgress(null);
-        return;
-      }
-      
-      const chunks = [];
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) {
-          chunks.push(value);
-          loaded += value.length;
-          setDownloadProgress(Math.round((loaded / total) * 100));
-        }
-      }
-      
-      const blob = new Blob(chunks);
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(blobUrl);
-      setIsDone(true);
-      setTimeout(() => {
-        setDownloadProgress(null);
-        setIsDone(false);
+
+      const pollInterval = setInterval(async () => {
         try {
-          const isElectron = typeof window !== 'undefined' && (
-            (window as any).navigator?.userAgent?.toLowerCase().indexOf(' electron/') > -1 ||
-            (window as any).process?.versions?.electron ||
-            (window as any).electron
-          );
-          if (isElectron) {
-            const electronAPI = (window as any).electron;
-            if (electronAPI && typeof electronAPI.closeApp === 'function') {
-              electronAPI.closeApp();
-            } else if (typeof (window as any).require === 'function') {
-              const { remote, app } = (window as any).require('electron');
-              const currentApp = app || (remote && remote.app);
-              if (currentApp) currentApp.quit();
-              else {
-                const currentWindow = remote && remote.getCurrentWindow();
-                if (currentWindow) currentWindow.close();
-                else window.close();
-              }
-            } else {
-              window.close();
+          const pollRes = await fetch('/api/updater/progress');
+          if (pollRes.ok) {
+            const pollData = await pollRes.json();
+            if (pollData.state === 'downloading') {
+              setDownloadProgress(pollData.progress);
+            } else if (pollData.state === 'installing') {
+              setDownloadProgress(100);
+              setIsDone(true);
+              clearInterval(pollInterval);
+            } else if (pollData.state === 'error') {
+              clearInterval(pollInterval);
+              setDownloadProgress(null);
+              setIsDone(false);
+              alert(isPt ? `Erro no download do update: ${pollData.error}` : `Update download error: ${pollData.error}`);
             }
-          } else {
-            window.close();
           }
-        } catch (closeErr) {
-          console.warn("Could not automatically close application window:", closeErr);
+        } catch (pollErr) {
+          console.error("Error polling updater progress:", pollErr);
         }
-      }, 4000);
+      }, 500);
     } catch (err) {
-      console.warn("Direct download failed, falling back to openExternalLink", err);
+      console.warn("Backend-managed update failed, falling back to openExternalLink", err);
       openExternalLink(url);
       setDownloadProgress(null);
     }
@@ -4189,8 +4219,8 @@ function UpdateModal({
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
                   {isPt 
-                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.2.0.' 
-                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.2.0.'}
+                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.3.0.' 
+                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.3.0.'}
                 </p>
                 <div className="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-medium rounded-xl p-4 text-xs flex items-center gap-2.5 max-w-md mx-auto">
                   <span className="material-symbols-outlined text-[18px]">verified_user</span>
@@ -4241,7 +4271,7 @@ function UpdateModal({
                     : 'Congratulations! You are already running the latest available version of GamingHub.'}
                 </p>
                 <div className="inline-block px-4 py-1 bg-surface-container-high rounded-full border border-outline-variant/30 text-xs font-mono font-bold text-on-surface-variant mt-2">
-                  v1.2.0 (Latest)
+                  v1.3.0 (Latest)
                 </div>
               </div>
               <div className="flex justify-center pt-2">
@@ -4267,8 +4297,8 @@ function UpdateModal({
                   </h3>
                   <p className="text-sm text-on-surface-variant">
                     {isPt 
-                      ? `Uma rota de atualização direta foi encontrada! Versão atual v1.2.0 → Nova versão ${data?.tag_name}`
-                      : `An update path was found! Current version v1.2.0 → New version ${data?.tag_name}`}
+                      ? `Uma rota de atualização direta foi encontrada! Versão atual v1.3.0 → Nova versão ${data?.tag_name}`
+                      : `An update path was found! Current version v1.3.0 → New version ${data?.tag_name}`}
                   </p>
                 </div>
               </div>
@@ -4531,13 +4561,13 @@ function BugReportModal({ isOpen, onClose, t }: { isOpen: boolean, onClose: () =
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/report-bug', {
+      const response = await fetch(getApiUrl('/api/report-bug'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           description,
           timestamp: new Date().toISOString(),
-          app: 'GamingHub V1.2.0',
+          app: 'GamingHub V1.2.1',
           userAgent: navigator.userAgent
         })
       });

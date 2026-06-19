@@ -1,9 +1,11 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -23,13 +25,26 @@ function createWindow() {
   const isDev = !app.isPackaged;
   
   if (isDev) {
-    win.loadURL('http://localhost:3000');
+    win.loadURL('http://127.0.0.1:3000');
   } else {
     win.loadFile(path.join(__dirname, 'dist/index.html'));
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Start the bundled backend Express server if the app is packaged
+  if (app.isPackaged) {
+    process.env.NODE_ENV = 'production';
+    process.env.IS_ELECTRON = 'true';
+    try {
+      const serverPath = path.join(__dirname, 'dist/server.cjs');
+      require(serverPath);
+      console.log('Production Express server successfully started from Electron process.');
+    } catch (err) {
+      console.error('Failed to start automatic Express server in Electron:', err);
+    }
+  }
+
   createWindow();
 
   app.on('activate', () => {
