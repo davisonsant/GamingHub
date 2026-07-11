@@ -1,0 +1,106 @@
+Termo de Uso – GamingHub
+
+Última atualização: 11 de julho de 2026
+
+Bem-vindo ao GamingHub.
+
+Ao instalar ou utilizar o GamingHub, você concorda com os presentes Termos de Uso. Caso não concorde com qualquer uma das condições descritas abaixo, não instale ou utilize o software.
+
+1. Sobre o GamingHub
+
+O GamingHub é um aplicativo desenvolvido para auxiliar usuários na organização e gerenciamento de sua biblioteca de jogos, permitindo o cadastro, acompanhamento e gerenciamento de informações relacionadas aos seus jogos.
+
+O GamingHub é disponibilizado "no estado em que se encontra" ("as is"), podendo receber updates, melhorias, correções ou novas funcionalidades a qualquer momento.
+
+2. Licença de Uso
+
+É concedida ao usuário uma licença pessoal, não exclusiva, intransferível e revogável para utilizar o GamingHub exclusivamente para fins pessoais ou internos.
+
+Esta licença não transfere qualquer direito de propriedade intelectual sobre o software.
+
+3. Direitos Autorais
+
+Todos os direitos sobre o GamingHub, incluindo seu código-fonte, interface, identidade visual, documentação, logotipos e demais elementos que compõem o software pertencem ao seu desenvolvedor, salvo conteúdos pertencentes a terceiros.
+
+O usuário não poderá:
+
+vender ou redistribuir versões modificadas do software como se fossem oficiais;
+remover avisos de direitos autorais;
+utilizar o nome GamingHub para induzir terceiros a acreditar que sua versão é oficial.
+
+Caso o código-fonte seja disponibilizado sob uma licença específica no repositório oficial do projeto, os termos dessa licença também deverão ser respeitados.
+
+4. Código Aberto
+
+O GamingHub possui repositório oficial disponível em:
+
+https://github.com/davisonsant/GamingHub
+
+A utilização, contribuição ou distribuição do código-fonte deverá respeitar a licença publicada no respectivo repositório.
+
+5. Responsabilidades do Usuário
+
+O usuário é responsável por:
+
+utilizar o software de forma lícita;
+manter cópias de segurança de seus dados;
+verificar a compatibilidade do software com seu computador;
+utilizar versões obtidas de fontes confiáveis.
+
+6. Limitação de Responsabilidade
+
+Embora esforços sejam realizados para oferecer um software estável e seguro, o GamingHub é fornecido sem garantias de qualquer natureza.
+
+O desenvolvedor não se responsabiliza por:
+
+perda de dados;
+danos indiretos ou consequenciais;
+incompatibilidade com hardware ou software de terceiros;
+interrupções, falhas ou erros decorrentes do uso do programa.
+
+O usuário utiliza o GamingHub por sua conta e risco.
+
+7. Dados Armazenados
+
+O GamingHub foi desenvolvido para armazenar informações relacionadas à biblioteca de jogos do usuário.
+
+Sempre que possível, os dados permanecem armazenados localmente no computador do usuário.
+
+O desenvolvedor não possui acesso automático às informações armazenadas pelo aplicativo.
+
+8. Atualizações
+
+O GamingHub poderá disponibilizar atualizações para:
+
+correção de falhas;
+melhorias de desempenho;
+novas funcionalidades;
+aprimoramentos de segurança.
+
+A instalação de atualizações poderá ser recomendada para garantir o funcionamento adequado do software.
+
+9. Softwares de Terceiros
+
+O GamingHub poderá utilizar bibliotecas, frameworks ou componentes de terceiros, cada um sujeito às respectivas licenças de uso.
+
+10. Encerramento da Licença
+
+O direito de utilização poderá ser encerrado caso o usuário viole estes Termos de Uso.
+
+Após o encerramento, o usuário deverá interromper a utilização do software.
+
+11. Alterações dos Termos
+
+Este documento poderá ser atualizado periodicamente.
+
+A versão mais recente substituirá quaisquer versões anteriores.
+
+12. Contato
+
+E-mail do desenvolvedor: davison.sant@live.com
+
+Para sugestões, dúvidas ou reporte de problemas.
+
+13. Aceite
+
+Ao instalar ou utilizar o GamingHub, o usuário declara que leu, compreendeu e concorda integralmente com estes Termos de Uso.

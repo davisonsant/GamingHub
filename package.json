@@ -1,9 +1,9 @@
 {
-  "name": "gaminghub",
+  "name": "GamingHub",
   "private": true,
-  "version": "1.3.0",
-  "description": "GamingHub",
-  "author": "Davison Sant",
+  "version": "1.5.0",
+  "description": "Um gerenciador sofisticado de biblioteca de jogos pessoais para acompanhar sua coleção, *backlog* e progresso, com uma interface bonita e moderna.",
+  "author": "Hub_",
   "type": "module",
   "repository": {
   "type": "git",
@@ -61,6 +61,12 @@
           ]
         }
       ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "license": "license.rtf"
     },
     "linux": {
       "icon": "public/icon.png",

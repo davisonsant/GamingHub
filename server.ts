@@ -709,7 +709,7 @@ Provide the response STRICTLY as a raw JSON object complying with this exact sch
     console.log(`[Updater] Starting background download: ${filename} from ${url}`);
 
     // Run background download process so we can respond to the server immediately
-    const destPath = path.join(os.tmpdir(), filename);
+    const destPath = path.join(process.cwd(), filename);
     const file = fs.createWriteStream(destPath);
     
     function getRequest(requestUrl: string) {
@@ -740,37 +740,80 @@ Provide the response STRICTLY as a raw JSON object complying with this exact sch
         response.pipe(file);
         
         file.on('finish', () => {
-          file.close();
-          updateState = "installing";
-          updateProgress = 100;
-          
-          console.log(`[Updater] Download finished! Executing downloaded updater: ${destPath}`);
-          // Execute installer after a tiny pause to ensure write locks are off
-          setTimeout(() => {
-            try {
-              if (process.platform === 'win32') {
-                const proc = spawn(destPath, [], { detached: true, stdio: 'ignore' });
-                proc.unref();
-              } else if (process.platform === 'darwin') {
-                spawn('open', [destPath], { detached: true, stdio: 'ignore' }).unref();
-              } else {
-                exec(`chmod +x "${destPath}"`, () => {
-                  spawn(destPath, [], { detached: true, stdio: 'ignore' }).unref();
-                });
-              }
-            } catch (err: any) {
-              console.error("[Updater] Failed to execute setup file:", err);
-              updateState = "error";
-              updateErrorMsg = err?.message || "Falha ao executar o executável de instalação.";
-              return;
+          file.close((err) => {
+            if (err) {
+              console.error("[Updater] Error closing file stream:", err);
             }
+            updateState = "installing";
+            updateProgress = 100;
             
-            // Auto close application after launching update
+            console.log(`[Updater] Download finished! File closed. Executing downloaded updater: ${destPath}`);
+            
+            // Execute installer after a small pause to let the OS release file handles completely
             setTimeout(() => {
-              console.log("[Updater] Closing application... Update is being run!");
-              process.exit(0);
-            }, 1500);
-          }, 1000);
+              try {
+                if (process.platform === 'win32') {
+                  console.log(`[Updater] Spawning win32 installer: ${destPath}`);
+                  // Run with shell: false to avoid CMD parsing bugs, and detached: true so it runs independently
+                  const proc = spawn(destPath, [], { detached: true, stdio: 'ignore', shell: false });
+                  proc.unref();
+
+                  // Add a fallback in case direct spawn fails (e.g. permission or association issues)
+                  proc.on('error', (spawnErr) => {
+                    console.error("[Updater] Direct spawn failed, attempting cmd start fallback:", spawnErr);
+                    try {
+                      const fallback = spawn('cmd.exe', ['/c', 'start', '""', destPath], { detached: true, stdio: 'ignore' });
+                      fallback.unref();
+                    } catch (fallbackErr) {
+                      console.error("[Updater] Fallback launcher failed too:", fallbackErr);
+                    }
+                  });
+                } else if (process.platform === 'darwin') {
+                  spawn('open', [destPath], { detached: true, stdio: 'ignore' }).unref();
+                } else {
+                  exec(`chmod +x "${destPath}"`, () => {
+                    spawn(destPath, [], { detached: true, stdio: 'ignore' }).unref();
+                  });
+                }
+              } catch (err: any) {
+                console.error("[Updater] Failed to execute setup file:", err);
+                updateState = "error";
+                updateErrorMsg = err?.message || "Falha ao executar o executável de instalação.";
+                return;
+              }
+              
+              // Auto close application after launching update to make sure files are not locked during installation
+              setTimeout(() => {
+                console.log("[Updater] Closing application... Update is being run!");
+                if (process.env.IS_ELECTRON === 'true') {
+                  try {
+                    const requireFn = typeof require !== 'undefined' ? require : (globalThis as any).require;
+                    if (requireFn) {
+                      const { app, BrowserWindow } = requireFn('electron');
+                      console.log("[Updater] Running under Electron. Destroying windows and exiting via app.exit(0)...");
+                      const windows = BrowserWindow.getAllWindows();
+                      for (const win of windows) {
+                        try {
+                          win.destroy();
+                        } catch (winErr) {
+                          console.error("[Updater] Error destroying window:", winErr);
+                        }
+                      }
+                      app.exit(0);
+                    } else {
+                      console.log("[Updater] require is not defined. Falling back to process.exit(0).");
+                      process.exit(0);
+                    }
+                  } catch (electronErr) {
+                    console.error("[Updater] Failed to close via Electron API, falling back to process.exit:", electronErr);
+                    process.exit(0);
+                  }
+                } else {
+                  process.exit(0);
+                }
+              }, 100);
+            }, 800);
+          });
         });
       }).on('error', (err) => {
         console.error("[Updater] HTTPS network error:", err);

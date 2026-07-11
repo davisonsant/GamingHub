@@ -42,6 +42,7 @@ export interface Disk {
   letter: string;
   totalGB: number;
   usedGB: number;
+  sortOrder?: number;
 }
 
 export interface RoadmapItem {

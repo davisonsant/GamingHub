@@ -38,12 +38,16 @@ Tudo isso envelopado sob os conceitos do inovador tema **Nexus Terminal** — um
 *   **🗄️ Coleção Inteligente**: Cadastre novos títulos com metadados robustos (gêneros, desenvolvedora, publisher, data de lançamento, plataforma, tempo jogado, barra de progresso, sinopse, link do trailer e indicador de Platinado).
 *   **💾 Banco de Dados Dexie (IndexedDB)**: Persistência local robusta que funciona inteiramente offline. Seus dados nunca são expirados pelo navegador de forma inesperada.
 *   **📊 Estatísticas Avançadas**: Painéis de análise gráfica ilustrando o total de jogos, horas acumuladas, taxa de conclusão de objetivos, distribuição de plataformas preferidas e ranqueamento de avaliação média (estrelas).
+*   **💾 Unidades de Armazenamento Dinâmicas**: Painel completo para gerenciar seus discos virtuais ou físicos (Letra da Unidade, Capacidade em GB/TB e Uso). Possui suporte total para ordenação por Arrastar e Soltar (Drag & Drop) e detecção inteligente de espaço ocupado pelos jogos cadastrados em cada disco.
+*   **📺 Player de Trailer Integrado (Sem Erros)**: Exibição fluida de trailers oficiais do YouTube utilizando `youtube-nocookie.com` em modal embutido. Implementa suporte robusto a requisições com cabeçalhos Referer HTTP válidos através do servidor local para contornar o Erro de Configuração (Erro 153) em ambientes Desktop empacotados.
+*   **🔄 Atualizador Automático e Encerramento Limpo**: Integração completa com o sistema de atualização automática. Ao disparar o instalador NSIS, o Electron realiza um encerramento limpo das janelas (`BrowserWindow.destroy()`) e do processo (`app.exit(0)`), liberando instantaneamente os handles de arquivos e evitando conflitos de arquivos travados.
+*   **📜 Termos de Uso no Instalador (.rtf)**: Licença e Termos de Uso formatados em Rich Text Format (`license.rtf`) de alta fidelidade para garantir leitura e exibição corretas com acentuação impecável (ã, ç, é) no assistente de instalação nativa do Windows (NSIS).
 *   **🏆 Ranking Top 10**: Monte seu *Hall of Fame* definitivo posicionando seus 10 jogos preferidos da vida nos espaços de destaque.
 *   **💿 Coleção de Mídias Físicas (Prateleira de Discos)**: Um espaço tridimensional/skeuomórfico que emula caixas de Blu-ray e cartuchos físicos, permitindo registrar se o jogo está emprestado ou guardado.
 *   **🎲 Recurso "Estou com Sorte"**: Sorteador aleatório de títulos pendentes na sua biblioteca, perfeito para ajudar a decidir qual jogo de seu backlog iniciar hoje.
 *   **🗺️ Roadmap Interativo & Changelog**: Canal onde você pode acompanhar futuras melhorias do projeto ou registrar suas próprias metas de atualização e desenvolvimento.
 *   **💬 Suporte Multilíngue Completo**: Localização instantânea e intuitiva entre **Português (Brasil)**, **English (US)** e **Español** no menu de configurações.
-*   **🛠️ Utilitários de Backup**: Funcionalidade completa para exportação em um único clique (.json), importação inteligente (substituindo ou mesclando dados) e redefinição de banco de dados protegida.
+*   **🛠️ Utilitários de Backup**: Funcionalidade completa para exportação em um único clique (.json), importação inteligente (substituindo ou mesclando dados) e redefinição de banco de dados completa (que zera de forma segura a biblioteca, usuários, avatares e discos).
 
 ---
 

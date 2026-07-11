@@ -35,7 +35,8 @@ function getGenreColor(genre: string) {
   return colors[Math.abs(hash) % colors.length];
 }
 
-function getPlatformStyle(platform: string) {
+function getPlatformStyle(platform: string | undefined | null) {
+  if (!platform) return 'bg-primary/10 text-primary border-primary/20';
   const p = platform.trim();
   if (p === 'PC') return 'bg-slate-500/10 text-slate-600 border-slate-500/20 dark:text-slate-400';
   if (p.includes('PlayStation')) return 'bg-blue-600/10 text-blue-600 border-blue-600/20 dark:text-blue-400';
@@ -66,16 +67,16 @@ function getApiUrl(path: string): string {
 const INITIAL_GAMES: Game[] = [];
 
 const INITIAL_DISKS: Disk[] = [
-  { id: '1', label: 'Windows', letter: 'C', totalGB: 464, usedGB: 404 },
-  { id: '2', label: 'Expansion Disc I', letter: 'D', totalGB: 447, usedGB: 352.1 },
-  { id: '3', label: 'Expansion Disc II', letter: 'E', totalGB: 298, usedGB: 176 },
-  { id: '4', label: 'Expansion Disc III', letter: 'F', totalGB: 298, usedGB: 165 },
-  { id: '5', label: 'Storage A', letter: 'G', totalGB: 1000, usedGB: 450 },
-  { id: '6', label: 'Storage B', letter: 'H', totalGB: 1000, usedGB: 300 },
-  { id: '7', label: 'Games 1', letter: 'I', totalGB: 2000, usedGB: 1800 },
-  { id: '8', label: 'Games 2', letter: 'J', totalGB: 2000, usedGB: 1200 },
-  { id: '9', label: 'Backup', letter: 'K', totalGB: 4000, usedGB: 3500 },
-  { id: '10', label: 'Media', letter: 'L', totalGB: 4000, usedGB: 1000 },
+  { id: '1', label: 'Unidade A', letter: 'C', totalGB: 500, usedGB: 404 },
+  { id: '2', label: 'Unidade B', letter: 'D', totalGB: 500, usedGB: 352.1 },
+  { id: '3', label: 'Unidade C', letter: 'E', totalGB: 500, usedGB: 176 },
+  { id: '4', label: 'Unidade D', letter: 'F', totalGB: 500, usedGB: 165 },
+  { id: '5', label: 'Unidade E', letter: 'G', totalGB: 500, usedGB: 450 },
+  { id: '6', label: 'Unidade F', letter: 'H', totalGB: 500, usedGB: 300 },
+  { id: '7', label: 'Unidade G', letter: 'I', totalGB: 500, usedGB: 180 },
+  { id: '8', label: 'Unidade H', letter: 'J', totalGB: 500, usedGB: 120 },
+  { id: '9', label: 'Unidade I', letter: 'K', totalGB: 500, usedGB: 350 },
+  { id: '10', label: 'Unidade J', letter: 'L', totalGB: 500, usedGB: 100 },
 ];
 
 // Views enumeration
@@ -194,8 +195,8 @@ function GamerTrophy({ level }: { level: number }) {
     <div className="relative w-28 h-40 flex items-center justify-center select-none">
       {/* Back Ambient Glow */}
       <div 
-        className="absolute inset-0 rounded-full blur-[24px] pointer-events-none transition-all duration-500"
-        style={{ backgroundColor: theme.glow, opacity: 0.65 }}
+        className="absolute inset-0 rounded-full blur-[16px] pointer-events-none transition-all duration-500"
+        style={{ backgroundColor: theme.glow, opacity: 0.35 }}
       />
       
       <motion.svg 
@@ -205,14 +206,14 @@ function GamerTrophy({ level }: { level: number }) {
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
         animate={{ 
-          y: [0, -4, 0],
+          y: [0, -6, 0],
         }}
         transition={{ 
           duration: 4,
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="relative z-10 drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)]"
+        className="relative z-10 drop-shadow-[0_6px_10px_rgba(0,0,0,0.3)]"
       >
         <defs>
           <linearGradient id={`badgeBg-${level}`} x1="0" y1="0" x2="0" y2="1">
@@ -230,7 +231,7 @@ function GamerTrophy({ level }: { level: number }) {
           </linearGradient>
           <linearGradient id={`medallionBg-${level}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={theme.dark} />
-            <stop offset="100%" stopColor="#121214" />
+            <stop offset="100%" stopColor="#0d0e12" />
           </linearGradient>
           <linearGradient id={`trophyBody-${level}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={theme.primary} />
@@ -242,49 +243,77 @@ function GamerTrophy({ level }: { level: number }) {
             <stop offset="100%" stopColor={theme.dark} stopOpacity="0.4" />
           </linearGradient>
           <radialGradient id={`glowGrad-${level}`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={theme.primary} stopOpacity="0.3" />
+            <stop offset="0%" stopColor={theme.primary} stopOpacity="0.4" />
             <stop offset="100%" stopColor={theme.primary} stopOpacity="0" />
           </radialGradient>
+          <linearGradient id={`glassSheen-${level}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+            <stop offset="25%" stopColor="#ffffff" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          </linearGradient>
         </defs>
 
         {/* Ambient Glow background inside SVG */}
-        <circle cx="80" cy="140" r="70" fill={`url(#glowGrad-${level})`} />
+        <circle cx="80" cy="115" r="75" fill={`url(#glowGrad-${level})`} />
+
+        {/* Orbiting Tech Energy Trails */}
+        <ellipse cx="80" cy="115" rx="68" ry="24" fill="none" stroke={`url(#trophyPrimary-${level})`} strokeWidth="1.5" strokeDasharray="90 150" opacity="0.6" transform="rotate(-25 80 115)" />
+        <ellipse cx="80" cy="115" rx="64" ry="20" fill="none" stroke={`url(#trophySecondary-${level})`} strokeWidth="1" strokeDasharray="50 120" opacity="0.4" transform="rotate(35 80 115)" />
 
         {/* Background Sparkles */}
-        <path d="M 28 100 Q 32 100 32 96 Q 32 100 36 100 Q 32 100 32 104 Q 32 100 28 100 Z" fill={theme.primary} opacity="0.8" />
-        <path d="M 128 104 Q 132 104 132 100 Q 132 104 136 104 Q 132 104 132 108 Q 132 104 128 104 Z" fill={theme.primary} opacity="0.8" />
-        <path d="M 80 72 Q 82 72 82 70 Q 82 72 84 72 Q 82 72 82 74 Q 82 72 80 72 Z" fill={theme.light} opacity="0.75" />
+        <path d="M 24 90 Q 28 90 28 86 Q 28 90 32 90 Q 28 90 28 94 Q 28 90 24 90 Z" fill={theme.primary} opacity="0.8" />
+        <path d="M 132 94 Q 136 94 136 90 Q 136 94 140 94 Q 136 94 136 98 Q 136 94 132 94 Z" fill={theme.primary} opacity="0.8" />
+        <path d="M 80 62 Q 82 62 82 60 Q 82 62 84 62 Q 82 62 82 64 Q 82 62 80 62 Z" fill={theme.light} opacity="0.75" />
 
-        {/* Medallion Base Circular Shape */}
-        <circle cx="80" cy="140" r="54" fill={`url(#medallionBg-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="3" />
+        {/* Modern Geometric 3D Shield (Outer Layer) */}
+        <path 
+          d="M 80 20 L 145 48 L 145 130 Q 145 155 115 178 L 80 202 L 45 178 Q 15 155 15 130 L 15 48 Z" 
+          fill={`url(#medallionBg-${level})`} 
+          stroke={`url(#trophySecondary-${level})`} 
+          strokeWidth="1.5" 
+          opacity="0.9" 
+        />
         
-        {/* Medallion Inner Ring Rim Accent */}
-        <circle cx="80" cy="140" r="50" fill="none" stroke={`url(#trophySecondary-${level})`} strokeWidth="1" strokeDasharray="3 3" opacity="0.6" />
+        {/* Inner Sleek Shield with Glowing Border */}
+        <path 
+          d="M 80 28 L 137 53 L 137 125 Q 137 147 110 168 L 80 190 L 50 168 Q 23 147 23 125 L 23 53 Z" 
+          fill={`url(#badgeBg-${level})`} 
+          stroke={`url(#trophyPrimary-${level})`} 
+          strokeWidth="2.5" 
+        />
 
-        {/* Compass Ornate Points on Medallion Rim */}
-        <path d="M 76 83 L 80 75 L 84 83 Z" fill={theme.primary} />
-        <path d="M 76 197 L 80 205 L 84 197 Z" fill={theme.primary} />
-        <path d="M 29 136 L 21 140 L 29 144 Z" fill={theme.primary} />
-        <path d="M 131 136 L 139 140 L 131 144 Z" fill={theme.primary} />
+        {/* Techno Accent Line details inside shield */}
+        <path d="M 35 60 L 50 56" stroke={theme.light} strokeWidth="1.5" opacity="0.4" />
+        <path d="M 125 60 L 110 56" stroke={theme.light} strokeWidth="1.5" opacity="0.4" />
 
-        {/* Ornate Wings/Laurel Wrapping from side to bottom */}
-        <path d="M 34 140 Q 22 182 62 195 Q 50 183 44 165 Q 42 150 46 138 Z" fill={`url(#leafGradient-${level})`} />
-        <path d="M 126 140 Q 138 182 98 195 Q 110 183 116 165 Q 118 150 114 138 Z" fill={`url(#leafGradient-${level})`} />
+        {/* Floating Star of Achievement */}
+        <path d="M 80 44 L 83 52 L 91 54 L 83 56 L 80 64 L 77 56 L 69 54 L 77 52 Z" fill={theme.light} />
+        <circle cx="80" cy="54" r="2" fill="#ffffff" />
 
-        {/* Pedestal Stand support below */}
-        <path d="M 54 186 L 106 186 Q 106 201 80 205 Q 54 201 54 186 Z" fill={`url(#trophyPrimary-${level})`} />
-        <path d="M 64 194 L 96 194 L 90 206 L 70 206 Z" fill={theme.dark} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
+        {/* Central Stylized Modern Trophy Cup */}
+        {/* Sharp geometric handles */}
+        <path d="M 54 82 L 36 94 L 38 106 L 50 114 L 46 102 Z" fill={`url(#trophySecondary-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
+        <path d="M 106 82 L 124 94 L 122 106 L 110 114 L 114 102 Z" fill={`url(#trophySecondary-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
 
-        {/* Central Trophy Cup Handles */}
-        <path d="M 63 121 C 45 121 45 146 62 149 C 50 145 48 129 63 129" fill={`url(#trophyPrimary-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
-        <path d="M 97 121 C 115 121 115 146 98 149 C 110 145 112 129 97 129" fill={`url(#trophyPrimary-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
+        {/* Main geometric Faceted Trophy Bowl */}
+        <path d="M 80 70 L 52 70 L 46 112 L 80 135 Z" fill={`url(#trophyPrimary-${level})`} />
+        <path d="M 80 70 L 108 70 L 114 112 L 80 135 Z" fill={`url(#trophySecondary-${level})`} />
+        {/* High-light middle shine */}
+        <path d="M 80 70 L 70 70 L 73 130 L 80 135 Z" fill={theme.light} opacity="0.2" />
 
-        {/* Trophy Cup Body Stem */}
-        <path d="M 74 162 L 86 162 L 84 184 L 76 184 Z" fill={`url(#trophyPrimary-${level})`} />
+        {/* Sleek support stem */}
+        <path d="M 74 135 L 86 135 L 84 154 L 76 154 Z" fill={`url(#trophyPrimary-${level})`} />
 
-        {/* Central Trophy Cup Main Body */}
-        <path d="M 62 114 C 58 142 66 158 80 162 C 94 158 102 142 98 114 Z" fill={`url(#trophyBody-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="2.5" />
-        <path d="M 62 114 L 98 114 C 98 114 98 118 80 118 C 62 118 62 114 62 114 Z" fill={`url(#trophyPrimary-${level})`} />
+        {/* Multi-layered tech base */}
+        <path d="M 55 154 L 105 154 L 98 165 L 62 165 Z" fill={`url(#trophyPrimary-${level})`} />
+        <path d="M 48 165 L 112 165 L 104 175 L 56 175 Z" fill={`url(#trophySecondary-${level})`} stroke={`url(#trophyPrimary-${level})`} strokeWidth="1" />
+
+        {/* Diagonal High-Gloss Sheen Overlay (frosted glass reflection) */}
+        <path 
+          d="M 23 53 L 100 28 L 137 125 L 60 150 Z" 
+          fill={`url(#glassSheen-${level})`} 
+          pointerEvents="none" 
+        />
       </motion.svg>
     </div>
   );
@@ -329,7 +358,12 @@ const openExternalLink = (url: string, e?: React.MouseEvent) => {
 
 export default function App() {
   const games = useLiveQuery(() => db.games.toArray()) || [];
-  const disks = useLiveQuery(() => db.disks.toArray()) || [];
+  const rawDisks = useLiveQuery(() => db.disks.toArray()) || [];
+  const disks = [...rawDisks].sort((a, b) => {
+    const orderA = a.sortOrder !== undefined ? a.sortOrder : Number(a.id) || 0;
+    const orderB = b.sortOrder !== undefined ? b.sortOrder : Number(b.id) || 0;
+    return orderA - orderB;
+  });
   const roadmapItems = useLiveQuery(() => db.roadmap.toArray()) || [];
   const changelogEntries = useLiveQuery(() => db.changelog.toArray()) || [];
   const settings = useLiveQuery(() => db.settings.get('current'));
@@ -363,6 +397,7 @@ export default function App() {
   const [showBugReportModal, setShowBugReportModal] = useState(false);
   const [editingDisk, setEditingDisk] = useState<Disk | null>(null);
   const [showEditDiskModal, setShowEditDiskModal] = useState(false);
+  const [draggedDiskId, setDraggedDiskId] = useState<string | null>(null);
   const [rankingSlotToEdit, setRankingSlotToEdit] = useState<number | null>(null);
   const [showRankingSelectModal, setShowRankingSelectModal] = useState(false);
   const [showAddRoadmapModal, setShowAddRoadmapModal] = useState(false);
@@ -386,7 +421,7 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-          const current = "1.3.0";
+          const current = "1.5.0";
           const latestParts = latestTag.split('.').map(Number);
           const currentParts = current.split('.').map(Number);
           let isNewer = false;
@@ -606,6 +641,21 @@ export default function App() {
       const diskCount = await db.disks.count();
       if (diskCount === 0) {
         await db.disks.bulkAdd(INITIAL_DISKS);
+      } else {
+        const allDisks = await db.disks.toArray();
+        const hasOldLabels = allDisks.some(d => d.label === 'Windows' || d.label === 'Expansion Disc I');
+        const needsCapacityUpdate = allDisks.some(d => INITIAL_DISKS.some(init => init.id === d.id && d.totalGB !== init.totalGB));
+        if (hasOldLabels || needsCapacityUpdate) {
+          for (const disk of allDisks) {
+            const initialMatch = INITIAL_DISKS.find(d => d.id === disk.id);
+            if (initialMatch) {
+              disk.label = initialMatch.label;
+              disk.totalGB = initialMatch.totalGB;
+              disk.usedGB = initialMatch.usedGB;
+              await db.disks.put(disk);
+            }
+          }
+        }
       }
       const settingsCount = await db.settings.count();
       if (settingsCount === 0) {
@@ -715,8 +765,55 @@ export default function App() {
         changes: [
           'Sistema de atualização automática modernizado (com download via servidor local e instalação silenciosa automática ao fechar)',
           'Balão vermelho indicativo de atualização pendente exibido de forma imediata assim que o app inicia',
-          'Aprimoramento de robustez do filtro de categorias e gêneros para evitar bugs inesperados',
-          'Elevação do número de versão global para v1.3.0'
+          'Aprimoramento de robustez do filtro de categorias e genres para evitar bugs inesperados'
+        ]
+      });
+      await db.changelog.put({
+        id: '8',
+        version: '1.4.0',
+        date: '2026-07-07',
+        changes: [
+          'Design do botão "Sortear Jogo" otimizado e minimalista, mantendo apenas o ícone do Dado',
+          'Design do botão "Add Jogo" otimizado, mantendo apenas o símbolo "+"',
+          'Redimensionamento inteligente e design totalmente responsivo dos cards de jogos na Biblioteca (títulos, estrelas de avaliação, tempo de jogo, ícones de plataforma e progresso)',
+          'Suavização e refinamento da animação de escala e hover dos cards de jogos para maior fluidez e sutileza',
+          'Listagem direta de jogos instalados ao abrir os detalhes de cada Unidade de Armazenamento'
+        ]
+      });
+      await db.changelog.put({
+        id: '9',
+        version: '1.4.1',
+        date: '2026-07-08',
+        changes: [
+          'Correção e automatização total do atualizador de sistema.',
+          'Instalação inteligente.',
+          'Redesenho completo do ícone de badge (troféu/medalha) do Nível do Jogador nas Estatísticas por um modelo futurista geométrico 3D sofisticado com linhas orbitais tecnológicas de energia',
+          'Refinamento do sombreamento e glow traseiro do badge de nível de jogador para um visual super limpo, elegante e leve'
+        ]
+      });
+      await db.changelog.put({
+        id: '10',
+        version: '1.4.2',
+        date: '2026-07-09',
+        changes: [
+          'Correção definitiva do player de trailers do YouTube contra Erro 153 com suporte a modo sem cookies, autoplay silenciado e botão de visualização direta.'
+        ]
+      });
+      await db.changelog.put({
+        id: '11',
+        version: '1.5.0',
+        date: '2026-07-09',
+        changes: [
+          'Movimentação e unificação do Backup e Importação para a seção de Banco de Dados.',
+          'Atualização dos botões Exportar e Importar para o mesmo modelo visual dos botões Reparar e Apagar.',
+          'Padronização automática das unidades de armazenamento para Unidade A, Unidade B, etc. (C: até Z:).',
+          'Adicionada nova função completa de adicionar e excluir unidades de armazenamento no painel.',
+          'Suporte para personalização de letra da unidade, capacidade padrão de 500 GB e espaço de uso inicial.',
+          'Cálculo e formatação inteligente de dados digitais (exibição em TB para unidades maiores ou iguais a 1000 GB).',
+          'Diferenciação visual e estrutural completa entre as janelas "Adicionar Unidade" (sem botão de exclusão) e "Editar Disco" (com botão de exclusão).',
+          'Organização da ordem das unidades de armazenamento arrastando e soltando (drag & drop) de forma intuitiva.',
+          'Aprimorado o botão Apagar do Banco de Dados para limpar também a biblioteca, avatar, Usuário Gamer e redefinir o Armazenamento.',
+          'Resolvido bug crítico de travamento e handles de arquivos no instalador NSIS através do encerramento limpo via API do Electron ao atualizar.'
         ]
       });
     };
@@ -763,7 +860,7 @@ export default function App() {
       const data = await res.json();
       
       const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-      const current = "1.3.0";
+      const current = "1.5.0";
       
       const latestParts = latestTag.split('.').map(Number);
       const currentParts = current.split('.').map(Number);
@@ -1232,6 +1329,12 @@ export default function App() {
     if (!dbClearAware) return;
     try {
       await db.games.clear();
+      await db.settings.update('current', {
+        userAvatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4",
+        userName: "Usuário Gamer"
+      });
+      await db.disks.clear();
+      await db.disks.bulkAdd(INITIAL_DISKS);
       setShowClearDbModal(false);
       alert("Banco de dados local limpo com sucesso!");
     } catch (err) {
@@ -1264,6 +1367,60 @@ export default function App() {
     await db.disks.put(diskData);
     setShowEditDiskModal(false);
     setEditingDisk(null);
+  };
+
+  const handleAddDisk = () => {
+    // Letters from C to Z, then A, B
+    const possibleLetters = ['C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B'];
+    const usedLetters = disks.map(d => (d.letter || '').toUpperCase());
+    const nextLetter = possibleLetters.find(l => !usedLetters.includes(l)) || 'C';
+
+    // Name suffixes from A to Z, then AA, BB etc.
+    const possibleSuffixes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    const usedLabels = disks.map(d => (d.label || '').trim());
+    
+    // Find the first suffix not used in labels (e.g. "Unidade A", "Unidade B"...)
+    let nextSuffix = 'A';
+    for (const suffix of possibleSuffixes) {
+      const candidateLabel = `Unidade ${suffix}`;
+      if (!usedLabels.includes(candidateLabel)) {
+        nextSuffix = suffix;
+        break;
+      }
+    }
+
+    const newDisk: Disk = {
+      id: Date.now().toString(),
+      label: `Unidade ${nextSuffix}`,
+      letter: nextLetter,
+      totalGB: 500,
+      usedGB: 0
+    };
+
+    setEditingDisk(newDisk);
+    setShowEditDiskModal(true);
+  };
+
+  const handleDeleteDisk = async (diskId: string) => {
+    await db.disks.delete(diskId);
+    setShowEditDiskModal(false);
+    setEditingDisk(null);
+  };
+
+  const handleReorderDisks = async (draggedId: string, targetId: string) => {
+    if (draggedId === targetId) return;
+    const items = [...disks];
+    const draggedIdx = items.findIndex(d => d.id === draggedId);
+    const targetIdx = items.findIndex(d => d.id === targetId);
+    if (draggedIdx === -1 || targetIdx === -1) return;
+
+    const [draggedItem] = items.splice(draggedIdx, 1);
+    items.splice(targetIdx, 0, draggedItem);
+
+    for (let i = 0; i < items.length; i++) {
+      items[i].sortOrder = i;
+      await db.disks.put(items[i]);
+    }
   };
 
   const handleSetRankingGame = async (gameId: string, slot: number) => {
@@ -1445,19 +1602,18 @@ export default function App() {
             <button 
               onClick={() => handleLuckyDraw()}
               title={getTooltip('randomGameBtn')}
-              className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all flex items-center gap-2"
+              className="h-10 w-10 bg-primary/10 text-primary border border-primary/20 rounded-full hover:bg-primary/20 transition-all flex items-center justify-center cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">casino</span>
-              {t.randomGame}
             </button>
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setView('Add')}
               title={getTooltip('addGameBtn')}
-              className="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold shadow-sm hover:brightness-110 transition-all"
+              className="h-10 w-10 bg-primary text-on-primary rounded-full text-xl font-bold shadow-sm hover:brightness-110 transition-all flex items-center justify-center cursor-pointer"
             >
-              {t.addGame}
+              +
             </motion.button>
             <div className="flex items-center gap-2 ml-2">
               <button 
@@ -2079,6 +2235,13 @@ export default function App() {
                           <span className="material-symbols-outlined text-primary">storage</span>
                           <h3 className="text-xl font-bold text-on-surface tracking-tight uppercase">{language === 'English (US)' ? 'Personal Storage Units' : 'Unidades de Armazenamento'}</h3>
                         </div>
+                        <button
+                          onClick={handleAddDisk}
+                          className="py-2.5 px-4 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl font-bold text-xs hover:scale-102 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer outline-none"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">add</span>
+                          {language === 'English (US)' ? 'Add Unit' : 'Adicionar Unidade'}
+                        </button>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {disks.map(disk => (
@@ -2090,6 +2253,12 @@ export default function App() {
                               setEditingDisk(d);
                               setShowEditDiskModal(true);
                             }} 
+                            onDragStart={(e, id) => setDraggedDiskId(id)}
+                            onDrop={(e, targetId) => {
+                              if (draggedDiskId) {
+                                handleReorderDisks(draggedDiskId, targetId);
+                              }
+                            }}
                           />
                         ))}
                       </div>
@@ -2271,7 +2440,7 @@ export default function App() {
                        </div>
                        
                        <div className="space-y-6">
-                         {changelogEntries.sort((a,b) => b.version.localeCompare(a.version)).map((entry) => (
+                         {[...changelogEntries].sort((a, b) => Number(b.id) - Number(a.id)).map((entry) => (
                            <div key={entry.id} className="relative bg-surface-container-low/40 p-8 rounded-3xl border border-outline-variant/10 group">
                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                                <div className="flex items-center gap-4">
@@ -2455,12 +2624,20 @@ export default function App() {
         <EditDiskModal 
           isOpen={showEditDiskModal}
           disk={editingDisk}
+          isAdding={editingDisk ? !disks.some(d => d.id === editingDisk.id) : false}
           onClose={() => {
             setShowEditDiskModal(false);
             setEditingDisk(null);
           }}
           onSave={handleSaveDisk}
+          onDelete={handleDeleteDisk}
           t={t}
+          games={games}
+          onGameClick={(gameId) => {
+            setShowEditDiskModal(false);
+            setEditingDisk(null);
+            navigateToDetails(gameId);
+          }}
         />
 
         <RankingSelectModal 
@@ -2620,11 +2797,11 @@ function GameCard({
       layoutId={game.id}
       onClick={onClick}
       whileHover={{ 
-        y: -10,
-        scale: 1.03,
-        transition: { duration: 0.2, ease: "easeOut" }
+        y: -4,
+        scale: 1.015,
+        transition: { duration: 0.3, ease: [0.25, 1, 0.5, 1] }
       }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.99 }}
       className="group bg-surface-container-low border border-outline-variant/10 rounded-none shadow-sm overflow-hidden hover:shadow-xl hover:border-primary/40 transition-all cursor-pointer flex flex-col"
     >
       <div className="relative aspect-square overflow-hidden rounded-none">
@@ -2660,13 +2837,15 @@ function GameCard({
         </motion.button>
       </div>
 
-      <div className="p-4 space-y-2">
-        <div className="flex justify-between items-start">
-          <div className="min-w-0 flex-1">
-            <h3 className="font-display font-bold text-sm lg:text-base text-on-surface line-clamp-1 transition-colors group-hover:text-primary tracking-tight">{game.title}</h3>
-            <p className="font-sans text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">{Array.isArray(game.platform) ? game.platform[0] : game.platform}</p>
-          </div>
-          <div className="flex items-center gap-0.5 text-primary shrink-0 ml-2">
+      <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between gap-3 min-w-0">
+        <div className="space-y-1.5 min-w-0">
+          {/* Game Title */}
+          <h3 className="font-display font-bold text-xs sm:text-sm lg:text-base text-on-surface line-clamp-2 transition-colors group-hover:text-primary tracking-tight leading-tight min-h-[2.4em] flex items-center">
+            {game.title}
+          </h3>
+          
+          {/* Rating Stars */}
+          <div className="flex items-center gap-0.5 text-primary">
             {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
@@ -2675,7 +2854,7 @@ function GameCard({
                 className="flex items-center justify-center font-semibold"
               >
                 <span 
-                  className="material-symbols-outlined text-[12px]" 
+                  className="material-symbols-outlined text-[10px] sm:text-[11px] lg:text-[12px]" 
                   style={{ fontVariationSettings: `"FILL" ${i < game.rating ? 1 : 0}` }}
                 >
                   star
@@ -2685,13 +2864,14 @@ function GameCard({
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10">
-          <div className="flex items-center gap-1.5 text-[10px] text-on-surface-variant font-bold group-hover:text-primary transition-colors uppercase tracking-tight">
-            <span className="material-symbols-outlined text-[14px] opacity-70">schedule</span>
+        {/* Playtime & Platform Info */}
+        <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10 mt-auto gap-2 min-w-0">
+          <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-on-surface-variant font-bold group-hover:text-primary transition-colors uppercase tracking-tight shrink-0">
+            <span className="material-symbols-outlined text-[12px] sm:text-[14px] opacity-70">schedule</span>
             {game.playtime}h
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-bold uppercase tracking-tight opacity-70">
-             <span className="material-symbols-outlined text-[14px]">
+          <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-on-surface-variant font-bold uppercase tracking-tight opacity-70 min-w-0">
+             <span className="material-symbols-outlined text-[12px] sm:text-[14px] shrink-0">
                {(() => {
                  const firstPlatform = Array.isArray(game.platform) ? (game.platform[0] || '') : (game.platform || '');
                  const p = firstPlatform.trim().toLowerCase();
@@ -2707,12 +2887,15 @@ function GameCard({
                  return 'desktop_windows';
                })()}
              </span>
-             {Array.isArray(game.platform) ? (game.platform.length > 1 ? `${game.platform[0]}+` : game.platform[0]) : game.platform}
+             <span className="truncate max-w-[50px] sm:max-w-[70px]">
+               {Array.isArray(game.platform) ? (game.platform.length > 1 ? `${game.platform[0]}+` : game.platform[0]) : game.platform}
+             </span>
           </div>
         </div>
+
         {game.status === 'Jogando' && (
-           <div className="mt-3 space-y-2">
-             <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter text-on-surface-variant/60">
+           <div className="mt-1 space-y-1.5">
+             <div className="flex justify-between text-[8px] sm:text-[9px] font-bold uppercase tracking-tighter text-on-surface-variant/60">
                <span>{t.progress}</span>
                <span>{game.progress}%</span>
              </div>
@@ -2731,6 +2914,124 @@ function GameCard({
   );
 }
 
+function getYoutubeEmbedUrl(url: string | null): string | null {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    const videoId = match[2];
+    const params = new URLSearchParams({
+      autoplay: '1',
+      mute: '1',
+      rel: '0'
+    });
+
+    if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol;
+      if (protocol === 'http:' || protocol === 'https:') {
+        params.set('enablejsapi', '1');
+        params.set('origin', window.location.origin);
+      }
+    }
+
+    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+  }
+  return null;
+}
+
+function TrailerModal({ isOpen, url, onClose }: { isOpen: boolean, url: string | null; onClose: () => void }) {
+  const embedUrl = getYoutubeEmbedUrl(url);
+  const isPt = localStorage.getItem('gaminghub_language') !== 'English (US)';
+
+  return (
+    <AnimatePresence>
+      {isOpen && url && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/95 backdrop-blur-md"
+          />
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative bg-surface-container-low max-w-4xl w-full aspect-video rounded-2xl border border-outline-variant/15 shadow-2xl flex flex-col overflow-hidden z-10"
+          >
+            {/* Header/Controls bar */}
+            <div className="absolute top-4 right-4 z-50">
+              <button 
+                onClick={onClose} 
+                className="p-2 bg-black/60 hover:bg-black/90 rounded-full text-white/80 hover:text-white transition-all flex items-center justify-center outline-none shadow-lg border border-white/10"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+
+            {embedUrl ? (
+              <div className="flex-1 flex flex-col min-h-0 relative">
+                <iframe 
+                  src={embedUrl}
+                  title="YouTube Game Trailer"
+                  className="w-full flex-1 border-0 bg-black"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+                <div className="bg-[#0f0f11] px-6 py-3 flex flex-col sm:flex-row items-center justify-between border-t border-outline-variant/10 text-xs text-on-surface-variant gap-2 shrink-0">
+                  <span className="flex items-center gap-1.5 text-center sm:text-left">
+                    <span className="material-symbols-outlined text-[16px] text-primary">info</span>
+                    {isPt 
+                      ? 'Problemas com a reprodução ou erro de configuração do player (ex: Erro 153)?' 
+                      : 'Having playback or player configuration issues (e.g. Error 153)?'}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      onClose();
+                      openExternalLink(url, e);
+                    }}
+                    className="flex items-center gap-1 text-primary hover:text-primary-hover font-bold transition-colors uppercase tracking-wider text-[10px]"
+                  >
+                    <span>{isPt ? 'Assistir no YouTube' : 'Watch on YouTube'}</span>
+                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-4 text-center bg-[#070707]">
+                <span className="material-symbols-outlined text-5xl text-primary animate-pulse">play_circle</span>
+                <div className="space-y-1">
+                  <p className="text-on-surface font-bold text-lg">
+                    {isPt ? 'Vídeo externo detectado' : 'External video stream'}
+                  </p>
+                  <p className="text-on-surface-variant text-sm max-w-md">
+                    {isPt 
+                      ? 'Este link do trailer não pôde ser incorporado diretamente. Deseja abrir no seu navegador?' 
+                      : 'This trailer link cannot be fully embedded. Would you like to open it in your browser?'}
+                  </p>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    onClose();
+                    openExternalLink(url, e);
+                  }}
+                  className="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold text-sm shadow-md hover:brightness-110 active:scale-95 transition-all outline-none flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                  {isPt ? 'Abrir no Navegador' : 'Open in Browser'}
+                </button>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteRequest, onGenreClick, onUpdateGame, t }: { 
   game: Game, 
   onEdit: () => void, 
@@ -2745,6 +3046,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
+  const [activeTrailerUrl, setActiveTrailerUrl] = useState<string | null>(null);
 
   const handleSync = async () => {
     setIsSyncing(true);
@@ -2884,16 +3186,13 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
               <span className="material-symbols-outlined text-[18px] lg:text-[20px]">delete</span>
             </button>
             {game.trailerUrl && (
-              <a 
-                href={game.trailerUrl} 
-                target="_blank" 
-                rel="noreferrer"
-                onClick={(e) => openExternalLink(game.trailerUrl, e)}
-                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-xl font-bold text-sm backdrop-blur-md transition-all active:scale-95 flex items-center gap-2"
+              <button 
+                onClick={() => setActiveTrailerUrl(game.trailerUrl)}
+                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-xl font-bold text-sm backdrop-blur-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[20px]">play_circle</span>
                 Trailer
-              </a>
+              </button>
             )}
           </div>
         </div>
@@ -3010,6 +3309,12 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
           </section>
         </div>
       </div>
+
+      <TrailerModal 
+        isOpen={!!activeTrailerUrl} 
+        url={activeTrailerUrl} 
+        onClose={() => setActiveTrailerUrl(null)} 
+      />
     </motion.div>
   );
 }
@@ -3059,6 +3364,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
+  const [activeTrailerUrl, setActiveTrailerUrl] = useState<string | null>(null);
 
   const handleSyncGameInfo = async () => {
     if (!formData.title?.trim()) {
@@ -3223,8 +3529,8 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
             <div className="pt-4 border-t border-outline-variant/20 space-y-4">
               <button 
                 type="button"
-                onClick={(e) => formData.trailerUrl && openExternalLink(formData.trailerUrl, e)}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95 outline-none"
+                onClick={() => formData.trailerUrl && setActiveTrailerUrl(formData.trailerUrl)}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-all active:scale-95 outline-none cursor-pointer"
               >
                 <span className="material-symbols-outlined">play_circle</span>
                 {t.watchTrailer}
@@ -3569,6 +3875,12 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
           </div>
         </div>
       </form>
+
+      <TrailerModal 
+        isOpen={!!activeTrailerUrl} 
+        url={activeTrailerUrl} 
+        onClose={() => setActiveTrailerUrl(null)} 
+      />
     </motion.div>
   );
 }
@@ -3742,6 +4054,157 @@ function SettingsView({
   const [localName, setLocalName] = useState<string>(userName);
   const [localLanguage, setLocalLanguage] = useState<string>(language);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Custom modal states for requested buttons
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showFeaturesModal, setShowFeaturesModal] = useState(false);
+  const [showChangelogModal, setShowChangelogModal] = useState(false);
+  const [supportTab, setSupportTab] = useState<'pix' | 'alternativa'>('pix');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const dbChangelogs = useLiveQuery(() => db.changelog.toArray()) || [];
+
+  const changelogEntries = useMemo(() => {
+    const STATIC_CHANGELOG: ChangelogEntry[] = [
+      {
+        id: '1',
+        version: '1.0.0',
+        date: '2024-01-01',
+        changes: ['Lançamento inicial', 'Gerenciamento de biblioteca', 'Modo escuro']
+      },
+      {
+        id: '2',
+        version: '1.0.1',
+        date: '2024-02-15',
+        changes: ['Melhorias de desempenho', 'Correção de filtros']
+      },
+      {
+        id: '3',
+        version: '1.1.7',
+        date: '2026-05-19',
+        changes: [
+          'Nova tela de estatísticas',
+          'Melhorias visuais',
+          'Correções no ranking',
+          'Adicionado idioma russo',
+          'Adicionado idioma chinês',
+          'Adicionado função atualização automática',
+          'Pequenas correções',
+          'Corrigido o problema de travamento na obtenção de troféus quando o alvo da ação não existia.'
+        ]
+      },
+      {
+        id: '4',
+        version: '1.1.9',
+        date: '2026-06-17',
+        changes: [
+          'Dicionário Temático Multilíngue (getTooltip)',
+          'Menus de Navegação do Painel Lateral (Sidebar)',
+          'Botões de Ação Principais da Barra Superior (Header)',
+          'Dynamic Database Installation Modes',
+          'Sinalização Visual de Atualizações',
+          'Fluxo de Atualização Interativo',
+          'Architectural & Visual Layout'
+        ]
+      },
+      {
+        id: '5',
+        version: '1.2.0',
+        date: '2026-06-18',
+        changes: [
+          'Botão Sincronizar Informações',
+          'Otimização do banco de dados',
+          'Ícone do app re-criado em dimensão 256x256'
+        ]
+      },
+      {
+        id: '6',
+        version: '1.2.1',
+        date: '2026-06-18',
+        changes: [
+          'Ajuste no layout dos cards dos jogos para formato de quadrado perfeito modernos (aspect-square) e pontas totalmente retas',
+          'Exibição de jogos otimizada para 5 colunas por fileira',
+          'Compactação visual do cabeçalho de filtros de gêneros e botões de ordenação para maior elegância',
+          'Transformação dos blocos de estatísticas da Biblioteca (Jogando, Concluído e Backlog) em botões interativos de navegação direta',
+          'Sinalização no Roadmap do status "Concluído" para a Sincronização de capas e informações Steam',
+          'Implementação de dicionário tradutor interno para tradução de sinopses de jogos ao utilizar Sincronizar Informações'
+        ]
+      },
+      {
+        id: '7',
+        version: '1.3.0',
+        date: '2026-06-19',
+        changes: [
+          'Sistema de atualização automática modernizado (com download via servidor local e instalação silenciosa automática ao fechar)',
+          'Balão vermelho indicativo de atualização pendente exibido de forma imediata assim que o app inicia',
+          'Aprimoramento de robustez do filtro de categorias e genres para evitar bugs inesperados'
+        ]
+      },
+      {
+        id: '8',
+        version: '1.4.0',
+        date: '2026-07-07',
+        changes: [
+          'Design do botão "Sortear Jogo" otimizado e minimalista, mantendo apenas o ícone do Dado',
+          'Design do botão "Add Jogo" otimizado, mantendo apenas o símbolo "+"',
+          'Redimensionamento inteligente e design totalmente responsivo dos cards de jogos na Biblioteca (títulos, estrelas de avaliação, tempo de jogo, ícones de plataforma e progresso)',
+          'Suavização e refinamento da animação de escala e hover dos cards de jogos para maior fluidez e sutileza',
+          'Listagem direta de jogos instalados ao abrir os detalhes de cada Unidade de Armazenamento'
+        ]
+      },
+      {
+        id: '9',
+        version: '1.4.1',
+        date: '2026-07-08',
+        changes: [
+          'Correção e automatização total do atualizador de sistema.',
+          'Instalação inteligente.',
+          'Redesenho completo do ícone de badge (troféu/medalha) do Nível do Jogador nas Estatísticas por um modelo futurista geométrico 3D sofisticado com linhas orbitais tecnológicas de energia',
+          'Refinamento do sombreamento e glow traseiro do badge de nível de jogador para um visual super limpo, elegante e leve'
+        ]
+      },
+      {
+        id: '10',
+        version: '1.4.2',
+        date: '2026-07-09',
+        changes: [
+          'Correção definitiva do player de trailers do YouTube contra Erro 153 com suporte a modo sem cookies, autoplay silenciado e botão de visualização direta.'
+        ]
+      },
+      {
+        id: '11',
+        version: '1.5.0',
+        date: '2026-07-09',
+        changes: [
+          'Movimentação e unificação do Backup e Importação para a seção de Banco de Dados.',
+          'Atualização dos botões Exportar e Importar para o mesmo modelo visual dos botões Reparar e Apagar.',
+          'Padronização automática das unidades de armazenamento para Unidade A, Unidade B, etc. (C: até Z:).',
+          'Adicionada nova função completa de adicionar e excluir unidades de armazenamento no painel.',
+          'Suporte para personalização de letra da unidade, capacidade padrão de 500 GB e espaço de uso inicial.',
+          'Cálculo e formatação inteligente de dados digitais (exibição em TB para unidades maiores ou iguais a 1000 GB).',
+          'Diferenciação visual e estrutural completa entre as janelas "Adicionar Unidade" (sem botão de exclusão) e "Editar Disco" (com botão de exclusão).',
+          'Organização da ordem das unidades de armazenamento arrastando e soltando (drag & drop) de forma intuitiva.',
+          'Aprimorado o botão Apagar do Banco de Dados para limpar também a biblioteca, avatar, Usuário Gamer e redefinir o Armazenamento.',
+          'Resolvido bug crítico de travamento e handles de arquivos no instalador NSIS através do encerramento limpo via API do Electron ao atualizar.'
+        ]
+      }
+    ];
+
+    const merged = [...STATIC_CHANGELOG];
+    dbChangelogs.forEach(dbEntry => {
+      if (!merged.some(item => item.id === dbEntry.id)) {
+        merged.push(dbEntry);
+      }
+    });
+    return merged;
+  }, [dbChangelogs]);
+
+  const handleCopy = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   // Sync with props if they change elsewhere
   useEffect(() => {
@@ -3941,32 +4404,56 @@ function SettingsView({
           </div>
         </section>
 
-        {/* Backup Section */}
+        {/* Unified App Info & Utilities Section */}
         <section className="bg-surface-container-low/50 backdrop-blur-md p-8 rounded-2xl border border-outline-variant/30 shadow-sm space-y-6">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-2xl">cloud_sync</span>
+              <span className="material-symbols-outlined text-primary text-2xl">info</span>
             </div>
-            <h2 className="font-display text-xl font-bold text-on-surface uppercase tracking-tight">Backup</h2>
+            <h2 className="font-display text-xl font-bold text-on-surface uppercase tracking-tight">Aplicativo</h2>
           </div>
-          <div className="space-y-5">
-            <p className="text-[11px] text-on-surface-variant font-medium leading-relaxed">Proteja seus dados salvando uma cópia local da sua biblioteca e configurações.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button 
-                onClick={() => onExport(true)}
-                className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-[18px]">download</span>
-                {language === 'English (US)' ? 'Export' : (language === 'Español' ? 'Exportar' : 'Exportar')}
-              </button>
-              <button 
-                onClick={() => onImport(true)}
-                className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-[18px]">upload</span>
-                {language === 'English (US)' ? 'Import' : (language === 'Español' ? 'Importar' : 'Importar')}
-              </button>
-            </div>
+          
+          <div className="divide-y divide-outline-variant/10">
+            {/* Termos de Uso e Politica de Privacidade */}
+            <button 
+              onClick={() => setShowTermsModal(true)}
+              className="w-full flex items-center justify-between py-4 text-left group hover:text-primary transition-colors outline-none cursor-pointer"
+            >
+              <span className="text-sm font-semibold text-on-surface">Termos de Uso e Política de Privacidade</span>
+              <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform text-[20px]">arrow_forward</span>
+            </button>
+
+            {/* Ver funcionalidade */}
+            <button 
+              onClick={() => setShowFeaturesModal(true)}
+              className="w-full flex items-center justify-between py-4 text-left group hover:text-primary transition-colors outline-none cursor-pointer"
+            >
+              <span className="text-sm font-semibold text-on-surface">Ver funcionalidade</span>
+              <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform text-[20px]">arrow_forward</span>
+            </button>
+
+            {/* Novidades desta versao do App */}
+            <button 
+              onClick={() => setShowChangelogModal(true)}
+              className="w-full flex items-center justify-between py-4 text-left group hover:text-primary transition-colors outline-none cursor-pointer"
+            >
+              <span className="text-sm font-semibold text-on-surface">Novidades desta versão do App</span>
+              <span className="bg-primary/10 text-primary text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">Novo</span>
+            </button>
+          </div>
+
+          {/* Card Footer with Version and Support Button */}
+          <div className="flex items-center justify-between pt-6 border-t border-outline-variant/10">
+            <span className="bg-primary/5 border border-primary/10 text-primary text-[10px] font-black px-3 py-1.5 rounded-xl">
+              v1.5.0
+            </span>
+            <button 
+              onClick={() => setShowSupportModal(true)}
+              className="px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold text-xs shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px] font-variation-fill" style={{ fontVariationSettings: '"FILL" 1' }}>favorite</span>
+              Apoiar este Projeto
+            </button>
           </div>
         </section>
 
@@ -3981,17 +4468,31 @@ function SettingsView({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <button 
               onClick={onRepairDatabase}
-              className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high transition-all flex items-center justify-center gap-2 active:scale-95"
+              className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer outline-none"
             >
               <span className="material-symbols-outlined text-[18px]">build</span>
               {language === 'English (US)' ? 'Repair' : (language === 'Español' ? 'Reparar' : 'Reparar')}
             </button>
             <button 
               onClick={onClearDatabase}
-              className="py-3.5 border border-error/20 bg-error/5 text-error rounded-xl font-bold text-[11px] hover:bg-error/10 transition-all flex items-center justify-center gap-2 active:scale-95"
+              className="py-3.5 border border-error/20 bg-error/5 text-error rounded-xl font-bold text-[11px] hover:bg-error/10 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer outline-none"
             >
               <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
               {language === 'English (US)' ? 'Clear' : (language === 'Español' ? 'Apagar' : 'Apagar')}
+            </button>
+            <button 
+              onClick={() => onExport(true)}
+              className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer outline-none"
+            >
+              <span className="material-symbols-outlined text-[18px]">download</span>
+              {language === 'English (US)' ? 'Export' : (language === 'Español' ? 'Exportar' : 'Exportar')}
+            </button>
+            <button 
+              onClick={() => onImport(true)}
+              className="py-3.5 border border-outline-variant/30 text-on-surface rounded-xl font-bold text-[11px] hover:bg-surface-container-high transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer outline-none"
+            >
+              <span className="material-symbols-outlined text-[18px]">upload</span>
+              {language === 'English (US)' ? 'Import' : (language === 'Español' ? 'Importar' : 'Importar')}
             </button>
           </div>
         </section>
@@ -4022,9 +4523,427 @@ function SettingsView({
         )}
       </AnimatePresence>
 
-      <div className="text-center py-6">
+      {/* Support Modal */}
+      <AnimatePresence>
+        {showSupportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSupportModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              className="bg-surface-container-high/95 backdrop-blur-xl rounded-[2.5rem] border border-outline-variant/30 shadow-2xl p-8 max-w-md w-full relative z-10 flex flex-col gap-6"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-red-500 text-2xl font-variation-fill animate-pulse" style={{ fontVariationSettings: '"FILL" 1' }}>favorite</span>
+                  <h3 className="font-display font-black text-headline-sm text-on-surface uppercase tracking-tight">Apoie o Projeto</h3>
+                </div>
+                <button 
+                  onClick={() => setShowSupportModal(false)}
+                  className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+
+              {/* Description */}
+              <p className="text-xs text-on-surface-variant leading-relaxed font-medium">
+                GamingHub é um projeto independente. Cada apoio ajuda a manter este aplicativo seguindo evoluindo com novas features, ajustes e patches.
+              </p>
+
+              {/* Tabs */}
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setSupportTab('pix')}
+                  className={`flex-1 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all text-xs active:scale-95 cursor-pointer ${
+                    supportTab === 'pix' 
+                      ? 'border-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                      : 'border border-outline-variant/30 hover:bg-surface-container text-on-surface-variant'
+                  }`}
+                >
+                  <span>💚</span> PIX
+                </button>
+                <button 
+                  onClick={() => setSupportTab('alternativa')}
+                  className={`flex-1 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all text-xs active:scale-95 cursor-pointer ${
+                    supportTab === 'alternativa' 
+                      ? 'border-2 border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400' 
+                      : 'border border-outline-variant/30 hover:bg-surface-container text-on-surface-variant'
+                  }`}
+                >
+                  <span>💙</span> ALTERNATIVA
+                </button>
+              </div>
+
+              {/* Content Card */}
+              <div className="bg-surface-container-low/60 p-5 rounded-2xl border border-outline-variant/20">
+                <div className="mb-4">
+                  <span className="text-[10px] font-black tracking-widest text-on-surface-variant/60 uppercase">Beneficiário</span>
+                  <p className="text-xs font-black text-on-surface uppercase mt-1">BENEFICIARIO: DAVISON SANT' ANA DA SILVA</p>
+                </div>
+
+                {supportTab === 'pix' ? (
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Chave PIX (E-mail)</span>
+                      <div className="bg-surface-container-high/40 p-3 rounded-xl border border-outline-variant/10 flex items-center justify-between gap-4">
+                        <span className="text-xs font-mono text-on-surface select-all break-all">davisonsant@gmail.com</span>
+                        <button 
+                          onClick={() => handleCopy('davisonsant@gmail.com', 'email')}
+                          className="p-2 hover:bg-emerald-500/10 rounded-lg transition-colors flex items-center justify-center text-emerald-600 dark:text-emerald-400 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">
+                            {copiedField === 'email' ? 'check_circle' : 'content_copy'}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] font-black tracking-widest text-emerald-500 uppercase">Chave Aleatória</span>
+                      <div className="bg-surface-container-high/40 p-3 rounded-xl border border-outline-variant/10 flex items-center justify-between gap-4">
+                        <span className="text-xs font-mono text-on-surface select-all break-all">f5f689d7-09d5-4a52-b327-771266473851</span>
+                        <button 
+                          onClick={() => handleCopy('f5f689d7-09d5-4a52-b327-771266473851', 'random')}
+                          className="p-2 hover:bg-emerald-500/10 rounded-lg transition-colors flex items-center justify-center text-emerald-600 dark:text-emerald-400 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">
+                            {copiedField === 'random' ? 'check_circle' : 'content_copy'}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-black tracking-widest text-blue-500 uppercase">Chave PIX Copia e Cola</span>
+                    <div className="bg-surface-container-high/40 p-3 rounded-xl border border-outline-variant/10 flex flex-col gap-3">
+                      <div className="p-3 bg-surface-container-low rounded-lg border border-outline-variant/10 max-h-20 overflow-y-auto font-mono text-[10px] text-on-surface-variant break-all select-all scrollbar-thin">
+                        00020101021126580014br.gov.bcb.pix01364c65e83e-3f96-4ea4-ac5d-c754fab5ddf35204000053039865802BR5914DAVISON  SILVA6009Sao Paulo62070503***63049063
+                      </div>
+                      <button 
+                        onClick={() => handleCopy('00020101021126580014br.gov.bcb.pix01364c65e83e-3f96-4ea4-ac5d-c754fab5ddf35204000053039865802BR5914DAVISON  SILVA6009Sao Paulo62070503***63049063', 'copiacola')}
+                        className="w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">
+                          {copiedField === 'copiacola' ? 'check_circle' : 'content_copy'}
+                        </span>
+                        {copiedField === 'copiacola' ? 'Chave Copiada!' : 'Copiar Chave'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowSupportModal(false)}
+                className="w-full py-3 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-center cursor-pointer"
+              >
+                Fechar
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Terms of Use Modal */}
+      <AnimatePresence>
+        {showTermsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowTermsModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              className="bg-surface-container-high/95 backdrop-blur-xl rounded-[2.5rem] border border-outline-variant/30 shadow-2xl p-8 max-w-2xl w-full relative z-10 flex flex-col gap-6 max-h-[85vh]"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-primary text-2xl">gavel</span>
+                  <h3 className="font-display font-black text-headline-sm text-on-surface uppercase tracking-tight">Termos de Uso & Política</h3>
+                </div>
+                <button 
+                  onClick={() => setShowTermsModal(false)}
+                  className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+
+              {/* Terms Content */}
+              <div className="flex-1 overflow-y-auto pr-2 space-y-5 text-sm text-on-surface-variant leading-relaxed scrollbar-thin max-h-[50vh]">
+                <div className="border-b border-outline-variant/10 pb-4">
+                  <h4 className="font-bold text-on-surface text-base">Termo de Uso – GamingHub</h4>
+                  <p className="text-[11px] text-on-surface-variant/70 font-semibold uppercase mt-1">Última atualização: 09 de julho de 2026</p>
+                </div>
+
+                <p className="font-medium">
+                  Bem-vindo ao GamingHub. Ao instalar ou utilizar o GamingHub, você concorda com os presentes Termos de Uso. Caso não concorde com qualquer uma das condições descritas abaixo, não instale ou utilize o software.
+                </p>
+
+                <div className="space-y-4 pt-2">
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">1. Sobre o GamingHub</h5>
+                    <p className="text-xs">O GamingHub é um aplicativo desenvolvido para auxiliar usuários na organização e gerenciamento de sua biblioteca de jogos, permitindo o cadastro, acompanhamento e gerenciamento de informações relacionadas aos seus jogos.</p>
+                    <p className="text-xs mt-1">O GamingHub é disponibilizado "no estado em que se encontra" ("as is"), podendo receber atualizações, melhorias, correções ou novas funcionalidades a qualquer momento.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">2. Licença de Uso</h5>
+                    <p className="text-xs">É concedida ao usuário uma licença pessoal, não exclusiva, intransferível e revogável para utilizar o GamingHub exclusivamente para fins pessoais ou internos. Esta licença não transfere qualquer direito de propriedade intelectual sobre o software.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">3. Direitos Autorais</h5>
+                    <p className="text-xs">Todos os direitos sobre o GamingHub, incluindo seu código-fonte, interface, identidade visual, documentação, logotipos e demais elementos que compõem o software pertencem ao seu desenvolvedor, salvo conteúdos pertencentes a terceiros.</p>
+                    <p className="text-xs mt-1 font-semibold">O usuário não poderá:</p>
+                    <ul className="list-disc list-inside text-xs pl-2 space-y-0.5 mt-1">
+                      <li>Vender ou redistribuir versões modificadas do software como se fossem oficiais;</li>
+                      <li>Remover avisos de direitos autorais;</li>
+                      <li>Utilizar o nome GamingHub para induzir terceiros a acreditar que sua versão é oficial.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">4. Código Aberto</h5>
+                    <p className="text-xs">O GamingHub possui repositório oficial disponível em:</p>
+                    <a href="https://github.com/davisonsant/GamingHub" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline break-all font-mono">
+                      https://github.com/davisonsant/GamingHub
+                    </a>
+                    <p className="text-xs mt-1">A utilização, contribuição ou distribuição do código-fonte deverá respeitar a licença publicada no respectivo repositório.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">5. Responsabilidades do Usuário</h5>
+                    <p className="text-xs">O usuário é responsável por utilizar o software de forma lícita, manter cópias de segurança de seus dados, verificar a compatibilidade do software com seu computador e utilizar versões obtidas de fontes confiáveis.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">6. Limitação de Responsabilidade</h5>
+                    <p className="text-xs">Embora esforços sejam realizados para oferecer um software estável e seguro, o GamingHub é fornecido sem garantias de qualquer natureza. O desenvolvedor não se responsabiliza por perda de dados, danos indiretos ou consequenciais, incompatibilidade com hardware/software de terceiros, ou falhas no uso do programa. O usuário utiliza o aplicativo por sua conta e risco.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">7. Dados Armazenados</h5>
+                    <p className="text-xs">O GamingHub armazena informações localmente no computador do usuário. O desenvolvedor não possui acesso automático às informações de sua biblioteca.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">8. Atualizações</h5>
+                    <p className="text-xs">O GamingHub poderá disponibilizar atualizações periódicas de segurança, melhorias de desempenho, correções ou novas funcionalidades. Recomenda-se manter o app sempre atualizado.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">9. Softwares de Terceiros</h5>
+                    <p className="text-xs">O GamingHub utiliza bibliotecas, frameworks ou componentes de terceiros, cada um sujeito às respectivas licenças de uso.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">10. Encerramento da Licença</h5>
+                    <p className="text-xs">O direito de utilização poderá ser encerrado caso o usuário viole estes Termos de Uso. Após o encerramento, o usuário deverá interromper a utilização do software.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">11. Alterações dos Termos</h5>
+                    <p className="text-xs">Este documento poderá ser atualizado periodicamente. A versão mais recente substituirá quaisquer versões anteriores.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">12. Contato</h5>
+                    <p className="text-xs">E-mail do desenvolvedor: <span className="font-semibold text-on-surface">davison.sant@live.com</span></p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-on-surface mb-1">13. Aceite</h5>
+                    <p className="text-xs">Ao instalar ou utilizar o GamingHub, o usuário declara que leu, compreendeu e concorda integralmente com estes Termos de Uso.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowTermsModal(false)}
+                className="w-full py-3 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-center cursor-pointer"
+              >
+                Fechar
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Features Modal */}
+      <AnimatePresence>
+        {showFeaturesModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowFeaturesModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              className="bg-surface-container-high/95 backdrop-blur-xl rounded-[2.5rem] border border-outline-variant/30 shadow-2xl p-8 max-w-lg w-full relative z-10 flex flex-col gap-6"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-primary text-2xl">star</span>
+                  <h3 className="font-display font-black text-headline-sm text-on-surface uppercase tracking-tight">Recursos do GamingHub</h3>
+                </div>
+                <button 
+                  onClick={() => setShowFeaturesModal(false)}
+                  className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+
+              {/* Grid of features */}
+              <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 scrollbar-thin">
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/10">
+                  <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">sports_esports</span>
+                  <div>
+                    <h4 className="font-bold text-sm text-on-surface mb-0.5">Biblioteca Premium</h4>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">Cadastre, refine filtros, gerencie status (Jogando, Favoritos, Backlog) e registre todas as suas horas de gameplay.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/10">
+                  <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">monitoring</span>
+                  <div>
+                    <h4 className="font-bold text-sm text-on-surface mb-0.5">Estatísticas do Jogador</h4>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">Acompanhe seu nível de jogador em tempo real através de XP acumulado por suas jogatinas e conquistas registradas.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/10">
+                  <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">database</span>
+                  <div>
+                    <h4 className="font-bold text-sm text-on-surface mb-0.5">Espaço em Disco & Armazenamento</h4>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">Gerencie o espaço ocupado por jogo em suas mídias ou partições de armazenamento, evitando surpresas de falta de espaço.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/10">
+                  <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl">timeline</span>
+                  <div>
+                    <h4 className="font-bold text-sm text-on-surface mb-0.5">Linha de Desenvolvimento (Roadmap)</h4>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">Visualize o planejamento e as próximas metas de novas funcionalidades previstas para o aplicativo.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowFeaturesModal(false)}
+                className="w-full py-3 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-center cursor-pointer"
+              >
+                Fechar
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Changelog Modal */}
+      <AnimatePresence>
+        {showChangelogModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChangelogModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              className="bg-surface-container-high/95 backdrop-blur-xl rounded-[2.5rem] border border-outline-variant/30 shadow-2xl p-8 max-w-lg w-full relative z-10 flex flex-col gap-6 max-h-[80vh]"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-primary text-2xl">history</span>
+                  <h3 className="font-display font-black text-headline-sm text-on-surface uppercase tracking-tight">Histórico de Novidades</h3>
+                </div>
+                <button 
+                  onClick={() => setShowChangelogModal(false)}
+                  className="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+
+              {/* Scrollable Changelog List */}
+              <div className="flex-1 overflow-y-auto pr-2 space-y-6 scrollbar-thin max-h-[45vh]">
+                {changelogEntries.length > 0 ? (
+                  [...changelogEntries].sort((a, b) => Number(b.id) - Number(a.id)).map((entry) => (
+                    <div key={entry.id} className="relative pl-6 border-l-2 border-primary/20 pb-2">
+                      <div className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-primary" />
+                      <div className="flex items-baseline justify-between gap-4 flex-wrap mb-2">
+                        <span className="font-bold text-on-surface text-base">Versão {entry.version}</span>
+                        <span className="text-[10px] text-on-surface-variant/70 font-bold uppercase tracking-wider">{entry.date}</span>
+                      </div>
+                      <ul className="list-disc list-inside text-xs text-on-surface-variant space-y-1.5 pl-1.5">
+                        {entry.changes.map((change, i) => (
+                          <li key={i} className="leading-relaxed">{change}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <span className="material-symbols-outlined text-on-surface-variant/40 text-4xl mb-2">inventory_2</span>
+                    <p className="text-xs text-on-surface-variant font-medium">Nenhum changelog registrado.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Close Button */}
+              <button 
+                onClick={() => setShowChangelogModal(false)}
+                className="w-full py-3 bg-primary text-on-primary rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-center cursor-pointer"
+              >
+                Fechar
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <div className="text-center py-6 flex flex-col gap-1 items-center">
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
-          GAMINGHUB V1.3.0 • 2026 • {t.developedBy} DAVISON SANT
+          GAMINGHUB V1.5.0 • 2026
+        </p>
+        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
+          Um produto Hub_ • {t.developedBy} DAVISON SANT
         </p>
       </div>
     </motion.div>
@@ -4069,25 +4988,13 @@ function UpdateModal({
         await db.changelog.clear();
         await db.disks.clear();
         await db.disks.bulkPut(INITIAL_DISKS);
-        
-        alert(
-          isPt 
-            ? "O banco de dados foi completamente resetado e formatado com sucesso! Iniciando download..." 
-            : "Database has been completely reset and reformatted! Starting download..."
-        );
-      } else {
-        alert(
-          isPt
-            ? "Excelente escolha! Sua biblioteca e personalizações estão 100% salvas e preservadas nas tabelas de banco de dados. Iniciando download..."
-            : "Excellent choice! Your library and customizations are 100% safe and preserved in database tables. Starting download..."
-        );
       }
 
       setDownloadProgress(0);
       setDownloadingName(filename);
       setIsDone(false);
       
-      const res = await fetch('/api/updater/start', {
+      const res = await fetch(getApiUrl('/api/updater/start'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, filename })
@@ -4099,7 +5006,7 @@ function UpdateModal({
 
       const pollInterval = setInterval(async () => {
         try {
-          const pollRes = await fetch('/api/updater/progress');
+          const pollRes = await fetch(getApiUrl('/api/updater/progress'));
           if (pollRes.ok) {
             const pollData = await pollRes.json();
             if (pollData.state === 'downloading') {
@@ -4219,8 +5126,8 @@ function UpdateModal({
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
                   {isPt 
-                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.3.0.' 
-                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.3.0.'}
+                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.5.0.' 
+                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.5.0.'}
                 </p>
                 <div className="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-medium rounded-xl p-4 text-xs flex items-center gap-2.5 max-w-md mx-auto">
                   <span className="material-symbols-outlined text-[18px]">verified_user</span>
@@ -4271,7 +5178,7 @@ function UpdateModal({
                     : 'Congratulations! You are already running the latest available version of GamingHub.'}
                 </p>
                 <div className="inline-block px-4 py-1 bg-surface-container-high rounded-full border border-outline-variant/30 text-xs font-mono font-bold text-on-surface-variant mt-2">
-                  v1.3.0 (Latest)
+                  v1.5.0 (Latest)
                 </div>
               </div>
               <div className="flex justify-center pt-2">
@@ -4297,8 +5204,8 @@ function UpdateModal({
                   </h3>
                   <p className="text-sm text-on-surface-variant">
                     {isPt 
-                      ? `Uma rota de atualização direta foi encontrada! Versão atual v1.3.0 → Nova versão ${data?.tag_name}`
-                      : `An update path was found! Current version v1.3.0 → New version ${data?.tag_name}`}
+                      ? `Uma nova atualização está disponível. Versão atual v1.5.0 → Nova versão ${data?.tag_name || ''}`
+                      : `A new update is available. Current version v1.5.0 → New version ${data?.tag_name || ''}`}
                   </p>
                 </div>
               </div>
@@ -4487,59 +5394,6 @@ function UpdateModal({
                     );
                   })()}
                 </div>
-
-                {/* Option 2: Manual Update / Redirection */}
-                <div className="space-y-3 bg-surface-container/50 p-5 rounded-2xl border border-outline-variant/10">
-                  <h4 className="text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
-                    <span className="material-symbols-outlined text-outline text-[18px]">open_in_new</span>
-                    {isPt ? 'Opção 2: Instalação Manual (Redirecionamento)' : 'Option 2: Manual Installation (Redirection)'}
-                  </h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">
-                    {isPt 
-                      ? 'Se preferir, saia temporariamente do aplicativo e faça o download manualmente acessando diretamente a página de releases do repositório no GitHub.' 
-                      : 'If you prefer, leave the application and perform the download and installation manually on the official GitHub page.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Main action triggers */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-outline-variant/10">
-                <button 
-                  onClick={async (e) => {
-                    if (updateMode === 'clean') {
-                      const confirmClean = window.confirm(
-                        isPt 
-                          ? "Você escolheu 'Instalação Limpa'. Deseja deletar agora todo o seu banco de dados local antes de ir para o GitHub?" 
-                          : "You chose 'Clean Installation'. Do you want to delete all your local database now before redirecting to GitHub?"
-                      );
-                      if (confirmClean) {
-                        await db.games.clear();
-                        await db.roadmap.clear();
-                        await db.changelog.clear();
-                        await db.disks.clear();
-                        await db.disks.bulkPut(INITIAL_DISKS);
-                        alert(isPt ? "Banco de dados limpo com sucesso!" : "Database cleared successfully!");
-                      }
-                    } else {
-                      alert(
-                        isPt 
-                          ? "Iniciando instalação manual. Seus dados cadastrados estão preservados e seguros!" 
-                          : "Starting manual installation. Your registered data is preserved and secure!"
-                      );
-                    }
-                    openExternalLink(data?.html_url || "https://github.com/davisonsant/GamingHub/releases/", e);
-                  }}
-                  className="flex-1 py-3 px-4 bg-primary text-on-primary font-bold text-sm rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 outline-none shadow-xl shadow-primary/25"
-                >
-                  <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                  {isPt ? 'Ir para o Repositório GitHub (Manual)' : 'Go to GitHub Repository (Manual)'}
-                </button>
-                <button 
-                  onClick={onClose}
-                  className="flex-1 py-3 px-4 border border-outline-variant hover:bg-surface-container font-bold text-sm rounded-xl transition-all outline-none"
-                >
-                  {isPt ? 'Instalar Depois' : 'Maybe Later'}
-                </button>
               </div>
             </div>
           )}
@@ -4925,14 +5779,51 @@ function RankingSelectModal({ isOpen, onClose, onSelect, games, slot, t }: { isO
   );
 }
 
-function DiskItem({ disk, t, onEdit }: { disk: Disk, t: any, onEdit: (disk: Disk) => void, key?: any }) {
+function formatStorageUnit(gb: number, forceDecimal: boolean = false): string {
+  if (gb >= 1000) {
+    const tb = gb / 1000;
+    return tb % 1 === 0 ? `${tb} TB` : `${tb.toFixed(1)} TB`;
+  }
+  return forceDecimal ? `${gb.toFixed(1)} GB` : `${gb} GB`;
+}
+
+function DiskItem({ 
+  disk, 
+  t, 
+  onEdit, 
+  onDragStart, 
+  onDrop 
+}: { 
+  disk: Disk, 
+  t: any, 
+  onEdit: (disk: Disk) => void, 
+  onDragStart: (e: React.DragEvent, id: string) => void, 
+  onDrop: (e: React.DragEvent, id: string) => void,
+  key?: any 
+}) {
   const freeGB = disk.totalGB - disk.usedGB;
   const usedPercent = (disk.usedGB / disk.totalGB) * 100;
+  const [isDragOver, setIsDragOver] = useState(false);
   
   return (
     <motion.div 
       whileHover={{ y: -2 }}
-      className="bg-surface-container-high/40 p-4 rounded-2xl border border-outline-variant/10 flex items-center gap-4 group cursor-pointer hover:bg-surface-container transition-colors"
+      draggable
+      onDragStart={(e) => onDragStart(e, disk.id)}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragOver(true);
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={(e) => {
+        setIsDragOver(false);
+        onDrop(e, disk.id);
+      }}
+      className={`p-4 rounded-2xl border flex items-center gap-4 group cursor-grab active:cursor-grabbing hover:bg-surface-container transition-all ${
+        isDragOver 
+          ? 'border-primary bg-primary/5 scale-[1.02] shadow-md' 
+          : 'bg-surface-container-high/40 border-outline-variant/10'
+      }`}
       onClick={() => onEdit(disk)}
     >
       <div className="relative shrink-0">
@@ -4957,21 +5848,58 @@ function DiskItem({ disk, t, onEdit }: { disk: Disk, t: any, onEdit: (disk: Disk
         </div>
         
         <p className="text-[10px] text-on-surface-variant/70 font-medium">
-          {freeGB.toFixed(1)} GB {t.freeSpace} {disk.totalGB} GB
+          {formatStorageUnit(freeGB, true)} {t.freeSpace} {formatStorageUnit(disk.totalGB)}
         </p>
       </div>
     </motion.div>
   );
 }
 
-function EditDiskModal({ isOpen, disk, onClose, onSave, t }: { isOpen: boolean, disk: Disk | null, onClose: () => void, onSave: (disk: Disk) => void, t: any }) {
+function EditDiskModal({ isOpen, disk, isAdding, onClose, onSave, onDelete, t, games = [], onGameClick }: { 
+  isOpen: boolean, 
+  disk: Disk | null, 
+  isAdding: boolean,
+  onClose: () => void, 
+  onSave: (disk: Disk) => void, 
+  onDelete?: (diskId: string) => void,
+  t: any,
+  games?: Game[],
+  onGameClick?: (gameId: string) => void
+}) {
   const [formData, setFormData] = useState<Partial<Disk>>({});
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const language = localStorage.getItem('gaminghub_language') || 'Português (Brasil)';
 
   useEffect(() => {
-    if (disk) setFormData(disk);
+    if (disk) {
+      setFormData(disk);
+      setConfirmDelete(false);
+    }
   }, [disk]);
 
   if (!isOpen || !disk) return null;
+
+  // Filter games associated with this disk
+  const diskGames = games.filter(g => {
+    if (!g.location) return false;
+    const loc = g.location.trim().toLowerCase();
+    const letter = (disk.letter || '').trim().toLowerCase();
+    const label = (disk.label || '').trim().toLowerCase();
+    
+    // Check if location starts with letter followed by a colon (like I:\... or I:)
+    if (loc.startsWith(letter + ':')) return true;
+    
+    // Check if the disk label matches or is included in the location
+    if (label && loc.includes(label)) return true;
+    
+    // Check if it contains the drive letter in parentheses/brackets/spaces
+    if (loc.includes('(' + letter + ':') || loc.includes('[' + letter + ':') || loc.includes(' ' + letter + ':')) return true;
+    
+    // If location is exactly the drive letter
+    if (loc === letter) return true;
+    
+    return false;
+  });
 
   return (
     <AnimatePresence>
@@ -4987,58 +5915,156 @@ function EditDiskModal({ isOpen, disk, onClose, onSave, t }: { isOpen: boolean, 
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative bg-surface-container-low w-full max-w-sm rounded-[2rem] p-8 shadow-2xl border border-outline-variant/30"
+          className="relative bg-surface-container-low w-full max-w-md rounded-[2rem] p-8 shadow-2xl border border-outline-variant/30 flex flex-col max-h-[90vh] overflow-hidden"
         >
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary">edit</span>
-            {t.editDisk}
-          </h2>
+          <div className="flex-1 overflow-y-auto space-y-6 pr-1">
+            <h2 className="text-xl font-bold flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary">
+                {isAdding ? 'add' : 'edit'}
+              </span>
+              {isAdding 
+                ? (language === 'English (US)' ? 'Add Storage Unit' : 'Adicionar Unidade') 
+                : (language === 'English (US)' ? 'Edit Disk' : 'Editar Disco')}
+            </h2>
 
-          <div className="space-y-4">
-            <div>
-              <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.diskName}</label>
-              <input 
-                type="text" 
-                value={formData.label || ''} 
-                onChange={e => setFormData({...formData, label: e.target.value})}
-                className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
-              />
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2">
+                  <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.diskName}</label>
+                  <input 
+                    type="text" 
+                    value={formData.label || ''} 
+                    onChange={e => setFormData({...formData, label: e.target.value})}
+                    className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">
+                    {language === 'English (US)' ? 'Letter' : 'Letra'}
+                  </label>
+                  <input 
+                    type="text" 
+                    maxLength={1}
+                    value={formData.letter || ''} 
+                    onChange={e => setFormData({...formData, letter: e.target.value.toUpperCase()})}
+                    className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all text-center font-bold"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.totalCapacity}</label>
+                  <input 
+                    type="number" 
+                    value={formData.totalGB || 0} 
+                    onChange={e => setFormData({...formData, totalGB: parseFloat(e.target.value)})}
+                    className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.usedSpace}</label>
+                  <input 
+                    type="number" 
+                    value={formData.usedGB || 0} 
+                    onChange={e => setFormData({...formData, usedGB: parseFloat(e.target.value)})}
+                    className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.totalCapacity}</label>
-                <input 
-                  type="number" 
-                  value={formData.totalGB || 0} 
-                  onChange={e => setFormData({...formData, totalGB: parseFloat(e.target.value)})}
-                  className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-1.5">{t.usedSpace}</label>
-                <input 
-                  type="number" 
-                  value={formData.usedGB || 0} 
-                  onChange={e => setFormData({...formData, usedGB: parseFloat(e.target.value)})}
-                  className="w-full bg-surface-container px-4 py-3 rounded-xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
-                />
-              </div>
+
+            <div className="pt-4 border-t border-outline-variant/20">
+              <label className="text-[10px] uppercase font-bold text-outline-variant tracking-widest block mb-2">
+                {localStorage.getItem('gaminghub_language') !== 'English (US)' ? 'Jogos nesta Unidade' : 'Games on this Drive'} ({diskGames.length})
+              </label>
+              
+              {diskGames.length > 0 ? (
+                <div className="max-h-52 overflow-y-auto space-y-2 pr-1">
+                  {diskGames.map(game => (
+                    <div 
+                      key={game.id}
+                      onClick={() => onGameClick?.(game.id)}
+                      className="flex items-center gap-3 p-2 rounded-xl bg-surface-container hover:bg-primary/10 transition-all cursor-pointer group"
+                    >
+                      <img 
+                        src={game.coverUrl} 
+                        alt="" 
+                        className="w-8 h-10 object-cover rounded shadow-sm"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-on-surface truncate group-hover:text-primary transition-colors">
+                          {game.title}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-0.5 text-[9px] text-on-surface-variant font-medium">
+                          <span className="uppercase">{Array.isArray(game.platform) ? game.platform[0] : game.platform}</span>
+                          {game.size && <span>• {game.size}</span>}
+                        </div>
+                      </div>
+                      <span className="material-symbols-outlined text-sm text-outline opacity-0 group-hover:opacity-100 transition-opacity mr-1">
+                        arrow_forward
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-on-surface-variant/50 italic py-2">
+                  {localStorage.getItem('gaminghub_language') !== 'English (US)' 
+                    ? 'Nenhum jogo associado a esta unidade.' 
+                    : 'No games associated with this drive.'}
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="flex gap-3 mt-8">
-            <button 
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border border-outline-variant text-on-surface font-bold text-sm rounded-xl hover:bg-surface-container transition-all"
-            >
-              {t.cancel}
-            </button>
-            <button 
-              onClick={() => onSave({...disk, ...formData} as Disk)}
-              className="flex-1 py-3 px-4 bg-primary text-on-primary font-bold text-sm rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/20"
-            >
-              {t.saveDisk}
-            </button>
+          <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-outline-variant/10">
+            <div className="flex gap-3">
+              <button 
+                onClick={onClose}
+                className="flex-1 py-3 px-4 border border-outline-variant text-on-surface font-bold text-sm rounded-xl hover:bg-surface-container transition-all cursor-pointer"
+              >
+                {t.cancel}
+              </button>
+              <button 
+                onClick={() => onSave({...disk, ...formData} as Disk)}
+                className="flex-1 py-3 px-4 bg-primary text-on-primary font-bold text-sm rounded-xl hover:brightness-110 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+              >
+                {isAdding 
+                  ? (language === 'English (US)' ? 'Add Unit' : 'Adicionar Unidade') 
+                  : t.saveDisk}
+              </button>
+            </div>
+            {!isAdding && disk.id && (
+              <div className="w-full mt-1">
+                {!confirmDelete ? (
+                  <button 
+                    onClick={() => setConfirmDelete(true)}
+                    className="w-full py-2.5 px-4 bg-error/10 hover:bg-error/20 text-error border border-error/20 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 outline-none"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                    {language === 'English (US)' ? 'Delete Storage Unit' : 'Excluir Unidade'}
+                  </button>
+                ) : (
+                  <div className="flex gap-2 w-full animate-fade-in">
+                    <button 
+                      onClick={() => setConfirmDelete(false)}
+                      className="flex-1 py-2 px-3 border border-outline-variant text-on-surface text-xs font-bold rounded-xl hover:bg-surface-container transition-all cursor-pointer"
+                    >
+                      {language === 'English (US)' ? 'Cancel' : 'Cancelar'}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        onDelete?.(disk.id);
+                        setConfirmDelete(false);
+                      }}
+                      className="flex-1 py-2 px-3 bg-error text-white text-xs font-bold rounded-xl hover:bg-error/80 transition-all cursor-pointer flex items-center justify-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">delete_forever</span>
+                      {language === 'English (US)' ? 'Confirm' : 'Confirmar'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
