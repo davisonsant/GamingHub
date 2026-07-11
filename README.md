@@ -20,11 +20,7 @@
     <strong>novas funções como: ranking e armazenamento.</strong>
   </p>
 
-![GamingHub Home Page](./docs/screenshot2.png)
-![GamingHub Home Page](./docs/screenshot3.png)
-![GamingHub Home Page](./docs/screenshot4.png)
-![GamingHub Home Page](./docs/screenshot5.png)
-![GamingHub Home Page](./docs/screenshot6.png)
+![GamingHub Home Page](./docs/screenshot7.png)
 
 </div>
 
