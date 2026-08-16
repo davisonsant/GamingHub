@@ -5,22 +5,16 @@
   <h1 align="center">GamingHub</h1>
 
   <p align="center">
-    <strong>O GamingHub é uma plataforma de jogos de código aberto criada para ser a única ferramenta de que você precisa para gerenciar sua biblioteca de jogos. O GamingHub é desenvolvido em Node.js (Electron, React, TypeScript) e Python.</strong>
+    <strong>GamingHub is an open-source gaming platform created to be the single tool that you need in order to manage your gaming library. GamingHub is written in Node.js (Electron, React, Typescript) and Python.</strong>
   </p>
 
 ![GamingHub Home Page](./docs/screenshot.png)
 
   <p align="center">
-    <strong>apresenta uma interface moderna em Modo Escuro, projetada para oferecer conforto visual, imersão e uma experiência premium no gerenciamento da sua biblioteca de jogos.</strong>
+    <strong>features a modern Dark Mode interface, designed to offer visual comfort, immersion, and a premium experience for managing your gaming library.</strong>
   </p>
 
 ![GamingHub Home Page](./docs/screenshot_dark_mode.png)
-
-  <p align="center">
-    <strong>novas funções como: ranking e armazenamento.</strong>
-  </p>
-
-![GamingHub Home Page](./docs/screenshot7.png)
 
 </div>
 

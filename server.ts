@@ -782,7 +782,10 @@ Provide the response STRICTLY as a raw JSON object complying with this exact sch
                 return;
               }
               
-              // Auto close application after launching update to make sure files are not locked during installation
+              // Auto close application after launching update to make sure files are not locked during installation.
+              // Note: Under Electron, we call app.exit(0) and destroy browser windows. 
+              // Any orphaned Chromium helper processes (GPU, utility, or crashpad-handler) 
+              // will be forcefully cleaned up by build/installer.nsh upon installer execution.
               setTimeout(() => {
                 console.log("[Updater] Closing application... Update is being run!");
                 if (process.env.IS_ELECTRON === 'true') {

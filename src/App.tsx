@@ -12,6 +12,7 @@ import React, { useState, useMemo, useEffect, useRef, type ReactNode, type Mouse
 import { motion, AnimatePresence } from 'motion/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Game, type GameStatus, type UserSettings, type Disk, type RoadmapItem, type ChangelogEntry } from './lib/db';
+import { matchesGameTitle } from './lib/searchUtils';
 
 function getGenreColor(genre: string) {
   const colors = [
@@ -65,6 +66,9 @@ function getApiUrl(path: string): string {
 
 // Mock Data for initial seed
 const INITIAL_GAMES: Game[] = [];
+
+const DEFAULT_AVATAR = "https://lh3.googleusercontent.com/aida-public/AB6AXuCteXppEy_4C1ES54wvS9QXaGTeoYBOajgFUD05c8Lk1XPWeyDHKD3afKIQ6lZwcXskaQEU7Dlud1nEiFXJ7tPqTROQaAUZD9Aw4k_eTvKQ8Hx_0ueJTpGXqY-j4TOkuZAdkbPaYV91lsO0xDBAahIdgbvhubD2QJy-fPWI0zYId92SC0XSpWKDOQeYdnYv9wtsICaBg1BTeEI1SVbNK2Mg5fPUBBlfiF2N1tjJ7Vc5l8zBOI51ETHqzSKLo-NKH-l0-TeZWnA25d4";
+const DEFAULT_COVER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%231a1a24'/%3E%3Cpath d='M110 180h80v40h-80z' fill='%23333344'/%3E%3Ctext x='150' y='210' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23777799' text-anchor='middle'%3EGamingHub%3C/text%3E%3C/svg%3E";
 
 const INITIAL_DISKS: Disk[] = [
   { id: '1', label: 'Unidade A', letter: 'C', totalGB: 500, usedGB: 404 },
@@ -421,7 +425,7 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-          const current = "1.5.0";
+          const current = "1.6.0";
           const latestParts = latestTag.split('.').map(Number);
           const currentParts = current.split('.').map(Number);
           let isNewer = false;
@@ -642,19 +646,22 @@ export default function App() {
       if (diskCount === 0) {
         await db.disks.bulkAdd(INITIAL_DISKS);
       } else {
-        const allDisks = await db.disks.toArray();
-        const hasOldLabels = allDisks.some(d => d.label === 'Windows' || d.label === 'Expansion Disc I');
-        const needsCapacityUpdate = allDisks.some(d => INITIAL_DISKS.some(init => init.id === d.id && d.totalGB !== init.totalGB));
-        if (hasOldLabels || needsCapacityUpdate) {
-          for (const disk of allDisks) {
-            const initialMatch = INITIAL_DISKS.find(d => d.id === disk.id);
-            if (initialMatch) {
-              disk.label = initialMatch.label;
-              disk.totalGB = initialMatch.totalGB;
-              disk.usedGB = initialMatch.usedGB;
-              await db.disks.put(disk);
+        const disksMigrated = localStorage.getItem('gaminghub_disks_migrated_v151');
+        if (!disksMigrated) {
+          const allDisks = await db.disks.toArray();
+          const hasOldLabels = allDisks.some(d => d.label === 'Windows' || d.label === 'Expansion Disc I');
+          if (hasOldLabels) {
+            for (const disk of allDisks) {
+              if (disk.label === 'Windows') {
+                disk.label = 'Unidade A';
+                await db.disks.put(disk);
+              } else if (disk.label === 'Expansion Disc I') {
+                disk.label = 'Unidade B';
+                await db.disks.put(disk);
+              }
             }
           }
+          localStorage.setItem('gaminghub_disks_migrated_v151', 'true');
         }
       }
       const settingsCount = await db.settings.count();
@@ -671,23 +678,24 @@ export default function App() {
       const roadmapCount = await db.roadmap.count();
       if (roadmapCount === 0) {
         await db.roadmap.bulkPut([
-          { id: '1', title: 'Novos Temas', date: 'Q3 2026', description: 'Personalização avançada de cores e fontes.', status: 'completed', priority: 'Q3' },
+          { id: '1', title: 'Novos Temas', date: 'Q3 2026', description: 'Personalização avançada de cores e fontes.', status: 'planned', priority: 'Q3' },
           { id: '2', title: 'Integração Web', date: 'Q2 2026', description: 'Sincronização com Steam e PlayStation Network.', status: 'in-progress', priority: 'Q2' },
-          { id: '3', title: 'Modo Multiplayer', date: 'Q1 2026', description: 'Compare sua biblioteca com amigos.', status: 'planned', priority: 'Q1' },
-          { id: '4', title: 'Sincronização de capas e informações Steam', date: 'Q1 2026', description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.', status: 'completed', priority: 'Q1' }
+          { id: '3', title: 'Biblioteca Pública', date: 'Q1 2026', description: 'Compare sua biblioteca com amigos.', status: 'planned', priority: 'Q1' },
+          { id: '4', title: 'Sincronização de capas e informações Steam', date: 'Q1 2026', description: 'Implementação de sistema e mecanismo que busca automaticamente capa e informações dos jogos ao cadastrar.', status: 'completed', priority: 'Q1' },
+          { id: '5', title: 'Sincronização Steam', date: 'Q1 2026', description: 'Sistema de sincronizar conquistas da Steam na biblioteca além de outras estatísticas', status: 'planned', priority: 'Q1' }
         ]);
       } else {
         const r1 = await db.roadmap.get('1');
-        if (r1 && r1.date === 'Q2 2024') {
-          await db.roadmap.update('1', { date: 'Q3 2026' });
+        if (r1) {
+          await db.roadmap.update('1', { status: 'planned', date: 'Q3 2026' });
         }
         const r2 = await db.roadmap.get('2');
         if (r2 && r2.date === 'Q3 2024') {
           await db.roadmap.update('2', { date: 'Q2 2026' });
         }
         const r3 = await db.roadmap.get('3');
-        if (r3 && r3.date === 'Q4 2024') {
-          await db.roadmap.update('3', { date: 'Q1 2026' });
+        if (r3) {
+          await db.roadmap.update('3', { title: 'Biblioteca Pública', date: 'Q1 2026' });
         }
         const r4 = await db.roadmap.get('4');
         if (!r4) {
@@ -701,6 +709,17 @@ export default function App() {
           });
         } else if (r4.status !== 'completed') {
           await db.roadmap.update('4', { status: 'completed' });
+        }
+        const r5 = await db.roadmap.get('5');
+        if (!r5) {
+          await db.roadmap.put({
+            id: '5',
+            title: 'Sincronização Steam',
+            date: 'Q1 2026',
+            description: 'Sistema de sincronizar conquistas da Steam na biblioteca além de outras estatísticas',
+            status: 'planned',
+            priority: 'Q1'
+          });
         }
       }
 
@@ -816,6 +835,62 @@ export default function App() {
           'Resolvido bug crítico de travamento e handles de arquivos no instalador NSIS através do encerramento limpo via API do Electron ao atualizar.'
         ]
       });
+      await db.changelog.put({
+        id: '12',
+        version: '1.5.1',
+        date: '2026-07-11',
+        changes: [
+          'Resolvido bug de backup onde os nomes personalizados das Unidades de Armazenamento não eram salvos e restaurados.',
+          'Corrigida a exibição da Sinopse na tela de detalhes dos jogos para respeitar quebras de linha e parágrafos de forma correta e legível.'
+        ]
+      });
+      await db.changelog.put({
+        id: '13',
+        version: '1.5.2',
+        date: '2026-07-12',
+        changes: [
+          'Resolução definitiva na atualização dinâmica do contêiner "Adicionados Recentemente" e "Concluídos Recentemente" na tela de Estatísticas através do controle preciso de registros de data/hora.',
+          'Correção de persistência nos nomes personalizados das Unidades de Armazenamento, garantindo consistência total ao importar, exportar ou recarregar os dados.'
+        ]
+      });
+      await db.changelog.put({
+        id: '14',
+        version: '1.6.0',
+        date: '2026-08-16',
+        changes: [
+          'Adicionado o botão "Carregar Capa de Fundo (horizontal)" na tela de Editar Jogo para envio de imagem panorâmica personalizada a partir do computador, com opções completas de alterar e remover foto.',
+          'Reformulado o campo de Plataformas no formulário de jogo para abrir automaticamente a listagem de plataformas e inserção personalizada diretamente ao clicar no campo.',
+          'Implementada a sugestão e preenchimento inteligente de Localização com base nas localizações já cadastradas na biblioteca (confirmado pela tecla TAB).',
+          'Adicionado o novo campo de Região ao lado de Localização para catalogação detalhada da procedência dos jogos.',
+          'Aprimorada a pesquisa global na barra superior para pesquisar e navegar diretamente para os resultados na Biblioteca mesmo ao buscar a partir da página de Detalhes de um jogo.',
+          'Correção e sincronização em tempo real das listas "Adicionados Recentemente" e "Concluídos Recentemente" na tela de Estatísticas com ordenação cronológica precisa e suporte a jogos 100% zerados.'
+        ]
+      });
+
+      // Ensure all games have valid addedAt, dateAdded and completedAt timestamps
+      try {
+        const allGames = await db.games.toArray();
+        for (let i = 0; i < allGames.length; i++) {
+          const game = allGames[i];
+          const updates: Partial<Game> = {};
+          
+          if (!game.dateAdded || !game.addedAt) {
+            const fallbackTime = game.dateAdded || game.addedAt || (1710000000000 + i * 1000);
+            updates.dateAdded = fallbackTime;
+            updates.addedAt = fallbackTime;
+          }
+
+          if ((game.status === 'Completos' || game.progress === 100) && !game.completedAt) {
+            updates.completedAt = updates.dateAdded || game.dateAdded || game.addedAt || (1710000000000 + i * 1000);
+          }
+
+          if (Object.keys(updates).length > 0) {
+            await db.games.update(game.id, updates);
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao verificar timestamps dos jogos:", err);
+      }
     };
     seed();
   }, []);
@@ -860,7 +935,7 @@ export default function App() {
       const data = await res.json();
       
       const latestTag = data.tag_name ? data.tag_name.replace(/^v/, '') : '';
-      const current = "1.5.0";
+      const current = "1.6.0";
       
       const latestParts = latestTag.split('.').map(Number);
       const currentParts = current.split('.').map(Number);
@@ -950,8 +1025,22 @@ export default function App() {
       .sort((a,b) => (b.rating || 0) - (a.rating || 0))
       .slice(0, 3);
       
-    const recentlyAdded = [...games].sort((a, b) => b.id.localeCompare(a.id)).slice(0, 4);
-    const recentlyCompleted = games.filter(g => g.status === 'Completos').sort((a, b) => b.id.localeCompare(a.id)).slice(0, 4);
+    const recentlyAdded = [...games].sort((a, b) => {
+      const timeA = a.dateAdded || a.addedAt || 0;
+      const timeB = b.dateAdded || b.addedAt || 0;
+      if (timeA !== timeB) return timeB - timeA;
+      return (b.id || "").localeCompare(a.id || "");
+    }).slice(0, 4);
+
+    const recentlyCompleted = games
+      .filter(g => g.status === 'Completos' || g.progress === 100)
+      .sort((a, b) => {
+        const timeA = a.completedAt || a.dateAdded || a.addedAt || 0;
+        const timeB = b.completedAt || b.dateAdded || b.addedAt || 0;
+        if (timeA !== timeB) return timeB - timeA;
+        return (b.id || "").localeCompare(a.id || "");
+      })
+      .slice(0, 4);
     
     // Gamer Level Calculation (Based on Campaign Progress)
     const experiencePoints = games.reduce((acc, g) => acc + (g.progress || 0), 0);
@@ -1097,8 +1186,8 @@ export default function App() {
     else if (view === 'Stats') list = list.filter(g => g.status === 'Backlog'); // Duplicating Backlog as Stats
     
     // Search
-    if (searchQuery) {
-      list = list.filter(g => g.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (searchQuery.trim()) {
+      list = list.filter(g => matchesGameTitle(g.title, searchQuery));
     }
 
     // Genre
@@ -1142,8 +1231,12 @@ export default function App() {
         case 'Rating':
           return (b.rating || 0) - (a.rating || 0);
         case 'Date':
-        default:
+        default: {
+          const timeA = a.dateAdded || a.addedAt || 0;
+          const timeB = b.dateAdded || b.addedAt || 0;
+          if (timeA !== timeB) return timeB - timeA;
           return (b.id || "").localeCompare(a.id || "");
+        }
       }
     });
 
@@ -1212,9 +1305,20 @@ export default function App() {
   const handleSaveGame = async (gameData: Partial<Game>) => {
     if (view === 'Edit' && selectedGameId) {
       const { id, ...updates } = gameData;
+      const isCompleted = updates.status === 'Completos' || (updates.progress !== undefined && updates.progress === 100);
+      const oldGame = await db.games.get(selectedGameId);
+      const wasCompleted = oldGame?.status === 'Completos' || (oldGame?.progress ?? 0) === 100;
+      
+      if (isCompleted && !wasCompleted) {
+        (updates as any).completedAt = Date.now();
+      } else if (updates.status && updates.status !== 'Completos' && (updates.progress === undefined ? (oldGame?.progress ?? 0) < 100 : updates.progress < 100)) {
+        (updates as any).completedAt = undefined;
+      }
       await db.games.update(selectedGameId, updates);
       setView('Details');
     } else {
+      const now = Date.now();
+      const isCompleted = gameData.status === 'Completos' || gameData.progress === 100;
       const newGame: Game = {
         title: gameData.title || 'Novo Jogo',
         genre: gameData.genre || '',
@@ -1229,15 +1333,20 @@ export default function App() {
         developer: gameData.developer || '',
         publisher: gameData.publisher || '',
         location: gameData.location || '',
+        region: gameData.region || '',
         synopsis: gameData.synopsis || '',
         genres: gameData.genres || [],
         trailerUrl: gameData.trailerUrl,
+        bannerUrl: gameData.bannerUrl || '',
         isPlatinum: gameData.isPlatinum || false,
         build: gameData.build || '',
         version: gameData.version || '',
         dlc: gameData.dlc || '',
         size: gameData.size || '',
         id: Math.random().toString(36).substr(2, 9),
+        addedAt: now,
+        dateAdded: now,
+        completedAt: isCompleted ? now : undefined,
       };
       await db.games.add(newGame);
       setView('Library');
@@ -1262,7 +1371,7 @@ export default function App() {
 
   const handleExport = (fullBackup = false) => {
     const data = fullBackup 
-      ? { games, theme, userAvatar, version: '1.0.4' }
+      ? { games, theme, userAvatar, userName, disks, version: '1.0.4' }
       : games;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1290,12 +1399,17 @@ export default function App() {
                 await db.games.clear();
                 await db.games.bulkAdd(parsed.games);
              }
-             if (parsed.theme || parsed.userAvatar) {
+             if (parsed.theme || parsed.userAvatar || parsed.userName) {
                 await db.settings.update('current', {
-                   theme: parsed.theme,
-                   userAvatar: parsed.userAvatar,
+                   theme: parsed.theme || theme,
+                   userAvatar: parsed.userAvatar || userAvatar,
                    userName: parsed.userName || userName
                 });
+             }
+             if (parsed.disks && Array.isArray(parsed.disks)) {
+                await db.disks.clear();
+                await db.disks.bulkAdd(parsed.disks);
+                localStorage.setItem('gaminghub_disks_migrated_v151', 'true');
              }
              alert("Backup restaurado com sucesso!");
           } else {
@@ -1548,14 +1662,36 @@ export default function App() {
                 </button>
               )}
               <div className="relative w-full max-w-sm">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">search</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px] pointer-events-none">search</span>
                 <input 
                   type="text" 
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-surface-container-low border border-outline-variant/5 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchQuery(val);
+                    if (val.trim().length > 0 && view !== 'Library' && view !== 'Favorites' && view !== 'Playing' && view !== 'Completed' && view !== 'Backlog') {
+                      setView('Library');
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && view !== 'Library' && view !== 'Favorites' && view !== 'Playing' && view !== 'Completed' && view !== 'Backlog') {
+                      setView('Library');
+                    }
+                  }}
+                  className={`w-full bg-surface-container-low border border-outline-variant/5 rounded-lg pl-10 ${searchQuery ? 'pr-9' : 'pr-4'} py-2 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none`}
                 />
+                {searchQuery.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    title="Limpar busca"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-outline hover:text-on-surface hover:bg-surface-container transition-colors flex items-center justify-center cursor-pointer"
+                    aria-label="Limpar busca"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -1622,7 +1758,7 @@ export default function App() {
                 className="w-8 h-8 rounded-full border border-outline-variant shadow-sm hover:ring-2 hover:ring-primary/30 transition-all overflow-hidden active:scale-95 cursor-pointer outline-none"
               >
                 <img 
-                  src={userAvatar} 
+                  src={userAvatar || DEFAULT_AVATAR} 
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                 />
@@ -1669,7 +1805,7 @@ export default function App() {
                 {/* Filter Bar */}
                 <div className="bg-surface-container-low border border-outline-variant/10 p-2 rounded-xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between shadow-sm gap-3">
                   <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1.5 lg:pb-0">
-                    {allGenres.map(genre => {
+                    {['Todos', 'RPG', 'Aventura', 'Ação', 'Mundo Aberto', 'Third-person', 'Shooter', 'Indie', 'Fantasia', 'Simulação', 'Corrida', 'Sci-Fi', 'Esporte', 'Stealth'].map(genre => {
                       const isTodos = genre === 'Todos';
                       const isActive = isTodos ? activeGenres.length === 0 : activeGenres.includes(genre);
                       
@@ -1694,7 +1830,7 @@ export default function App() {
                           }`}
                         >
                           {!isTodos && activeGenres.includes(genre) && <span className="material-symbols-outlined text-[12px]">check_circle</span>}
-                          {genre}
+                          {genre === 'Todos' ? t.all : genre}
                         </button>
                       );
                     })}
@@ -1844,6 +1980,7 @@ export default function App() {
 
                 {/* Grid */}
                 <motion.div 
+                  key={`${view}-${sortBy}-${searchQuery}-${activeGenres.join(',')}-${activePlatform}-${activeDeveloper}-${activeYear}-${platinumFilter}`}
                   initial="hidden"
                   animate="show"
                   variants={{
@@ -1851,7 +1988,7 @@ export default function App() {
                     show: {
                       opacity: 1,
                       transition: {
-                        staggerChildren: 0.05
+                        staggerChildren: 0.03
                       }
                     }
                   }}
@@ -1862,8 +1999,16 @@ export default function App() {
                       key={game.id}
                       className="w-full"
                       variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        show: { opacity: 1, y: 0 }
+                        hidden: { opacity: 0, y: 12 },
+                        show: { 
+                          opacity: 1, 
+                          y: 0,
+                          transition: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20
+                          }
+                        }
                       }}
                     >
                       <GameCard 
@@ -1871,7 +2016,11 @@ export default function App() {
                         t={t}
                         onToggleFavorite={handleToggleFavorite}
                         onUpdateStatus={async (id, status) => {
-                          await db.games.update(id, { status });
+                          const updates: Partial<Game> = { status };
+                          if (status === 'Completos') {
+                            updates.completedAt = Date.now();
+                          }
+                          await db.games.update(id, updates);
                         }}
                         onClick={() => navigateToDetails(game.id)}
                         statusColor={getStatusColor(game.status)}
@@ -1991,7 +2140,7 @@ export default function App() {
                             {extraStats.top3.length > 0 ? extraStats.top3.map((game, i) => (
                               <div key={game.id} className="relative group cursor-pointer" onClick={() => navigateToDetails(game.id)}>
                                 <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-2 border-primary/20 group-hover:scale-[1.02] transition-transform duration-500">
-                                  <img src={game.coverUrl} className="w-full h-full object-cover" alt={game.title} />
+                                  <img src={game.coverUrl || DEFAULT_COVER} className="w-full h-full object-cover" alt={game.title} />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 flex flex-col justify-end p-4">
                                     <h4 className="text-white text-xs font-bold truncate mb-1">{game.title}</h4>
                                     <div className="flex items-center gap-1">
@@ -2142,7 +2291,7 @@ export default function App() {
                           {extraStats.recentlyAdded.map(g => (
                             <div key={g.id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-container transition-all cursor-pointer group" onClick={() => navigateToDetails(g.id)}>
                               <div className="relative w-12 h-16 rounded-lg overflow-hidden shadow-md">
-                                <img src={g.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                                <img src={g.coverUrl || DEFAULT_COVER} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">{g.title}</p>
@@ -2162,7 +2311,7 @@ export default function App() {
                           {extraStats.recentlyCompleted.length > 0 ? extraStats.recentlyCompleted.map(g => (
                             <div key={g.id} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-container transition-all cursor-pointer group" onClick={() => navigateToDetails(g.id)}>
                               <div className="relative w-12 h-16 rounded-lg overflow-hidden shadow-md">
-                                <img src={g.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                                <img src={g.coverUrl || DEFAULT_COVER} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">{g.title}</p>
@@ -2270,7 +2419,7 @@ export default function App() {
                         {extraStats.largestGames.map(game => (
                           <div key={game.id} className="p-3 bg-surface-container-high/40 rounded-2xl border border-outline-variant/5 group hover:border-primary/30 transition-colors cursor-pointer" onClick={() => navigateToDetails(game.id)}>
                             <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 border border-outline-variant/10">
-                              <img src={game.coverUrl} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                              <img src={game.coverUrl || DEFAULT_COVER} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
                             </div>
                             <p className="text-[10px] font-bold text-on-surface truncate mb-1">{game.title}</p>
                             <p className="text-xs font-black text-primary">{game.size}</p>
@@ -2314,7 +2463,7 @@ export default function App() {
                                 <div className="space-y-3">
                                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-outline-variant/10 group-hover:border-primary/50 transition-all duration-500">
                                     <img 
-                                      src={rankingGame.coverUrl} 
+                                      src={rankingGame.coverUrl || DEFAULT_COVER} 
                                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                       alt={rankingGame.title} 
                                     />
@@ -2388,7 +2537,7 @@ export default function App() {
                           </h3>
                           
                           <div className="relative pl-8 space-y-12 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-outline-variant/30">
-                            {roadmapItems.sort((a,b) => a.date.localeCompare(b.date)).map((item) => (
+                            {[...roadmapItems].sort((a, b) => a.date.localeCompare(b.date) || Number(a.id) - Number(b.id)).map((item) => (
                               <div key={item.id} className="relative">
                                 <div className={`absolute -left-[37px] top-1.5 w-6 h-6 rounded-full border-4 border-surface-container flex items-center justify-center shadow-sm z-10 ${
                                   item.status === 'completed' ? 'bg-green-500' :
@@ -2794,7 +2943,6 @@ function GameCard({
   const language = localStorage.getItem('gaminghub_language') || 'Português (Brasil)';
   return (
     <motion.div 
-      layoutId={game.id}
       onClick={onClick}
       whileHover={{ 
         y: -4,
@@ -2806,7 +2954,7 @@ function GameCard({
     >
       <div className="relative aspect-square overflow-hidden rounded-none">
         <motion.img 
-          src={game.coverUrl} 
+          src={game.coverUrl || DEFAULT_COVER} 
           alt={game.title} 
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.4 }}
@@ -2831,7 +2979,7 @@ function GameCard({
           }}
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.85 }}
-          className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors z-20"
+          className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors z-20"
         >
           <span className={`material-symbols-outlined text-[20px] transition-colors ${game.isFavorite ? 'text-red-500 font-variation-fill' : ''}`} style={{ fontVariationSettings: `"FILL" ${game.isFavorite ? 1 : 0}` }}>favorite</span>
         </motion.button>
@@ -3111,7 +3259,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden shadow-2xl h-[380px] group">
         <img 
-          src={game.coverUrl || '/public/icon.png'} 
+          src={game.bannerUrl || game.coverUrl || DEFAULT_COVER} 
           alt={game.title} 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
         />
@@ -3227,7 +3375,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
               <div className="w-1 h-6 bg-primary rounded-full" />
               <h3 className="font-display text-sm lg:text-base font-bold text-on-surface-variant uppercase tracking-wider">{t.synopsis}</h3>
             </div>
-            <p className="font-sans text-on-surface-variant leading-relaxed text-xs lg:text-sm font-normal opacity-90 max-w-none">
+            <p className="font-sans text-on-surface-variant leading-relaxed text-xs lg:text-sm font-normal opacity-90 max-w-none whitespace-pre-line">
               {game.synopsis}
             </p>
           </section>
@@ -3287,6 +3435,7 @@ function GameDetailView({ game, onEdit, onBack, onToggleFavorite, onDeleteReques
               <DetailItem label="Desenvolvedor" value={game.developer} />
               <DetailItem label="Publicador" value={game.publisher} />
               <DetailItem label="Localização" value={game.location} />
+              <DetailItem label={t.region || "Região"} value={game.region || 'Global'} />
               <DetailItem label="Build" value={game.build || 'N/A'} />
               <DetailItem label="Versão" value={game.version || 'N/A'} />
               <DetailItem label="DLC" value={game.dlc || 'N/A'} />
@@ -3341,6 +3490,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
     title: '',
     platform: [],
     coverUrl: '',
+    bannerUrl: '',
     rating: 0,
     status: 'Backlog',
     playtime: 0,
@@ -3350,6 +3500,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
     synopsis: '',
     genres: [],
     location: '',
+    region: '',
     trailerUrl: '',
     isPlatinum: false,
     releaseDate: '',
@@ -3361,10 +3512,39 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
 
   const [newGenre, setNewGenre] = useState('');
   const [newPlatform, setNewPlatform] = useState('');
+  const [isPlatformMenuOpen, setIsPlatformMenuOpen] = useState(false);
+  const [customPlatformInput, setCustomPlatformInput] = useState('');
+  const platformContainerRef = useRef<HTMLDivElement>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [activeTrailerUrl, setActiveTrailerUrl] = useState<string | null>(null);
+
+  // Existing locations for auto-completion
+  const allExistingGames = useLiveQuery(() => db.games.toArray()) || [];
+  const existingLocations = useMemo(() => {
+    const locs = allExistingGames
+      .map(g => g.location?.trim())
+      .filter((l): l is string => Boolean(l && l.length > 0));
+    return Array.from(new Set(locs));
+  }, [allExistingGames]);
+
+  const [isLocationFocused, setIsLocationFocused] = useState(false);
+  const currentLocationInput = formData.location || '';
+  const locationSuggestion = useMemo(() => {
+    if (!currentLocationInput.trim()) return null;
+    return existingLocations.find(loc => 
+      loc.toLowerCase().startsWith(currentLocationInput.toLowerCase()) && 
+      loc.toLowerCase() !== currentLocationInput.toLowerCase()
+    ) || null;
+  }, [currentLocationInput, existingLocations]);
+
+  const filteredLocations = useMemo(() => {
+    if (!currentLocationInput.trim()) return existingLocations.slice(0, 8);
+    return existingLocations.filter(loc => 
+      loc.toLowerCase().includes(currentLocationInput.toLowerCase())
+    ).slice(0, 8);
+  }, [currentLocationInput, existingLocations]);
 
   const handleSyncGameInfo = async () => {
     if (!formData.title?.trim()) {
@@ -3429,6 +3609,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -3436,6 +3617,17 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, coverUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, bannerUrl: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -3460,6 +3652,36 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
     setFormData(prev => ({ ...prev, genres: prev.genres?.filter(g => g !== genre) }));
   };
 
+  const STANDARD_PLATFORMS = [
+    'PC', 
+    'PlayStation 5', 
+    'PlayStation 4', 
+    'Xbox Series X|S', 
+    'Xbox One', 
+    'Nintendo Switch', 
+    'Steam Deck', 
+    'Mobile', 
+    'PlayStation 3', 
+    'Xbox 360', 
+    'Nintendo Wii / Wii U', 
+    'Nintendo 3DS', 
+    'Retro / Emulador'
+  ];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (platformContainerRef.current && !platformContainerRef.current.contains(event.target as Node)) {
+        setIsPlatformMenuOpen(false);
+      }
+    };
+    if (isPlatformMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isPlatformMenuOpen]);
+
   const addPlatform = (platform: string) => {
     const p = platform.trim();
     if (p && !formData.platform?.includes(p)) {
@@ -3475,6 +3697,17 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
       ...prev, 
       platform: Array.isArray(prev.platform) ? prev.platform.filter(p => p !== platform) : [] 
     }));
+  };
+
+  const togglePlatform = (platform: string) => {
+    const p = platform.trim();
+    if (!p) return;
+    const current = Array.isArray(formData.platform) ? formData.platform : [];
+    if (current.includes(p)) {
+      removePlatform(p);
+    } else {
+      addPlatform(p);
+    }
   };
 
   return (
@@ -3511,7 +3744,7 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
               className="relative group cursor-pointer aspect-[3/4] bg-surface-container-low border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all overflow-hidden"
               onClick={() => fileInputRef.current?.click()}
             >
-              {formData.coverUrl ? (
+              {formData.coverUrl && formData.coverUrl.trim() !== '' ? (
                 <img src={formData.coverUrl} alt="Capa" className="w-full h-full object-cover" />
               ) : (
                 <>
@@ -3519,9 +3752,22 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
                   <span className="font-body-sm text-body-sm px-4 text-center">{t.clickToUpload}</span>
                 </>
               )}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
-                <span className="material-symbols-outlined mb-2">add_photo_alternate</span>
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity gap-2">
+                <span className="material-symbols-outlined mb-1">add_photo_alternate</span>
                 <span className="font-label-md">{t.changePhoto}</span>
+                {formData.coverUrl && formData.coverUrl.trim() !== '' && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFormData(prev => ({ ...prev, coverUrl: '' }));
+                    }}
+                    className="mt-1 px-3 py-1 bg-error text-white rounded-lg text-xs font-semibold hover:bg-error/80 flex items-center gap-1 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">delete</span>
+                    {t.removePhoto || "Remover Foto"}
+                  </button>
+                )}
               </div>
             </div>
             <p className="font-body-sm text-body-sm text-on-surface-variant/70 text-center">{t.recommendedFormat}</p>
@@ -3545,6 +3791,60 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
                   onChange={(e) => setFormData({...formData, trailerUrl: e.target.value})}
                 />
               </div>
+
+              {/* Horizontal Background Cover Upload */}
+              <div className="pt-4 border-t border-outline-variant/20 space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">
+                  {t.horizontalCover || "Capa de Fundo (horizontal)"}
+                </label>
+
+                <input 
+                  type="file"
+                  ref={bannerFileInputRef}
+                  onChange={handleBannerUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+
+                {formData.bannerUrl && formData.bannerUrl.trim() !== '' ? (
+                  <div className="relative group rounded-xl overflow-hidden aspect-[16/9] border-2 border-outline-variant/30 bg-surface-container-low shadow-sm">
+                    <img 
+                      src={formData.bannerUrl} 
+                      alt="Capa de Fundo" 
+                      className="w-full h-full object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                      <button
+                        type="button"
+                        onClick={() => bannerFileInputRef.current?.click()}
+                        className="px-3 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold flex items-center gap-1.5 hover:brightness-110 active:scale-95 transition-all shadow"
+                      >
+                        <span className="material-symbols-outlined text-[15px]">edit</span>
+                        {t.changePhoto || "Alterar foto"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, bannerUrl: '' }))}
+                        className="px-3 py-1.5 bg-error text-white rounded-lg text-xs font-bold flex items-center gap-1.5 hover:brightness-110 active:scale-95 transition-all shadow"
+                      >
+                        <span className="material-symbols-outlined text-[15px]">delete</span>
+                        {t.deletePhoto || "Excluir foto"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => bannerFileInputRef.current?.click()}
+                    className="w-full py-4 px-4 border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all cursor-pointer group"
+                  >
+                    <span className="material-symbols-outlined text-3xl mb-1 text-primary group-hover:scale-110 transition-transform">panorama</span>
+                    <span className="font-label-md text-xs text-on-surface font-semibold">{t.uploadHorizontalCover || "Carregar Capa de Fundo (horizontal)"}</span>
+                    <span className="font-body-sm text-[11px] text-on-surface-variant/70 mt-0.5">{t.horizontalRecommendedFormat || "Formato recomendado: 16:9 (Horizontal)"}</span>
+                  </button>
+                )}
+              </div>
+
               <div className="flex items-center gap-3 pt-2">
                 <input 
                   className="w-5 h-5 rounded border-outline-variant bg-surface-container-low text-primary focus:ring-primary transition-all cursor-pointer" 
@@ -3585,48 +3885,128 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
                 {syncSuccess && <p className="text-xs text-green-500 font-medium mt-1">Campos em branco preenchidos automaticamente com sucesso!</p>}
                 {syncError && <p className="text-xs text-error font-medium mt-1">{syncError}</p>}
               </div>
-              <div className="space-y-2">
-                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">{t.platforms}</label>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2 p-3 bg-surface-container-low border border-outline-variant/30 rounded-lg min-h-[48px]">
-                    {Array.isArray(formData.platform) && formData.platform?.map(p => (
-                      <span key={p} className="flex items-center gap-1 bg-primary text-on-primary px-3 py-1 rounded-lg font-label-md text-label-md shadow-sm">
-                        {p}
+              <div className="space-y-2 relative" ref={platformContainerRef}>
+                <div className="flex items-center justify-between">
+                  <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+                    {t.platforms}
+                  </label>
+                  {Array.isArray(formData.platform) && formData.platform.length > 0 && (
+                    <span className="text-[11px] text-primary font-bold">
+                      {formData.platform.length} selecionada(s)
+                    </span>
+                  )}
+                </div>
+
+                {/* Clickable Platforms Field */}
+                <div 
+                  onClick={() => setIsPlatformMenuOpen(prev => !prev)}
+                  className={`w-full bg-surface-container-low border ${
+                    isPlatformMenuOpen ? 'border-primary ring-2 ring-primary/30' : 'border-outline-variant/30 hover:border-outline-variant/60'
+                  } rounded-lg p-2.5 min-h-[48px] flex items-center justify-between gap-2 cursor-pointer transition-all shadow-sm`}
+                >
+                  <div className="flex flex-wrap gap-1.5 flex-1 items-center">
+                    {Array.isArray(formData.platform) && formData.platform.length > 0 ? (
+                      formData.platform.map(p => (
                         <span 
-                          className="material-symbols-outlined text-[16px] cursor-pointer hover:opacity-70" 
-                          onClick={() => removePlatform(p)}
+                          key={p} 
+                          className="flex items-center gap-1 bg-primary text-on-primary px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          close
+                          {p}
+                          <span 
+                            className="material-symbols-outlined text-[14px] cursor-pointer hover:bg-black/20 rounded-full p-0.5 transition-colors" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removePlatform(p);
+                            }}
+                          >
+                            close
+                          </span>
                         </span>
+                      ))
+                    ) : (
+                      <span className="text-on-surface-variant/50 text-xs select-none">
+                        {t.noPlatformSelected || "Clique para selecionar plataformas..."}
                       </span>
-                    ))}
-                    {(!Array.isArray(formData.platform) || formData.platform.length === 0) && (
-                      <span className="text-on-surface-variant/40 text-xs py-1">{t.noPlatformSelected}</span>
                     )}
                   </div>
-                  <div className="relative">
-                    <select 
-                      className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all appearance-none outline-none pr-10" 
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          addPlatform(e.target.value);
-                          e.target.value = '';
-                        }
-                      }}
-                    >
-                      <option value="">+ {t.addPlatform}...</option>
-                      <option value="PC">PC</option>
-                      <option value="PlayStation 5">PlayStation 5</option>
-                      <option value="PlayStation 4">PlayStation 4</option>
-                      <option value="Xbox Series X|S">Xbox Series X|S</option>
-                      <option value="Xbox One">Xbox One</option>
-                      <option value="Nintendo Switch">Nintendo Switch</option>
-                      <option value="Mobile">Mobile</option>
-                      <option value="Steam Deck">Steam Deck</option>
-                    </select>
-                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">add</span>
-                  </div>
+                  <span className={`material-symbols-outlined text-on-surface-variant transition-transform duration-200 shrink-0 ${isPlatformMenuOpen ? 'rotate-180 text-primary' : ''}`}>
+                    expand_more
+                  </span>
                 </div>
+
+                {/* Interactive Platforms Popover Menu */}
+                {isPlatformMenuOpen && (
+                  <div className="absolute z-30 top-full left-0 right-0 mt-1 bg-surface-container border border-outline-variant/30 rounded-xl shadow-2xl p-3 space-y-3 backdrop-blur-md">
+                    {/* Custom platform input */}
+                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="text"
+                        placeholder="Digitar outra plataforma..."
+                        value={customPlatformInput}
+                        onChange={(e) => setCustomPlatformInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (customPlatformInput.trim()) {
+                              addPlatform(customPlatformInput.trim());
+                              setCustomPlatformInput('');
+                            }
+                          }
+                        }}
+                        className="flex-1 bg-surface-container-low border border-outline-variant/30 rounded-lg px-3 py-1.5 text-xs text-on-surface focus:ring-2 focus:ring-primary/50 outline-none"
+                      />
+                      <button
+                        type="button"
+                        disabled={!customPlatformInput.trim()}
+                        onClick={() => {
+                          if (customPlatformInput.trim()) {
+                            addPlatform(customPlatformInput.trim());
+                            setCustomPlatformInput('');
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold disabled:opacity-40 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">add</span>
+                        Adicionar
+                      </button>
+                    </div>
+
+                    {/* Predefined Platform Options */}
+                    <div className="space-y-1.5" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-between px-1">
+                        <span className="text-[10px] uppercase font-bold text-on-surface-variant/60 tracking-wider">
+                          Selecione as plataformas
+                        </span>
+                        <span className="text-[9px] text-on-surface-variant/50">
+                          clique para marcar/desmarcar
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 max-h-56 overflow-y-auto pr-1">
+                        {STANDARD_PLATFORMS.map(p => {
+                          const isSelected = Array.isArray(formData.platform) && formData.platform.includes(p);
+                          return (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={() => togglePlatform(p)}
+                              className={`flex items-center justify-between p-2 rounded-lg text-xs transition-all text-left cursor-pointer ${
+                                isSelected 
+                                  ? 'bg-primary text-on-primary shadow-sm font-bold' 
+                                  : 'bg-surface-container-low hover:bg-surface-container-high text-on-surface border border-outline-variant/20'
+                              }`}
+                            >
+                              <span className="truncate mr-1">{p}</span>
+                              <span className="material-symbols-outlined text-[16px] shrink-0">
+                                {isSelected ? 'check_circle' : 'add'}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -3704,17 +4084,113 @@ function GameFormView({ game, onSave, onCancel, isEdit, onDeleteRequest, t }: {
               </div>
             </div>
 
-            {/* New Field: Localização (Full Width) */}
-            <div className="space-y-2">
-              <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="location">{t.location}</label>
-              <input 
-                className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
-                id="location" 
-                placeholder="Ex: HD Externo, Steam Library, GOG Galaxy" 
-                type="text"
-                value={formData.location || ''}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-              />
+            {/* Fields: Localização & Região */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Localização with Tab Autocompletion and Suggestions */}
+              <div className="space-y-2 relative">
+                <div className="flex items-center justify-between">
+                  <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="location">
+                    {t.location}
+                  </label>
+                  {locationSuggestion && (
+                    <span className="text-[11px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse">
+                      <kbd className="font-mono bg-surface-container px-1 py-0.2 rounded text-[10px] border border-outline-variant/30">Tab</kbd>
+                      {t.tabToComplete || "Tab para completar"}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="relative">
+                  {/* Ghost text overlay for Tab completion */}
+                  {locationSuggestion && isLocationFocused && (
+                    <div className="absolute inset-0 px-4 py-2 pointer-events-none font-body-sm text-body-sm flex items-center whitespace-pre overflow-hidden">
+                      <span className="opacity-0">{currentLocationInput}</span>
+                      <span className="text-on-surface-variant/40 select-none">
+                        {locationSuggestion.slice(currentLocationInput.length)}
+                      </span>
+                    </div>
+                  )}
+
+                  <input 
+                    className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                    id="location" 
+                    placeholder="Ex: Biblioteca I, HD Externo, Steam" 
+                    type="text"
+                    autoComplete="off"
+                    value={formData.location || ''}
+                    onChange={(e) => setFormData({...formData, location: e.target.value})}
+                    onFocus={() => setIsLocationFocused(true)}
+                    onBlur={() => {
+                      setTimeout(() => setIsLocationFocused(false), 200);
+                    }}
+                    onKeyDown={(e) => {
+                      if ((e.key === 'Tab' || e.key === 'ArrowRight') && locationSuggestion) {
+                        e.preventDefault();
+                        setFormData(prev => ({ ...prev, location: locationSuggestion }));
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Suggested existing locations dropdown */}
+                {isLocationFocused && filteredLocations.length > 0 && (
+                  <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-surface-container border border-outline-variant/30 rounded-lg shadow-xl p-2 space-y-1 backdrop-blur-md">
+                    <div className="text-[10px] uppercase font-bold text-on-surface-variant/60 px-2 py-1 flex items-center justify-between">
+                      <span>Localizações existentes</span>
+                      <span className="text-[9px] lowercase opacity-70">tab ou clique para aplicar</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 p-1 max-h-36 overflow-y-auto">
+                      {filteredLocations.map(loc => (
+                        <button
+                          key={loc}
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setFormData(prev => ({ ...prev, location: loc }));
+                            setIsLocationFocused(false);
+                          }}
+                          className={`px-2.5 py-1 text-xs rounded-md transition-all text-left flex items-center gap-1.5 cursor-pointer ${
+                            loc.toLowerCase() === (formData.location || '').toLowerCase()
+                              ? 'bg-primary text-on-primary font-bold'
+                              : 'bg-surface-container-high hover:bg-primary/20 text-on-surface'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[13px] opacity-70">folder</span>
+                          {loc}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Região Field */}
+              <div className="space-y-2">
+                <label className="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" htmlFor="region">
+                  {t.region || "Região"}
+                </label>
+                <div className="relative">
+                  <input 
+                    className="w-full bg-surface-container-low border-none rounded-lg px-4 py-2 text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary/50 transition-all outline-none" 
+                    id="region" 
+                    placeholder="Ex: Global, USA / NTSC-U, EUR / PAL, JPN" 
+                    type="text"
+                    list="game-region-options"
+                    value={formData.region || ''}
+                    onChange={(e) => setFormData({...formData, region: e.target.value})}
+                  />
+                  <datalist id="game-region-options">
+                    <option value="Global" />
+                    <option value="América do Norte (USA / NTSC-U)" />
+                    <option value="Europa (EUR / PAL)" />
+                    <option value="Japão (JPN / NTSC-J)" />
+                    <option value="Brasil (BR)" />
+                    <option value="Ásia (Asia)" />
+                    <option value="América Latina (LATAM)" />
+                    <option value="Austrália (AUS)" />
+                  </datalist>
+                </div>
+              </div>
             </div>
 
             {/* New Field: Ano de Lançamento & Horas Jogadas (Modified grid) */}
@@ -3917,7 +4393,7 @@ function LuckyDrawModal({ isOpen, game, onClose, onReDraw, onViewDetails, t }: {
         >
           <div className="flex flex-col md:flex-row h-full">
             <div className="w-full md:w-1/2 aspect-[3/4] md:aspect-auto">
-              <img src={game.coverUrl} alt={game.title} className="w-full h-full object-cover" />
+              <img src={game.coverUrl || DEFAULT_COVER} alt={game.title} className="w-full h-full object-cover" />
             </div>
             <div className="p-8 flex flex-col justify-center flex-1 space-y-6">
               <div className="space-y-2">
@@ -4188,6 +4664,37 @@ function SettingsView({
           'Aprimorado o botão Apagar do Banco de Dados para limpar também a biblioteca, avatar, Usuário Gamer e redefinir o Armazenamento.',
           'Resolvido bug crítico de travamento e handles de arquivos no instalador NSIS através do encerramento limpo via API do Electron ao atualizar.'
         ]
+      },
+      {
+        id: '12',
+        version: '1.5.1',
+        date: '2026-07-11',
+        changes: [
+          'Resolvido bug de backup onde os nomes personalizados das Unidades de Armazenamento não eram salvos e restaurados.',
+          'Corrigida a exibição da Sinopse na tela de detalhes dos jogos para respeitar quebras de linha e parágrafos de forma correta e legível.'
+        ]
+      },
+      {
+        id: '13',
+        version: '1.5.2',
+        date: '2026-07-12',
+        changes: [
+          'Resolução definitiva na atualização dinâmica do contêiner "Adicionados Recentemente" e "Concluídos Recentemente" na tela de Estatísticas através do controle preciso de registros de data/hora.',
+          'Correção de persistência nos nomes personalizados das Unidades de Armazenamento, garantindo consistência total ao importar, exportar ou recarregar os dados.'
+        ]
+      },
+      {
+        id: '14',
+        version: '1.6.0',
+        date: '2026-08-16',
+        changes: [
+          'Adicionado o botão "Carregar Capa de Fundo (horizontal)" na tela de Editar Jogo para envio de imagem panorâmica personalizada a partir do computador, com opções completas de alterar e remover foto.',
+          'Reformulado o campo de Plataformas no formulário de jogo para abrir automaticamente a listagem de plataformas e inserção personalizada diretamente ao clicar no campo.',
+          'Implementada a sugestão e preenchimento inteligente de Localização com base nas localizações já cadastradas na biblioteca (confirmado pela tecla TAB).',
+          'Adicionado o novo campo de Região ao lado de Localização para catalogação detalhada da procedência dos jogos.',
+          'Aprimorada a pesquisa global na barra superior para pesquisar e navegar diretamente para os resultados na Biblioteca mesmo ao buscar a partir da página de Detalhes de um jogo.',
+          'Correção e sincronização em tempo real das listas "Adicionados Recentemente" e "Concluídos Recentemente" na tela de Estatísticas com ordenação cronológica precisa e suporte a jogos 100% zerados.'
+        ]
       }
     ];
 
@@ -4280,7 +4787,7 @@ function SettingsView({
           />
           <div className="relative group shrink-0">
             <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-primary/10 shadow-lg bg-surface-container">
-              <img src={localAvatar} alt="Profile" className="w-full h-full object-cover" />
+              <img src={localAvatar || DEFAULT_AVATAR} alt="Profile" className="w-full h-full object-cover" />
             </div>
             <button 
               onClick={handleUpdateAvatar}
@@ -4445,7 +4952,7 @@ function SettingsView({
           {/* Card Footer with Version and Support Button */}
           <div className="flex items-center justify-between pt-6 border-t border-outline-variant/10">
             <span className="bg-primary/5 border border-primary/10 text-primary text-[10px] font-black px-3 py-1.5 rounded-xl">
-              v1.5.0
+              v1.6.0
             </span>
             <button 
               onClick={() => setShowSupportModal(true)}
@@ -4940,7 +5447,7 @@ function SettingsView({
 
       <div className="text-center py-6 flex flex-col gap-1 items-center">
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
-          GAMINGHUB V1.5.0 • 2026
+          GAMINGHUB V1.6.0 • 2026
         </p>
         <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-60">
           Um produto Hub_ • {t.developedBy} DAVISON SANT
@@ -5126,8 +5633,8 @@ function UpdateModal({
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
                   {isPt 
-                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.5.0.' 
-                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.5.0.'}
+                    ? 'Ainda não existem versões de lançamento (releases) oficiais criadas no seu repositório GitHub. O GamingHub está executando na versão v1.6.0.' 
+                    : 'There are no official releases found on your GitHub repository yet. GamingHub is running on build v1.6.0.'}
                 </p>
                 <div className="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-medium rounded-xl p-4 text-xs flex items-center gap-2.5 max-w-md mx-auto">
                   <span className="material-symbols-outlined text-[18px]">verified_user</span>
@@ -5178,7 +5685,7 @@ function UpdateModal({
                     : 'Congratulations! You are already running the latest available version of GamingHub.'}
                 </p>
                 <div className="inline-block px-4 py-1 bg-surface-container-high rounded-full border border-outline-variant/30 text-xs font-mono font-bold text-on-surface-variant mt-2">
-                  v1.5.0 (Latest)
+                  v1.6.0 (Latest)
                 </div>
               </div>
               <div className="flex justify-center pt-2">
@@ -5204,8 +5711,8 @@ function UpdateModal({
                   </h3>
                   <p className="text-sm text-on-surface-variant">
                     {isPt 
-                      ? `Uma nova atualização está disponível. Versão atual v1.5.0 → Nova versão ${data?.tag_name || ''}`
-                      : `A new update is available. Current version v1.5.0 → New version ${data?.tag_name || ''}`}
+                      ? `Uma nova atualização está disponível. Versão atual v1.6.0 → Nova versão ${data?.tag_name || ''}`
+                      : `A new update is available. Current version v1.6.0 → New version ${data?.tag_name || ''}`}
                   </p>
                 </div>
               </div>
@@ -5710,7 +6217,7 @@ function RankingSelectModal({ isOpen, onClose, onSelect, games, slot, t }: { isO
   if (!isOpen || slot === null) return null;
 
   const filteredGames = games.filter(g => 
-    g.title.toLowerCase().includes(search.toLowerCase()) && !g.rankingPos
+    matchesGameTitle(g.title, search) && !g.rankingPos
   );
 
   return (
@@ -5740,14 +6247,24 @@ function RankingSelectModal({ isOpen, onClose, onSelect, games, slot, t }: { isO
           </div>
 
           <div className="relative mb-6">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40">search</span>
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 pointer-events-none">search</span>
             <input 
               type="text" 
               placeholder={t.searchPlaceholder}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-surface-container px-12 py-4 rounded-2xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
+              className="w-full bg-surface-container pl-12 pr-10 py-4 rounded-2xl border border-outline-variant/20 focus:border-primary/50 outline-none text-sm transition-all"
             />
+            {search.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-on-surface-variant/50 hover:text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center cursor-pointer"
+                aria-label="Limpar busca"
+              >
+                <span className="material-symbols-outlined text-base">close</span>
+              </button>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 space-y-2 scrollbar-hide">
@@ -5758,7 +6275,7 @@ function RankingSelectModal({ isOpen, onClose, onSelect, games, slot, t }: { isO
                   onClick={() => onSelect(game.id, slot)}
                   className="flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-container transition-all cursor-pointer group border border-transparent hover:border-outline-variant/20"
                 >
-                  <img src={game.coverUrl} className="w-10 h-14 rounded-lg object-cover shadow-md" alt="" />
+                  <img src={game.coverUrl || DEFAULT_COVER} className="w-10 h-14 rounded-lg object-cover shadow-md" alt="" />
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">{game.title}</h4>
                     <p className="text-[10px] text-on-surface-variant/60 uppercase font-bold tracking-wider">{Array.isArray(game.platform) ? game.platform[0] : game.platform}</p>
@@ -5889,8 +6406,16 @@ function EditDiskModal({ isOpen, disk, isAdding, onClose, onSave, onDelete, t, g
     // Check if location starts with letter followed by a colon (like I:\... or I:)
     if (loc.startsWith(letter + ':')) return true;
     
-    // Check if the disk label matches or is included in the location
-    if (label && loc.includes(label)) return true;
+    // Check if the disk label matches or is included in the location with proper word/roman numeral boundaries
+    if (label) {
+      const idx = loc.indexOf(label);
+      if (idx !== -1) {
+        const nextChar = loc[idx + label.length];
+        if (!nextChar || !/[a-z0-9]/i.test(nextChar)) {
+          return true;
+        }
+      }
+    }
     
     // Check if it contains the drive letter in parentheses/brackets/spaces
     if (loc.includes('(' + letter + ':') || loc.includes('[' + letter + ':') || loc.includes(' ' + letter + ':')) return true;
@@ -5987,7 +6512,7 @@ function EditDiskModal({ isOpen, disk, isAdding, onClose, onSave, onDelete, t, g
                       className="flex items-center gap-3 p-2 rounded-xl bg-surface-container hover:bg-primary/10 transition-all cursor-pointer group"
                     >
                       <img 
-                        src={game.coverUrl} 
+                        src={game.coverUrl || DEFAULT_COVER} 
                         alt="" 
                         className="w-8 h-10 object-cover rounded shadow-sm"
                       />
